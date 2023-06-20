@@ -1,0 +1,14 @@
+{
+    "name": "UFlow.Addon.Ecs.Core.Runtime",
+    "rootNamespace": "UFlow.Addon.Ecs.Core.Runtime",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

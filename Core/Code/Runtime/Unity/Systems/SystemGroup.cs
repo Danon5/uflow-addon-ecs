@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UFlow.Core.Runtime {
+namespace UFlow.Addon.Ecs.Core.Runtime {
     public sealed class SystemGroup {
         private readonly World m_world;
         private readonly List<ISystem> m_systems;

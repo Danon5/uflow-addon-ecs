@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UFlow.Core.Runtime {
+namespace UFlow.Addon.Ecs.Core.Runtime {
     public abstract class BaseSystemRunner<T> : MonoBehaviour where T : Enum {
         private readonly Dictionary<T, SystemGroup> m_groups;
 

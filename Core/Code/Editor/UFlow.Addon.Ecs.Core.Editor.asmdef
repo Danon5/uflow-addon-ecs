@@ -1,10 +1,12 @@
 {
-    "name": "UFlow.Addon.Ecs.Runtime",
-    "rootNamespace": "UFlow.Addon.Ecs.Runtime",
-    "references": [],
+    "name": "UFlow.Addon.Ecs.Core.Editor",
+    "rootNamespace": "UFlow.Addon.Ecs.Core.Editor",
+    "references": [
+        "GUID:f4b25e78f096ead41bab888a001e186b"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

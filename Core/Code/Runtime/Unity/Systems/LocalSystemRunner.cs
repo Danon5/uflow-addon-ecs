@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace UFlow.Core.Runtime {
+namespace UFlow.Addon.Ecs.Core.Runtime {
     public sealed class LocalSystemRunner : BaseSystemRunner<LocalSystemRunTiming> {
         [UsedImplicitly]
         private void Update() {
