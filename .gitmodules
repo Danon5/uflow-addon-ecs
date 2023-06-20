@@ -1,3 +1,0 @@
-[submodule "Core/Runtime/Source"]
-	path = Core/Code/Runtime/Source
-	url = https://github.com/Danon5/uflow-ecs
