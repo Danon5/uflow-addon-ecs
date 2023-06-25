@@ -1,5 +1,5 @@
 ﻿namespace UFlow.Addon.Ecs.Core.Runtime {
-    public class DynamicEntitySet {
+    public sealed class DynamicEntitySet {
         
     }
 }
