@@ -39,19 +39,19 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             m_subscriptions.Dispose();
         }
 
-        private void CheckedAdd(in Entity entity) {
+        internal void CheckedAdd(in Entity entity) {
             if (m_entities.Has(entity.id)) return;
             if (!m_filter(entity.ComponentBitset)) return;
             m_entities.Set(entity.id, entity);
         }
         
-        private void CheckedRemove(in Entity entity) {
+        internal void CheckedRemove(in Entity entity) {
             if (!m_entities.Has(entity.id)) return;
             if (m_filter(entity.ComponentBitset)) return;
             m_entities.Remove(entity.id);
         }
         
-        private void Remove(in Entity entity) {
+        internal void Remove(in Entity entity) {
             if (!m_entities.Has(entity.id)) return;
             m_entities.Remove(entity.id);
         }
