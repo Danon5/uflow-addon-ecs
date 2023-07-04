@@ -17,9 +17,19 @@ namespace UFlow.Addon.Ecs.Core.Editor.Editors {
             EditorApplication.update -= Update;
         }
 
+        public override void OnInspectorGUI() {
+            base.OnInspectorGUI();
+
+            if (!GUI.changed) return;
+            var sceneEntity = target as SceneEntity;
+            if (!Application.isPlaying || sceneEntity == null) return;
+            sceneEntity.ApplyRuntimeInspector();
+        }
+
         private void Update() {
             var sceneEntity = target as SceneEntity;
-            if (Application.isPlaying && sceneEntity != null) sceneEntity.UpdateRuntimeInspector();
+            if (!Application.isPlaying || sceneEntity == null) return;
+            sceneEntity.RetrieveRuntimeInspector();
             Repaint();
         }
     }

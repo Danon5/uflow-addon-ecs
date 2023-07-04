@@ -19,9 +19,20 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             m_inspector.BakeAuthoringComponents(Entity);
         }
 
+        [UsedImplicitly]
+        private void OnDestroy() {
+            if (!World.IsAlive()) return;
+            Entity.Destroy();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void UpdateRuntimeInspector() {
-            m_inspector.UpdateRuntimeComponents(Entity);
+        internal void RetrieveRuntimeInspector() {
+            m_inspector.RetrieveRuntimeComponents();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void ApplyRuntimeInspector() {
+            m_inspector.ApplyRuntimeComponents();
         }
 
         protected virtual World GetWorld() => UFlowUtils.Modules.Get<EcsModule>().World;
