@@ -25,6 +25,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             Entity.Destroy();
         }
 
+#if UNITY_EDITOR
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RetrieveRuntimeInspector() {
             inspector.RetrieveRuntimeComponents();
@@ -34,6 +35,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         internal void ApplyRuntimeInspector() {
             inspector.ApplyRuntimeComponents();
         }
+#endif
 
         protected virtual World GetWorld() => UFlowUtils.Modules.Get<EcsModule>().World;
     }
