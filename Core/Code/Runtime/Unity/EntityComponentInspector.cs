@@ -161,7 +161,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             [SerializeReference]
             public IEcsComponent value;
 
-            public EntityComponentInspector inspector;
+            [NonSerialized] public EntityComponentInspector inspector;
 
             [UsedImplicitly] private string Name => value != null ? value.GetType().Name : "None";
             [UsedImplicitly] private Color Color => enabled ? inspector.Color : inspector.DisabledColor;
