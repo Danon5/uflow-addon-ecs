@@ -19,7 +19,6 @@ namespace UFlow.Addon.Ecs.Core.Editor {
 
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
-
             var sceneEntity = target as SceneEntity;
             if (!Application.isPlaying || sceneEntity == null) return;
             if (!GUI.changed) return;
