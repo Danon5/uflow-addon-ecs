@@ -81,9 +81,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             m_typesToRemove = new Queue<Type>();
 #endif
 
-            foreach (var component in m_authoring) {
+            foreach (var component in m_authoring)
                 entity.SetRaw(component.value, component.enabled);
-            }
         }
 
 #if UNITY_EDITOR
@@ -107,9 +106,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
 
             // enqueue sets
-            foreach (var type in componentTypes) {
+            foreach (var type in componentTypes)
                 m_typesToSet.Enqueue(type);
-            }
 
             // apply sets
             while (m_typesToSet.TryDequeue(out var type)) {
@@ -157,13 +155,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
         }
         
-        private void Add() {
-            m_runtime.Add(new EntityComponent(this, default));
-        }
+        private void Add() => m_runtime.Add(new EntityComponent(this, default));
 
-        private void SetEnabled(in Type type, bool enabled) {
-            m_entity.SetEnabledRaw(type, enabled);
-        }
+        private void SetEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
 #endif
 
         [Serializable]
