@@ -24,6 +24,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private static readonly Dictionary<Type, MethodInfo> s_tryRemoveRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_setEnabledRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_isEnabledRawCache = new();
+        private static readonly object[] s_emptyObjectBuffer = Array.Empty<object>();
+        private static readonly object[] s_singleObjectBuffer = new object[1];
+        private static readonly object[] s_doubleObjectBuffer = new object[2];
 
         public World World => Worlds.Get(worldId);
         internal Bitset Bitset => Worlds.Get(worldId).GetEntityComponentBitset(id);
@@ -106,7 +109,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEcsComponent SetRaw(in Type type, in IEcsComponent component, bool enabled = true) {
             var method = GetOrCreateGenericMethod(s_setRawCache, type, nameof(SetRawInternal));
-            return method.Invoke(this, new object[] { component, enabled }) as IEcsComponent;
+            s_doubleObjectBuffer[0] = component;
+            s_doubleObjectBuffer[1] = enabled;
+            return method.Invoke(this, s_doubleObjectBuffer) as IEcsComponent;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -143,7 +148,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEcsComponent GetRaw(in Type type) {
             var method = GetOrCreateGenericMethod(s_getRawCache, type, nameof(GetRawInternal));
-            return (IEcsComponent)method.Invoke(this, Array.Empty<object>());
+            return (IEcsComponent)method.Invoke(this, s_emptyObjectBuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -185,13 +190,13 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveRaw(in Type type) {
             var method = GetOrCreateGenericMethod(s_removeRawCache, type, nameof(RemoveRawInternal));
-            method.Invoke(this, Array.Empty<object>());
+            method.Invoke(this, s_emptyObjectBuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryRemoveRaw(in Type type) {
             var method = GetOrCreateGenericMethod(s_tryRemoveRawCache, type, nameof(TryRemoveRawInternal));
-            return (bool)method.Invoke(this, Array.Empty<object>());
+            return (bool)method.Invoke(this, s_emptyObjectBuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -212,7 +217,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEnabledRaw(in Type type, bool enabled) {
             var method = GetOrCreateGenericMethod(s_setEnabledRawCache, type, nameof(SetEnabledRawInternal));
-            method.Invoke(this, new object[] { enabled });
+            s_singleObjectBuffer[0] = enabled;
+            method.Invoke(this, s_singleObjectBuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -227,7 +233,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabledRaw(in Type type) {
             var method = GetOrCreateGenericMethod(s_isEnabledRawCache, type, nameof(IsEnabledRawInternal));
-            return (bool)method.Invoke(this, Array.Empty<object>());
+            return (bool)method.Invoke(this, s_emptyObjectBuffer);
         }
 
         private MethodInfo GetOrCreateGenericMethod(in Dictionary<Type, MethodInfo> cache, in Type type, in string methodName) {
