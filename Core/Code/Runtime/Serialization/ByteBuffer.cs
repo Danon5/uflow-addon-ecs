@@ -200,13 +200,14 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public Span<byte> GetBytesToCursor() => new(m_buffer, 0, Cursor + 1);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void EnsureLength<T>(ref T[] array, int length, int maxLength = int.MaxValue) {
+        private void EnsureLength<T>(ref T[] array, int length, int maxLength = int.MaxValue) {
             if (array.Length >= length) return;
             var oldCapacity = array.Length;
             var newCapacity = Math.Max(oldCapacity, 1);
             while (newCapacity <= length && newCapacity <= maxLength)
                 newCapacity <<= 1;
             newCapacity = Math.Min(newCapacity, maxLength);
+            Capacity = newCapacity;
             Array.Resize(ref array, newCapacity);
         }
 
