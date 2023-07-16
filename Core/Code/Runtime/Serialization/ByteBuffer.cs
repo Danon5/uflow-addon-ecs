@@ -65,56 +65,64 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<byte> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<sbyte> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<short> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<ushort> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<int> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<uint> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<long> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in Span<ulong> values) {
-            EnsureLength(ref m_buffer, Cursor + values.Length);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + values.Length);
             foreach (var value in values)
                 Write(value);
         }
@@ -140,14 +148,16 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteInternal(byte value) {
-            EnsureLength(ref m_buffer, Cursor + 1);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + 1);
             m_buffer[Cursor] = value;
             Cursor += 1;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteInternal(short value) {
-            EnsureLength(ref m_buffer, Cursor + 2);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + 2);
             if (m_littleEndian) {
                 m_buffer[Cursor] = (byte)value;
                 m_buffer[Cursor + 1] = (byte)(value >> 8);
@@ -161,7 +171,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteInternal(int value) {
-            EnsureLength(ref m_buffer, Cursor + 4);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + 4);
             if (m_littleEndian) {
                 m_buffer[Cursor] = (byte)value;
                 m_buffer[Cursor + 1] = (byte)(value >> 8);
@@ -179,7 +190,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteInternal(long value) {
-            EnsureLength(ref m_buffer, Cursor + 8);
+            if (m_autoResize)
+                EnsureLength(ref m_buffer, Cursor + 8);
             if (m_littleEndian) {
                 m_buffer[Cursor] = (byte)value;
                 m_buffer[Cursor + 1] = (byte)(value >> 8);
