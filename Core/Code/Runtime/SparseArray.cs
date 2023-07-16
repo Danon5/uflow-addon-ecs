@@ -15,9 +15,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         public int Count { get; private set; }
 
-        public SparseArray() {
-            Clear();
-        }
+        public SparseArray() => Clear();
 
         public SparseArray(int initialCapacity) {
             initialCapacity = Math.Max(initialCapacity, 1);
@@ -28,13 +26,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() {
-            return new Enumerator(this);
-        }
+        public Enumerator GetEnumerator() => new Enumerator(this);
 
-        public void Dispose() {
-            Clear();
-        }
+        public void Dispose() => Clear();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Set(int id, in T value) {
@@ -73,24 +67,16 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Get(int id) {
-            return ref m_dense[m_sparse[id]];
-        }
+        public ref T Get(int id) => ref m_dense[m_sparse[id]];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetBufferValue() {
-            return ref m_dense[0];
-        }
+        public ref T GetBufferValue() => ref m_dense[0];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Has(int id) {
-            return id < m_sparse.Length && m_sparse[id] != -1;
-        }
+        public bool Has(int id) => id < m_sparse.Length && m_sparse[id] != -1;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool HasBufferValue() {
-            return m_sparse[0] != -1;
-        }
+        public bool HasBufferValue() => m_sparse[0] != -1;
 
         public void Clear() {
             m_dense = new T[1];
@@ -121,9 +107,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() {
-                return ++m_index <= m_count;
-            }
+            public bool MoveNext() => ++m_index <= m_count;
         }
     }
 }
