@@ -203,7 +203,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public unsafe void WriteUnsafe<T>(T value) where T : unmanaged {
             var size = Marshal.SizeOf<T>();
             if (m_autoResize)
-                EnsureLength(ref m_buffer, Cursor + size);  
+                EnsureLength(ref m_buffer, Cursor + size);
             var ptr = (byte*)Unsafe.AsPointer(ref value);
             if (m_currentSystemUsesLittleEndian) {
                 for (var i = 0; i < size; i++)

@@ -30,6 +30,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         public World World => Worlds.Get(worldId);
         internal Bitset Bitset => Worlds.Get(worldId).GetEntityComponentBitset(id);
+        internal IEnumerable<Type> ComponentTypes => World.GetEntityComponentTypes(this);
+        internal int ComponentCount => World.GetEntityComponentTypes(this).Count;
 
         internal Entity(int id, ushort gen, in short worldId) {
             this.id = id;

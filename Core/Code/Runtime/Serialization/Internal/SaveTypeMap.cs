@@ -22,5 +22,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Type GetType(int hash) => m_hashToType[hash];
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<Type> GetRegisteredTypesEnumerable() => m_typeToHash.Keys;
     }
 }
