@@ -290,7 +290,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         public List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
         
-        public Entity CreateEntity() {
+        public Entity CreateEntity(bool enable = true) {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
@@ -300,13 +300,18 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             var entity = new Entity(entityId, info.gen, id);
             EntityCount++;
             Publish(new EntityCreatedEvent(entity));
-            Publish(new EntityEnabledEvent(entity));
+            if (enable)
+                Publish(new EntityEnabledEvent(entity));
+            else
+                Publish(new EntityDisabledEvent(entity));
             return entity;
         }
 
         internal void DestroyEntity(in Entity entity) {
-            Publish(new EntityDisableComponentsEvent(entity));
-            Publish(new EntityDisabledEvent(entity));
+            if (entity.IsEnabled()) {
+                Publish(new EntityDisableComponentsEvent(entity));
+                Publish(new EntityDisabledEvent(entity));
+            }
             Publish(new EntityRemoveComponentsEvent(entity));
             m_entityIdStack.RecycleId(entity.id);
             ref var info = ref m_entityInfos[entity.id];
