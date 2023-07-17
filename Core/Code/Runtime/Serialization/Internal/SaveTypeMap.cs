@@ -10,7 +10,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private readonly Dictionary<int, Type> m_hashToType = new();
 
         public void RegisterTypes() {
-            foreach (var type in UFlowUtils.Reflection.GetAllTypesWithAttribute<EcsSerializableAttribute>()) {
+            foreach (var type in UFlowUtils.Reflection.GetAllInheritorsWithAttribute<IEcsComponent, EcsSerializableAttribute>()) {
                 var hash = type.GetCustomAttribute<EcsSerializableAttribute>().id.GetHashCode();
                 m_typeToHash[type] = hash;
                 m_hashToType[hash] = type;
