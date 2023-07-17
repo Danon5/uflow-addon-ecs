@@ -194,25 +194,13 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public void ReadDoubleArrayInto(in Span<double> span) => ReadArrayIntoUnsafe(span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Complete() => Cursor = 0;
+        public void ResetCursor() => Cursor = 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Span<byte> GetBytesToCursor() => new(m_buffer, 0, Cursor + 1);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureLength<T>(ref T[] array, int length, int maxLength = int.MaxValue) {
-            if (array.Length >= length) return;
-            var oldCapacity = array.Length;
-            var newCapacity = Math.Max(oldCapacity, 1);
-            while (newCapacity <= length && newCapacity <= maxLength)
-                newCapacity <<= 1;
-            newCapacity = Math.Min(newCapacity, maxLength);
-            Capacity = newCapacity;
-            Array.Resize(ref array, newCapacity);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private unsafe void WriteUnsafe<T>(T value) where T : unmanaged {
+        public unsafe void WriteUnsafe<T>(T value) where T : unmanaged {
             var size = Marshal.SizeOf<T>();
             if (m_autoResize)
                 EnsureLength(ref m_buffer, Cursor + size);  
@@ -229,7 +217,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteArrayUnsafe<T>(in ReadOnlySpan<T> span) where T : unmanaged {
+        public void WriteArrayUnsafe<T>(in ReadOnlySpan<T> span) where T : unmanaged {
             if (m_autoResize)
                 EnsureLength(ref m_buffer, span.Length);
             WriteUnsafe((ushort)span.Length);
@@ -238,7 +226,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private unsafe T ReadUnsafe<T>() where T : unmanaged {
+        public unsafe T ReadUnsafe<T>() where T : unmanaged {
             var size = Marshal.SizeOf<T>();
             var ptr = (byte*)Unsafe.AsPointer(ref m_buffer[Cursor]);
             if (!m_currentSystemUsesLittleEndian) {
@@ -251,7 +239,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private T[] ReadArrayUnsafe<T>() where T : unmanaged {
+        public T[] ReadArrayUnsafe<T>() where T : unmanaged {
             var length = ReadUnsafe<ushort>();
             var values = new T[length];
             for (var i = 0; i < length; i++)
@@ -260,10 +248,22 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ReadArrayIntoUnsafe<T>(in Span<T> span) where T : unmanaged {
+        public void ReadArrayIntoUnsafe<T>(in Span<T> span) where T : unmanaged {
             var length = ReadUnsafe<ushort>();
             for (var i = 0; i < length; i++)
                 span[i] = ReadUnsafe<T>();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void EnsureLength<T>(ref T[] array, int length, int maxLength = int.MaxValue) {
+            if (array.Length >= length) return;
+            var oldCapacity = array.Length;
+            var newCapacity = Math.Max(oldCapacity, 1);
+            while (newCapacity <= length && newCapacity <= maxLength)
+                newCapacity <<= 1;
+            newCapacity = Math.Min(newCapacity, maxLength);
+            Capacity = newCapacity;
+            Array.Resize(ref array, newCapacity);
         }
     }
 }

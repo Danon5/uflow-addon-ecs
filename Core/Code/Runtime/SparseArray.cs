@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UFlow.Core.Runtime;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
 #if IL2CPP_ENABLED
@@ -32,9 +33,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Set(int id, in T value) {
-            EcsUtils.Internal.EnsureIndex(ref m_sparse, id, -1);
+            UFlowUtils.Collections.EnsureIndex(ref m_sparse, id, -1);
             if (m_sparse[id] == -1) Count++;
-            EcsUtils.Internal.EnsureIndex(ref m_dense, Count);
+            UFlowUtils.Collections.EnsureIndex(ref m_dense, Count);
             m_dense[Count] = value;
             m_sparse[id] = Count;
             return ref m_dense[Count];

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using UFlow.Core.Runtime;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
 #if IL2CPP_ENABLED
@@ -20,7 +21,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public static World AddWorld(in World world) {
             var id = world.id;
             if (id >= short.MaxValue) throw new Exception("Created too many worlds!");
-            EcsUtils.Internal.EnsureIndex(ref s_worlds, id);
+            UFlowUtils.Collections.EnsureIndex(ref s_worlds, id);
             s_worlds[id] = world;
             Publishers<WorldCreatedEvent>.Global.Publish(new WorldCreatedEvent(world));
             return world;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UFlow.Core.Runtime;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Serialization.Core.Runtime")]
 namespace UFlow.Addon.Ecs.Core.Runtime {
@@ -291,7 +292,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         public Entity CreateEntity() {
             var entityId = m_entityIdStack.GetNextId();
-            EcsUtils.Internal.EnsureIndex(ref m_entityInfos, entityId);
+            UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
             info.bitset[Bits.IsAlive] = true;
             info.bitset[Bits.IsEnabled] = true;

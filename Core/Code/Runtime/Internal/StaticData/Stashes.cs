@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UFlow.Core.Runtime;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -32,8 +33,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Stash<T> GetOrCreate(short worldId) {
-            EcsUtils.Internal.EnsureIndex(ref s_stashes, worldId);
-            EcsUtils.Internal.EnsureIndex(ref s_subscriptions, worldId);
+            UFlowUtils.Collections.EnsureIndex(ref s_stashes, worldId);
+            UFlowUtils.Collections.EnsureIndex(ref s_subscriptions, worldId);
             s_stashes[worldId] ??= new Stash<T>();
             var world = Worlds.Get(worldId);
             s_subscriptions[worldId] ??= new List<IDisposable> {
@@ -55,7 +56,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Stash<T> GetOrCreatePrevious(short worldId) {
-            EcsUtils.Internal.EnsureIndex(ref s_previousStashes, worldId);
+            UFlowUtils.Collections.EnsureIndex(ref s_previousStashes, worldId);
             s_previousStashes[worldId] ??= new Stash<T>();
             return s_previousStashes[worldId];
         }

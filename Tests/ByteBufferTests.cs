@@ -8,7 +8,7 @@ namespace UFlow.Addon.ECS.Tests {
             var buffer = new ByteBuffer();
             const int value = 5;
             buffer.Write(value);
-            buffer.Complete();
+            buffer.ResetCursor();
             Assert.That(buffer.ReadInt(), Is.EqualTo(5));
         }
 
@@ -17,7 +17,7 @@ namespace UFlow.Addon.ECS.Tests {
             var buffer = new ByteBuffer();
             var values = new[] { 1, 2, 3, 4, 5 };
             buffer.Write(values);
-            buffer.Complete();
+            buffer.ResetCursor();
             buffer.ReadIntArrayInto(values);
             Assert.That(values[0], Is.EqualTo(1));
             Assert.That(values[1], Is.EqualTo(2));
@@ -31,7 +31,7 @@ namespace UFlow.Addon.ECS.Tests {
             var buffer = new ByteBuffer();
             var values = new[] { 1, 2, 3, 4, 5 };
             buffer.Write(values);
-            buffer.Complete();
+            buffer.ResetCursor();
             Assert.That(buffer.ReadUShort(), Is.EqualTo(5));
             Assert.That(buffer.ReadInt(), Is.EqualTo(1));
             Assert.That(buffer.ReadInt(), Is.EqualTo(2));

@@ -1,4 +1,5 @@
 ﻿using System;
+using UFlow.Core.Runtime;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
 #if IL2CPP_ENABLED
@@ -41,7 +42,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
             
             public static IDisposable Subscribe(in GenericHandler<T> action, int worldId) {
-                EcsUtils.Internal.EnsureIndex(ref s_actions, worldId);
+                UFlowUtils.Collections.EnsureIndex(ref s_actions, worldId);
                 s_actions[worldId] += action;
                 return new WorldInstanceSubscription<T>(action, worldId);
             }
