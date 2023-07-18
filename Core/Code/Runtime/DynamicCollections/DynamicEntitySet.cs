@@ -17,21 +17,22 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         internal DynamicEntitySet(in World world, 
                                   in Predicate<Bitset> filter, 
                                   in List<Func<World, DynamicEntityCollectionUpdater, IDisposable>> actions,
+                                  in List<Predicate<Entity>> initialAddPredicates,
                                   bool excludeInitialEntities) {
-            m_updater = new DynamicEntityCollectionUpdater(this, world, filter, actions);
+            m_updater = new DynamicEntityCollectionUpdater(this, world, filter, actions, initialAddPredicates);
             m_entities = new SparseArray<Entity>();
             if (excludeInitialEntities) return;
             m_updater.AddInitialEntities();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Add(in Entity entity) {
+        public void EnsureAdded(in Entity entity) {
             if (m_entities.Has(entity.id)) return;
             m_entities.Set(entity.id, entity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Remove(in Entity entity) {
+        public void EnsureRemoved(in Entity entity) {
             if (!m_entities.Has(entity.id)) return;
             m_entities.Remove(entity.id);
         }

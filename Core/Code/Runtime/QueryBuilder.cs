@@ -14,6 +14,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private readonly List<Bitset> m_withoutEitherSets;
         private readonly List<Func<World, DynamicEntityCollectionUpdater, IDisposable>> m_actions;
         private readonly List<Func<World, DynamicEntityCollectionUpdater, IDisposable>> m_whenActions;
+        private readonly List<Predicate<Entity>> m_initialAddPredicates;
         private Bitset m_withSet;
         private Bitset m_withoutSet;
         private Bitset m_whenAddedSet;
@@ -31,18 +32,22 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             m_withoutEitherSets = new List<Bitset>();
             m_actions = new List<Func<World, DynamicEntityCollectionUpdater, IDisposable>>();
             m_whenActions = new List<Func<World, DynamicEntityCollectionUpdater, IDisposable>>();
+            m_initialAddPredicates = new List<Predicate<Entity>>();
         }
 
         public QueryBuilder With<T>() where T : IEcsComponent {
             if (m_withSet[Stashes<T>.Bit]) return this;
             m_withSet[Stashes<T>.Bit] = true;
-            m_actions.Add((world, updater) => world.WhenEntityComponentAdded((in Entity entity, ref T _) => 
-                updater.CheckedAdd(entity)));
-            m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
-                updater.CheckedRemove(entity)));
+            m_initialAddPredicates.Add(entity => entity.IsEnabled() && entity.Has<T>() && entity.IsEnabled<T>());
             var enabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Enabled);
             var disabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Disabled);
-            if (enabled == disabled) return this;
+            if (enabled == disabled) {
+                m_actions.Add((world, updater) => world.WhenEntityComponentAdded((in Entity entity, ref T _) => 
+                    updater.CheckedAdd(entity)));
+                m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
+                    updater.CheckedRemove(entity)));
+                return this;
+            }
             AddEnabledActions<T>(false);
             return this;
         }
@@ -50,13 +55,16 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public QueryBuilder Without<T>() where T : IEcsComponent {
             if (m_withoutSet[Stashes<T>.Bit]) return this;
             m_withoutSet[Stashes<T>.Bit] = true;
-            m_actions.Add((world, updater) => world.WhenEntityComponentAdded((in Entity entity, ref T _) => 
-                updater.CheckedRemove(entity)));
-            m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
-                updater.CheckedAdd(entity)));
+            m_initialAddPredicates.Add(entity => !entity.IsEnabled() || !entity.Has<T>() || !entity.IsEnabled<T>());
             var enabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Enabled);
             var disabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Disabled);
-            if (enabled == disabled) return this;
+            if (enabled == disabled) {
+                m_actions.Add((world, updater) => world.WhenEntityComponentAdded((in Entity entity, ref T _) => 
+                    updater.CheckedRemove(entity)));
+                m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
+                    updater.CheckedAdd(entity)));
+                return this;
+            }
             AddEnabledActions<T>(true);
             return this;
         }
@@ -144,7 +152,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             return this;
         }
 
-        public DynamicEntitySet AsSet() => new DynamicEntitySet(m_world, GetFilter(), GetSubscriptions(), m_excludeInitialEntities);
+        public DynamicEntitySet AsSet() => new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
 
         private Predicate<Bitset> GetFilter() => Queries.GetFilter(m_withSet, m_withoutSet, m_withEitherSets, m_withoutEitherSets);
 
@@ -154,34 +162,57 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private void AddEnabledActions<T>(bool inverse) where T : IEcsComponent {
             switch (m_enabledFlags) {
                 case QueryEnabledFlags.Enabled:
-                    if (inverse) {
+                    if (inverse) { // without
                         m_actions.Add((world, updater) => world.WhenEntityComponentEnabled((in Entity entity, ref T _) =>
                             updater.CheckedRemove(entity)));
-                        m_actions.Add((world, updater) => world.WhenEntityComponentDisabled((in Entity entity, ref T _) => 
-                            updater.CheckedAdd(entity)));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentDisabled((in Entity entity, ref T _) => {
+                            if (entity.IsEnabled())
+                                updater.CheckedAdd(entity);
+                        }));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentEnabled((in Entity entity, ref T _) => {
+                            updater.CheckedRemove(entity);
+                        }));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentDisabled((in Entity entity, ref T _) => {
+                            if (entity.IsEnabled<T>())
+                                updater.CheckedAdd(entity);
+                        }));
                     }
-                    else {
-                        m_actions.Add((world, updater) => world.WhenEntityComponentEnabled((in Entity entity, ref T _) => 
-                            updater.CheckedAdd(entity)));
+                    else { // with
+                        m_actions.Add((world, updater) => world.WhenEntityComponentEnabled((in Entity entity, ref T _) => {
+                            if (entity.IsEnabled())
+                                updater.CheckedAdd(entity);
+                        }));
                         m_actions.Add((world, updater) => world.WhenEntityComponentDisabled((in Entity entity, ref T _) => 
                             updater.CheckedRemove(entity)));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentEnabled((in Entity entity, ref T _) => {
+                            if (entity.IsEnabled<T>())
+                                updater.CheckedAdd(entity);
+                        }));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentDisabled((in Entity entity, ref T _) => 
+                            updater.EnsureRemoved(entity)));
                     }
-
                     break;
                 case QueryEnabledFlags.Disabled:
-                    if (inverse) {
+                    if (inverse) { // without
                         m_actions.Add((world, updater) => world.WhenEntityComponentEnabled((in Entity entity, ref T _) => 
                             updater.CheckedAdd(entity)));
                         m_actions.Add((world, updater) => world.WhenEntityComponentDisabled((in Entity entity, ref T _) => 
                             updater.CheckedRemove(entity)));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentEnabled((in Entity entity, ref T _) => 
+                            updater.CheckedAdd(entity)));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentDisabled((in Entity entity, ref T _) => 
+                            updater.EnsureRemoved(entity)));
                     }
-                    else {
+                    else { // with
                         m_actions.Add((world, updater) => world.WhenEntityComponentEnabled((in Entity entity, ref T _) => 
                             updater.CheckedRemove(entity)));
                         m_actions.Add((world, updater) => world.WhenEntityComponentDisabled((in Entity entity, ref T _) => 
                             updater.CheckedAdd(entity)));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentEnabled((in Entity entity, ref T _) => 
+                            updater.EnsureRemoved(entity)));
+                        m_actions.Add((world, updater) => world.WhenEntityComponentParentDisabled((in Entity entity, ref T _) => 
+                            updater.CheckedAdd(entity)));
                     }
-
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

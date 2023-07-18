@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
+using UnityEngine;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -40,7 +41,11 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             s_subscriptions[worldId] ??= new List<IDisposable> {
                 world.WhenEntityEnabled((in Entity entity) => {
                     if (!entity.Has<T>()) return;
-                    entity.Enable<T>();
+                    world.Publish(new EntityComponentParentEnabledEvent<T>(entity));
+                }),
+                world.WhenEntityDisabled((in Entity entity) => {
+                    if (!entity.Has<T>()) return;
+                    world.Publish(new EntityComponentParentDisabledEvent<T>(entity));
                 }),
                 world.WhenEntityDisableComponents((in Entity entity) => {
                     if (!entity.Has<T>()) return;

@@ -137,6 +137,14 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         internal IDisposable WhenEntityRemoveComponents(EntityRemoveComponentsHandler action) =>
             Publishers<EntityRemoveComponentsEvent>.WorldInstance.Subscribe(
                 (in EntityRemoveComponentsEvent @event) => action(@event.entity), id);
+        
+        internal IDisposable WhenEntityComponentParentEnabled<T>(EntityComponentParentEnabledHandler<T> action) where T : IEcsComponent =>
+            Publishers<EntityComponentParentEnabledEvent<T>>.WorldInstance.Subscribe(
+                (in EntityComponentParentEnabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
+        
+        internal IDisposable WhenEntityComponentParentDisabled<T>(EntityComponentParentDisabledHandler<T> action) where T : IEcsComponent =>
+            Publishers<EntityComponentParentDisabledEvent<T>>.WorldInstance.Subscribe(
+                (in EntityComponentParentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Publish<T>(in T @event) => Publishers<T>.WorldInstance.Publish(@event, id);
@@ -295,7 +303,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
             info.bitset[Bits.IsAlive] = true;
-            info.bitset[Bits.IsEnabled] = true;
+            info.bitset[Bits.IsEnabled] = enable;
             info.componentTypes = new List<Type>();
             var entity = new Entity(entityId, info.gen, id);
             EntityCount++;
@@ -333,12 +341,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             var wasEnabled = info.bitset[Bits.IsEnabled];
             if (enabled == wasEnabled) return;
             if (!enabled)
-                Publishers<EntityDisablingEvent>.WorldInstance.Publish(new EntityDisablingEvent(entity), id);
+                Publish(new EntityDisablingEvent(entity));
             info.bitset[Bits.IsEnabled] = enabled;
             if (enabled)
-                Publishers<EntityEnabledEvent>.WorldInstance.Publish(new EntityEnabledEvent(entity), id);
+                Publish(new EntityEnabledEvent(entity));
             else
-                Publishers<EntityDisabledEvent>.WorldInstance.Publish(new EntityDisabledEvent(entity), id);
+                Publish(new EntityDisabledEvent(entity));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

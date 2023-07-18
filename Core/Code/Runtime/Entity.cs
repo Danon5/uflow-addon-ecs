@@ -82,7 +82,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             if (!alreadyHas) {
                 World.SetComponentBit<T>(this, enableIfAdded);
                 Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Publish(new EntityComponentAddedEvent<T>(this), worldId);
-                if (enableIfAdded)
+                if (enableIfAdded && IsEnabled())
                     Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Publish(new EntityComponentEnabledEvent<T>(this), worldId);
                 else
                     Publishers<EntityComponentDisabledEvent<T>>.WorldInstance.Publish(new EntityComponentDisabledEvent<T>(this), worldId);
@@ -109,15 +109,16 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in Type type, in IEcsComponent component, bool enabled = true) {
+        public IEcsComponent SetRaw(in Type type, in IEcsComponent component, bool enableIfAdded = true) {
             var method = GetOrCreateGenericMethod(s_setRawCache, type, nameof(SetRawInternal));
             s_doubleObjectBuffer[0] = component;
-            s_doubleObjectBuffer[1] = enabled;
+            s_doubleObjectBuffer[1] = enableIfAdded;
             return method.Invoke(this, s_doubleObjectBuffer) as IEcsComponent;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in IEcsComponent component, bool enabled = true) => SetRaw(component.GetType(), component, enabled);
+        public IEcsComponent SetRaw(in IEcsComponent component, bool enableIfAdded = true) => 
+            SetRaw(component.GetType(), component, enableIfAdded);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void NotifyChanged<T>() where T : IEcsComponent {
@@ -173,7 +174,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             if (!Stashes<T>.TryGet(worldId, out var stash) || !stash.Has(id))
                 throw new Exception($"Entity does not have component of type {typeof(T)}");
             ref var comp = ref stash.Get(id);
-            Disable<T>();
+            if (IsEnabled())
+                Disable<T>();
             Publishers<EntityComponentRemovingEvent<T>>.WorldInstance.Publish(new EntityComponentRemovingEvent<T>(this), worldId);
             stash.Remove(id);
             World.SetComponentBit<T>(this, false);

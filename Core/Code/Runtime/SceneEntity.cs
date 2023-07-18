@@ -7,7 +7,7 @@ using UnityEngine;
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
 namespace UFlow.Addon.Ecs.Core.Runtime {
     public class SceneEntity : MonoBehaviour {
-        [SerializeField, InlineProperty, HideLabel] internal EntityComponentInspector inspector;
+        [SerializeField, InlineProperty, HideLabel] internal EntityInspector inspector;
         
         public World World { get; private set; }
         public Entity Entity { get; private set; }
@@ -15,7 +15,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [UsedImplicitly]
         private void Awake() {
             World = GetWorld();
-            Entity = World.CreateEntity();
+            Entity = World.CreateEntity(inspector.EntityEnabled);
             inspector.BakeAuthoringComponents(Entity);
         }
 
@@ -28,12 +28,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 #if UNITY_EDITOR
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RetrieveRuntimeInspector() {
-            inspector.RetrieveRuntimeComponents();
+            inspector.RetrieveRuntimeState();
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void ApplyRuntimeInspector() {
-            inspector.ApplyRuntimeComponents();
+            inspector.ApplyRuntimeState();
         }
 #endif
 

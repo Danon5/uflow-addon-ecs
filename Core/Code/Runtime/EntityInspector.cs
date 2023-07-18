@@ -10,14 +10,21 @@ using UnityEngine;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
     [Serializable]
-    internal sealed class EntityComponentInspector
+    internal sealed class EntityInspector
 #if UNITY_EDITOR
         : ISerializationCallbackReceiver
 #endif
 
     {
 #if UNITY_EDITOR
-        [ColoredFoldoutGroup("Authoring", "$Color", GroupName = "Components")]
+        [ColoredBoxGroup("Entity", "$Color")]
+        [ToggleLeft]
+#endif
+        [SerializeField]
+        private bool m_enabled = true;
+        
+#if UNITY_EDITOR
+        [ColoredFoldoutGroup("ComponentAuthoring", "$Color", GroupName = "Components")]
         [HideLabel, LabelText("Authoring")]
         [ListDrawerSettings(ShowFoldout = false)]
         [HideIf(nameof(ShouldDisplayRuntime))]
@@ -26,10 +33,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private List<EntityComponent> m_authoring = new();
 
 #if UNITY_EDITOR
-        [ColoredFoldoutGroup("Runtime", "$Color", GroupName = "Components")]
+        [ColoredFoldoutGroup("ComponentRuntime", "$Color", GroupName = "Components")]
         [ShowInInspector, HideLabel, LabelText("Runtime")]
         [ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add))]
-        [OnCollectionChanged(nameof(ApplyRuntimeComponents))]
+        [OnCollectionChanged(nameof(ApplyRuntimeState))]
         [ShowIf(nameof(ShouldDisplayRuntime))]
         private List<EntityComponent> m_runtime = new();
 #endif
@@ -41,6 +48,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private Queue<Type> m_typesToSet;
         private Queue<Type> m_typesToRemove;
 
+        internal bool EntityEnabled => m_enabled;
         private bool ShouldDisplayRuntime => Application.isPlaying && m_entity.IsAlive();
         [UsedImplicitly] private Color AuthoringColor => new(.25f, .75f, 1f, 1f);
         [UsedImplicitly] private Color RuntimeColor => new(1f, .25f, 0f, 1f);
@@ -80,15 +88,16 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             m_typesToSet = new Queue<Type>();
             m_typesToRemove = new Queue<Type>();
 #endif
-
             foreach (var component in m_authoring)
                 entity.SetRaw(component.value, component.enabled);
         }
 
 #if UNITY_EDITOR
-        public void RetrieveRuntimeComponents() {
+        public void RetrieveRuntimeState() {
             if (!m_entity.IsAlive()) return;
             if (m_world == null) return;
+
+            m_enabled = m_entity.IsEnabled();
 
             var componentTypes = m_world.GetEntityComponentTypes(m_entity);
 
@@ -122,9 +131,11 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
         }
 
-        public void ApplyRuntimeComponents() {
+        public void ApplyRuntimeState() {
             if (!m_entity.IsAlive()) return;
             if (m_world == null) return;
+            
+            m_entity.SetEnabled(m_enabled);
 
             // enqueue removes
             foreach (var (type, component) in m_typeMap) {
@@ -157,7 +168,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         private void Add() => m_runtime.Add(new EntityComponent(this, default));
 
-        private void SetEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
+        private void SetComponentEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
 #endif
 
         [Serializable]
@@ -177,10 +188,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             public IEcsComponent value;
 
 #if UNITY_EDITOR
-            [NonSerialized] public EntityComponentInspector inspector;
+            [NonSerialized] public EntityInspector inspector;
 
             [UsedImplicitly] private string Name => value != null ? value.GetType().Name : "None";
-            [UsedImplicitly] private Color Color => enabled ? inspector.Color : inspector.DisabledColor;
+            [UsedImplicitly] private Color Color => inspector.EntityEnabled && enabled ? inspector.Color : inspector.DisabledColor;
 #endif
 
             public EntityComponent() {
@@ -188,7 +199,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
 
 #if UNITY_EDITOR
-            public EntityComponent(in EntityComponentInspector inspector, in IEcsComponent value) {
+            public EntityComponent(in EntityInspector inspector, in IEcsComponent value) {
                 this.inspector = inspector;
                 this.value = value;
                 enabled = true;
