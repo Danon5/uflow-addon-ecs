@@ -38,16 +38,21 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public QueryBuilder With<T>() where T : IEcsComponent {
             if (m_withSet[Stashes<T>.Bit]) return this;
             m_withSet[Stashes<T>.Bit] = true;
-            m_initialAddPredicates.Add(entity => entity.IsEnabled() && entity.Has<T>() && entity.IsEnabled<T>());
             var enabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Enabled);
             var disabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Disabled);
             if (enabled == disabled) {
+                if (!enabled) return this;
+                m_initialAddPredicates.Add(entity => entity.Has<T>());
                 m_actions.Add((world, updater) => world.WhenEntityComponentAdded((in Entity entity, ref T _) => 
                     updater.CheckedAdd(entity)));
                 m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
                     updater.CheckedRemove(entity)));
                 return this;
             }
+            m_initialAddPredicates.Add(entity => entity.IsEnabled() == enabled && entity.Has<T>() && entity.IsEnabled<T>());
+            m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => {
+                updater.CheckedRemove(entity);
+            }));
             AddEnabledActions<T>(false);
             return this;
         }
@@ -55,16 +60,20 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public QueryBuilder Without<T>() where T : IEcsComponent {
             if (m_withoutSet[Stashes<T>.Bit]) return this;
             m_withoutSet[Stashes<T>.Bit] = true;
-            m_initialAddPredicates.Add(entity => !entity.IsEnabled() || !entity.Has<T>() || !entity.IsEnabled<T>());
             var enabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Enabled);
             var disabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Disabled);
             if (enabled == disabled) {
+                if (!enabled) return this;
+                m_initialAddPredicates.Add(entity => !entity.Has<T>());
                 m_actions.Add((world, updater) => world.WhenEntityComponentAdded((in Entity entity, ref T _) => 
                     updater.CheckedRemove(entity)));
                 m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
                     updater.CheckedAdd(entity)));
                 return this;
             }
+            m_initialAddPredicates.Add(entity => entity.IsEnabled() == enabled && (!entity.Has<T>() || !entity.IsEnabled<T>()));
+            m_actions.Add((world, updater) => world.WhenEntityComponentRemoved((in Entity entity, in T _) => 
+                updater.CheckedAdd(entity)));
             AddEnabledActions<T>(true);
             return this;
         }
@@ -152,7 +161,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             return this;
         }
 
-        public DynamicEntitySet AsSet() => new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
+        public DynamicEntitySet AsSet() => 
+            new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
+        public DynamicEntityMap<TKey> AsMap<TKey>(in DynamicEntityMap<TKey>.TryGetKeyDelegate tryGetKey) => 
+            new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities, tryGetKey);
 
         private Predicate<Bitset> GetFilter() => Queries.GetFilter(m_withSet, m_withoutSet, m_withEitherSets, m_withoutEitherSets);
 
@@ -297,6 +309,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
 
             public DynamicEntitySet AsSet() => EndEither().AsSet();
+            public DynamicEntityMap<TKey> AsMap<TKey>(in DynamicEntityMap<TKey>.TryGetKeyDelegate tryGetKey) => 
+                EndEither().AsMap(tryGetKey);
 
             internal enum EitherType : byte {
                 With,

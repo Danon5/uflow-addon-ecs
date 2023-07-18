@@ -43,9 +43,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             m_entities.Clear();
         }
 
-        public void Dispose() {
-            m_updater?.Dispose();
-        }
+        public void Dispose() => m_updater?.Dispose();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SparseArray<Entity>.Enumerator GetEnumerator() => m_entities.GetEnumerator();

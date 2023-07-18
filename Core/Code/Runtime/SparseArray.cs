@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
 
@@ -13,6 +11,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
     public sealed class SparseArray<T> : IDisposable {
         private T[] m_dense;
         private int[] m_sparse;
+        private int[] m_denseToSparse;
 
         public int Count { get; private set; }
 
@@ -22,6 +21,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             initialCapacity = Math.Max(initialCapacity, 1);
             m_dense = new T[initialCapacity];
             m_sparse = new int[initialCapacity];
+            m_denseToSparse = new int[initialCapacity];
             for (var i = 0; i < initialCapacity; i++)
                 m_sparse[i] = -1;
         }
@@ -34,9 +34,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Set(int id, in T value) {
             UFlowUtils.Collections.EnsureIndex(ref m_sparse, id, -1);
-            if (m_sparse[id] == -1) Count++;
+            if (m_sparse[id] == -1)
+                Count++;
             UFlowUtils.Collections.EnsureIndex(ref m_dense, Count);
+            UFlowUtils.Collections.EnsureIndex(ref m_denseToSparse, Count, -1);
             m_dense[Count] = value;
+            m_denseToSparse[Count] = id;
             m_sparse[id] = Count;
             return ref m_dense[Count];
         }
@@ -45,26 +48,35 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public ref T SetBufferValue(in T value) {
             m_dense[0] = value;
             m_sparse[0] = 0;
+            m_denseToSparse[0] = 0;
             return ref m_dense[0];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(int id) {
-            var idx = m_sparse[id];
-            var lastIdx = Count--;
-            if (idx != lastIdx) {
-                m_sparse[lastIdx] = idx;
-                m_dense[idx] = m_dense[lastIdx];
+            var denseIdx = m_sparse[id];
+            var lastDenseIdx = Count--;
+            if (denseIdx == lastDenseIdx) {
+                m_dense[denseIdx] = default;
+                m_sparse[id] = -1;
+                m_denseToSparse[denseIdx] = -1;
             }
-
-            m_sparse[id] = -1;
-            m_dense[idx] = default;
+            else {
+                var lastSparseIndex = m_denseToSparse[lastDenseIdx];
+                m_dense[denseIdx] = m_dense[lastDenseIdx];
+                m_sparse[id] = -1;
+                m_denseToSparse[denseIdx] = lastSparseIndex;
+                m_dense[lastDenseIdx] = default;
+                m_sparse[lastSparseIndex] = denseIdx;
+                m_denseToSparse[lastDenseIdx] = -1;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveBufferValue() {
             m_dense[0] = default;
             m_sparse[0] = -1;
+            m_denseToSparse[0] = -1;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,7 +94,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public void Clear() {
             m_dense = new T[1];
             m_sparse = new int[1];
+            m_denseToSparse = new int[1];
             m_sparse[0] = -1;
+            m_denseToSparse[0] = -1;
             Count = 0;
         }
 

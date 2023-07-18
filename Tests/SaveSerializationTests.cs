@@ -37,6 +37,8 @@ namespace UFlow.Addon.ECS.Tests {
             Assert.That(test1.someData1, Is.EqualTo(1));
             Assert.That(test1.someData2, Is.EqualTo(0));
             Assert.That(test1.someData3, Is.EqualTo(3));
+            world.Destroy();
+            ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
         }
 
         [EcsSerializable("SerializationTestsComp1")]

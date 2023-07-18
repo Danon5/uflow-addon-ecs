@@ -28,6 +28,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
 
         public static void DestroyWorld(in World world) {
+            if (!world.IsAlive()) return;
             Publishers<WorldDestroyingEvent>.Global.Publish(new WorldDestroyingEvent(world.id));
             Publishers<WorldDestroyingEvent>.WorldInstance.Publish(new WorldDestroyingEvent(world.id), world.id);
             s_worlds[world.id] = null;
