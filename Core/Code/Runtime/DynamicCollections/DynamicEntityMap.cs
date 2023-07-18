@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
     public sealed class DynamicEntityMap<TKey> : IDynamicEntityCollection, IInternalDynamicEntityCollection, IDisposable {
