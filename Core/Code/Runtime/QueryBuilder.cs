@@ -163,8 +163,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         public DynamicEntitySet AsSet() => 
             new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
-        public DynamicEntityMap<TKey> AsMap<TKey>(in DynamicEntityMap<TKey>.TryGetKeyDelegate tryGetKey) => 
-            new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities, tryGetKey);
+        public DynamicEntityMap<TKey> AsMap<TKey>() where TKey : IEcsComponent => 
+            new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
 
         private Predicate<Bitset> GetFilter() => Queries.GetFilter(m_withSet, m_withoutSet, m_withEitherSets, m_withoutEitherSets);
 
@@ -309,8 +309,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             }
 
             public DynamicEntitySet AsSet() => EndEither().AsSet();
-            public DynamicEntityMap<TKey> AsMap<TKey>(in DynamicEntityMap<TKey>.TryGetKeyDelegate tryGetKey) => 
-                EndEither().AsMap(tryGetKey);
+            public DynamicEntityMap<TKey> AsMap<TKey>() where TKey : IEcsComponent => EndEither().AsMap<TKey>();
 
             internal enum EitherType : byte {
                 With,

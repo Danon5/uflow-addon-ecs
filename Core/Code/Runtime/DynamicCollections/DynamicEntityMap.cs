@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
-    public sealed class DynamicEntityMap<TKey> : IDynamicEntityCollection, IInternalDynamicEntityCollection, IDisposable {
+    public sealed class DynamicEntityMap<TKey> : IDynamicEntityCollection, IInternalDynamicEntityCollection, IDisposable 
+        where TKey : IEcsComponent {
         private readonly DynamicEntityCollectionUpdater m_updater;
         private readonly Dictionary<TKey, Entity> m_entities;
-        private readonly TryGetKeyDelegate m_tryGetKey;
 
         public int EntityCount => m_entities.Count;
 
@@ -14,11 +14,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                                   in Predicate<Bitset> filter,
                                   in List<Func<World, DynamicEntityCollectionUpdater, IDisposable>> actions,
                                   in List<Predicate<Entity>> initialAddPredicates,
-                                  bool excludeInitialEntities,
-                                  in TryGetKeyDelegate tryGetKey) {
+                                  bool excludeInitialEntities) {
             m_updater = new DynamicEntityCollectionUpdater(this, world, filter, actions, initialAddPredicates);
             m_entities = new Dictionary<TKey, Entity>();
-            m_tryGetKey = tryGetKey;
             if (excludeInitialEntities) return;
             m_updater.AddInitialEntities();
         }
@@ -31,16 +29,16 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void EnsureAdded(in Entity entity) {
-            if (!m_tryGetKey(entity, out var key)) return;
-            if (m_entities.ContainsKey(key)) return;
-            m_entities.Add(key, entity);
+            if (!entity.TryGet(out TKey component)) return;
+            if (m_entities.ContainsKey(component)) return;
+            m_entities.Add(component, entity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void EnsureRemoved(in Entity entity) {
-            if (!m_tryGetKey(entity, out var key)) return;
-            if (!m_entities.ContainsKey(key)) return;
-            m_entities.Remove(key);
+            if (!entity.TryGet(out TKey component)) return;
+            if (!m_entities.ContainsKey(component)) return;
+            m_entities.Remove(component);
         }
 
         public void Dispose() => m_updater?.Dispose();
@@ -49,7 +47,5 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Dictionary<TKey, Entity>.Enumerator GetEnumerator() => m_entities.GetEnumerator();
-
-        public delegate bool TryGetKeyDelegate(in Entity entity, out TKey key);
     }
 }

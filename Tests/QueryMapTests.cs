@@ -12,13 +12,10 @@ namespace UFlow.Addon.ECS.Tests {
             world.CreateEntity().Set(new Test1 {
                 someData = 2
             });
-            var query = world.BuildQuery().With<Test1>().AsMap((in Entity e, out int key) => {
-                key = -1;
-                if (!e.TryGet(out Test1 test1)) return false;
-                key = test1.someData;
-                return true;
-            });
+            var query = world.BuildQuery().With<Test1>().AsMap<Test1>();
             Assert.That(query.EntityCount, Is.EqualTo(2));
+            Assert.That(query.GetEntity(new Test1 { someData = 1 }).Get<Test1>().someData, Is.EqualTo(1));
+            Assert.That(query.GetEntity(new Test1 { someData = 2 }).Get<Test1>().someData, Is.EqualTo(2));
             world.Destroy();
             ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
         }
@@ -26,20 +23,17 @@ namespace UFlow.Addon.ECS.Tests {
         [Test]
         public void PostInitTest() {
             var world = new World();
-            var query = world.BuildQuery().With<Test1>().AsMap((in Entity e, out int key) => {
-                key = -1;
-                if (!e.TryGet(out Test1 test1)) return false;
-                key = test1.someData;
-                return true;
-            });
+            var query = world.BuildQuery().With<Test1>().AsMap<Test1>();
             world.CreateEntity().Set(new Test1 {
                 someData = 1
             });
             Assert.That(query.EntityCount, Is.EqualTo(1));
+            Assert.That(query.GetEntity(new Test1 { someData = 1 }).Get<Test1>().someData, Is.EqualTo(1));
             world.CreateEntity().Set(new Test1 {
                 someData = 2
             });
             Assert.That(query.EntityCount, Is.EqualTo(2));
+            Assert.That(query.GetEntity(new Test1 { someData = 2 }).Get<Test1>().someData, Is.EqualTo(2));
             world.Destroy();
             ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
         }
@@ -47,20 +41,17 @@ namespace UFlow.Addon.ECS.Tests {
         [Test]
         public void PostAddRemoveTest() {
             var world = new World();
-            var query = world.BuildQuery().With<Test1>().AsMap((in Entity e, out int key) => {
-                key = -1;
-                if (!e.TryGet(out Test1 test1)) return false;
-                key = test1.someData;
-                return true;
-            });
+            var query = world.BuildQuery().With<Test1>().AsMap<Test1>();
             var firstEntity = world.CreateEntity();
             firstEntity.Set(new Test1 {
                 someData = 1
             });
+            Assert.That(query.GetEntity(new Test1 { someData = 1 }).Get<Test1>().someData, Is.EqualTo(1));
             var secondEntity = world.CreateEntity();
             secondEntity.Set(new Test1 {
                 someData = 2
             });
+            Assert.That(query.GetEntity(new Test1 { someData = 2 }).Get<Test1>().someData, Is.EqualTo(2));
             Assert.That(query.EntityCount, Is.EqualTo(2));
             firstEntity.Destroy();
             Assert.That(query.EntityCount, Is.EqualTo(1));
