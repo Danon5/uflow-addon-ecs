@@ -17,7 +17,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
     {
 #if UNITY_EDITOR
-        [ColoredBoxGroup("Entity", "$Color")]
+        [ColoredBoxGroup("Entity", "$Color", GroupName = "$m_entity")]
         [ToggleLeft]
 #endif
         [SerializeField]
@@ -52,18 +52,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private bool ShouldDisplayRuntime => Application.isPlaying && m_entity.IsAlive();
         [UsedImplicitly] private Color AuthoringColor => new(.25f, .75f, 1f, 1f);
         [UsedImplicitly] private Color RuntimeColor => new(1f, .25f, 0f, 1f);
-        [UsedImplicitly] private Color Color => ShouldDisplayRuntime ? RuntimeColor : AuthoringColor;
-
-        [UsedImplicitly]
-        private Color DisabledColor {
-            get {
-                var col = Color;
-                var a = col.a;
-                col /= 4f;
-                col.a = a;
-                return col;
-            }
-        }
+        [UsedImplicitly] private Color Color => ShouldDisplayRuntime ? 
+            m_enabled ? RuntimeColor : GetDisabledColor(RuntimeColor) : 
+            m_enabled ? AuthoringColor : GetDisabledColor(AuthoringColor);
+        [UsedImplicitly] private Color DisabledColor => GetDisabledColor(Color);
         
         public void OnBeforeSerialize() {
             foreach (var component in m_authoring)
@@ -169,6 +161,15 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private void Add() => m_runtime.Add(new EntityComponent(this, default));
 
         private void SetComponentEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Color GetDisabledColor(in Color color) {
+            var col = color;
+            var a = col.a;
+            col /= 2f;
+            col.a = a;
+            return col;
+        }
 #endif
 
         [Serializable]
@@ -191,7 +192,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             [NonSerialized] public EntityInspector inspector;
 
             [UsedImplicitly] private string Name => value != null ? value.GetType().Name : "None";
-            [UsedImplicitly] private Color Color => inspector.EntityEnabled && enabled ? inspector.Color : inspector.DisabledColor;
+            [UsedImplicitly] private Color Color => (enabled && inspector.EntityEnabled) || !inspector.EntityEnabled ? 
+                inspector.Color : inspector.DisabledColor;
 #endif
 
             public EntityComponent() {
