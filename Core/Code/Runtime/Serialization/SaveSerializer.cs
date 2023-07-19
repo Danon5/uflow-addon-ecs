@@ -25,6 +25,14 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                 s_entityComponentDeserializeCache.Add(registeredType, 
                     type.GetMethod(nameof(DeserializeEntityComponent), BindingFlags.Static | BindingFlags.NonPublic)!
                         .MakeGenericMethod(registeredType));
+            foreach (var registeredType in s_map.GetRegisteredTypesEnumerable())
+                s_worldComponentSerializeCache.Add(registeredType, 
+                    type.GetMethod(nameof(SerializeWorldComponent), BindingFlags.Static | BindingFlags.NonPublic)!
+                        .MakeGenericMethod(registeredType));
+            foreach (var registeredType in s_map.GetRegisteredTypesEnumerable())
+                s_worldComponentDeserializeCache.Add(registeredType, 
+                    type.GetMethod(nameof(DeserializeWorldComponent), BindingFlags.Static | BindingFlags.NonPublic)!
+                        .MakeGenericMethod(registeredType));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,7 +86,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             buffer.Write(world.ComponentCount);
             foreach (var componentType in world.ComponentTypes) {
                 buffer.Write(s_map.GetHash(componentType));
-                s_entityComponentSerializeCache[componentType].Invoke(null, s_singleObjectBuffer);
+                s_worldComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
             }
             buffer.Write(world.EntityCount);
             foreach (var entity in world.GetEntitiesEnumerable())

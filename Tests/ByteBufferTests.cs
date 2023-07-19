@@ -32,7 +32,7 @@ namespace UFlow.Addon.ECS.Tests {
             var values = new[] { 1, 2, 3, 4, 5 };
             buffer.Write(values);
             buffer.ResetCursor();
-            Assert.That(buffer.ReadUShort(), Is.EqualTo(5));
+            Assert.That(buffer.ReadInt(), Is.EqualTo(5));
             Assert.That(buffer.ReadInt(), Is.EqualTo(1));
             Assert.That(buffer.ReadInt(), Is.EqualTo(2));
             Assert.That(buffer.ReadInt(), Is.EqualTo(3));

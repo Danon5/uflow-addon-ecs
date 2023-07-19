@@ -66,6 +66,24 @@ namespace UFlow.Addon.ECS.Tests {
             ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
         }
 
+        [Test]
+        public void WorldSerializeDeserializeTest() {
+            var buffer = new ByteBuffer();
+            var world = new World();
+            var entity = world.CreateEntity();
+            entity.Set(new Test1 {
+                someData1 = 1,
+                someData2 = 2,
+                someData3 = 3
+            });
+            SaveSerializer.SerializeWorld(buffer, world);
+            buffer.ResetCursor();
+            SaveSerializer.DeserializeWorld(buffer, world);
+            Assert.That(entity.Get<Test1>().someData1, Is.EqualTo(1));
+            Assert.That(entity.Get<Test1>().someData2, Is.EqualTo(0));
+            Assert.That(entity.Get<Test1>().someData3, Is.EqualTo(3));
+        }
+
         [EcsSerializable("SerializationTestsComp1")]
         private struct Test1 : IEcsComponent {
             [Save] public int someData1;
