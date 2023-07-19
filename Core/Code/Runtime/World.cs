@@ -407,7 +407,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         internal List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
 
-        internal void ResetForSerialization() {
+        internal void ResetForDeserialization() {
             IsDeserializing = true;
             Publish(new WorldResetEvent());
             m_entityIdStack.Reset();

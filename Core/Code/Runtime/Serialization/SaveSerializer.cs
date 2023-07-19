@@ -89,7 +89,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public static void DeserializeWorld(in ByteBuffer buffer, in World world) {
             s_doubleObjectBuffer[0] = buffer;
             s_doubleObjectBuffer[1] = world;
-            world.ResetForSerialization();
+            world.ResetForDeserialization();
             var componentCount = buffer.ReadInt();
             for (var i = 0; i < componentCount; i++) {
                 var componentType = s_map.GetType(buffer.ReadInt());
