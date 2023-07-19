@@ -22,14 +22,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public static BaseSystemGroup GetOrCreateGroup(short worldId, in Type type) {
             if (!s_groups.ContainsKey(worldId)) s_groups.Add(worldId, new Dictionary<Type, BaseSystemGroup>());
             if (s_groups[worldId].TryGetValue(type, out var group)) return group;
-            
-            try {
-                group = Activator.CreateInstance(type) as BaseSystemGroup;
-            }
-            catch (Exception) {
+            if (!typeof(BaseSystemGroup).IsAssignableFrom(type))
                 throw new Exception($"Type {type} is not a valid SystemGroup");
-            }
-            
+            group = Activator.CreateInstance(type) as BaseSystemGroup;
             s_groups[worldId].Add(type, group);
             return group;
         }
