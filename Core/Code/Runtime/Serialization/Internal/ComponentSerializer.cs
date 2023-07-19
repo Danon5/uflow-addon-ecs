@@ -13,9 +13,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         static ComponentSerializer() {
             var componentType = typeof(TComponent);
-            var serializerType = typeof(UnmanagedFieldSerializer<,>);
+            var unmanagedSerializerType = typeof(UnmanagedFieldSerializer<,>);
+            var arraySerializerType = typeof(ArrayFieldSerializer<,>);
             foreach (var field in UFlowUtils.Reflection.GetAllFieldsInTypeWithAttribute<TAttribute>(componentType)) {
-                var genericType = serializerType.MakeGenericType(componentType, field.FieldType);
+                var genericType = field.FieldType.IsArray ? 
+                    arraySerializerType.MakeGenericType(componentType, field.FieldType.GetElementType()) : 
+                    unmanagedSerializerType.MakeGenericType(componentType, field.FieldType);
                 s_objectBuffer[0] = field;
                 s_fieldSerializers.Add(Activator.CreateInstance(genericType, s_objectBuffer) as ISerializer<TComponent>);
             }

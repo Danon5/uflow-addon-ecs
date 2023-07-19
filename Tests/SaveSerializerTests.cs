@@ -1,8 +1,9 @@
 ﻿using NUnit.Framework;
 using UFlow.Addon.Ecs.Core.Runtime;
+using UnityEngine;
 
 namespace UFlow.Addon.ECS.Tests {
-    public sealed class SaveSerializationTests {
+    public sealed class SaveSerializerTests {
         [Test]
         public void ComponentSerializeDeserializeTest() {
             var buffer = new ByteBuffer();
@@ -40,12 +41,41 @@ namespace UFlow.Addon.ECS.Tests {
             world.Destroy();
             ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
         }
+        
+        [Test]
+        public void EntitySerializeDeserializeArrayTest() {
+            var buffer = new ByteBuffer();
+            var world = new World();
+            var entity = world.CreateEntity();
+            entity.Set(new Test2 {
+                someDataArray1 = new [] {
+                    1,
+                    2,
+                    3
+                }
+            });
+            SaveSerializer.SerializeEntity(buffer, entity);
+            buffer.ResetCursor();
+            entity.Destroy();
+            var deserializedEntity = SaveSerializer.DeserializeEntity(buffer, world);
+            ref var test2 = ref deserializedEntity.Get<Test2>();
+            Assert.That(test2.someDataArray1[0], Is.EqualTo(1));
+            Assert.That(test2.someDataArray1[1], Is.EqualTo(2));
+            Assert.That(test2.someDataArray1[2], Is.EqualTo(3));
+            world.Destroy();
+            ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
+        }
 
         [EcsSerializable("SerializationTestsComp1")]
         private struct Test1 : IEcsComponent {
             [Save] public int someData1;
             public int someData2;
             [Save] public int someData3;
+        }
+        
+        [EcsSerializable("SerializationTestsComp2")]
+        private struct Test2 : IEcsComponent {
+            [Save] public int[] someDataArray1;
         }
     }
 }
