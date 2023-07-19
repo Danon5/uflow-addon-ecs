@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -23,7 +24,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             var statePtr = Unsafe.AsPointer(ref value);
             var fieldPtr = (void*)((byte*)statePtr + m_offset);
             var length = buffer.ReadInt();
-            var array = new TField[length];
+            var array = Unsafe.Read<TField[]>(fieldPtr) ?? new TField[length];
+            if (array.Length != length)
+                Array.Resize(ref array, length);
             for (var i = 0; i < length; i++)
                 array[i] = buffer.ReadUnsafe<TField>();
             Unsafe.Write(fieldPtr, array);

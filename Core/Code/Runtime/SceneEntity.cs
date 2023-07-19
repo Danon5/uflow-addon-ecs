@@ -17,6 +17,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             World = GetWorld();
             Entity = World.CreateEntity(inspector.EntityEnabled);
             inspector.BakeAuthoringComponents(Entity);
+            gameObject.SetActive(Entity.IsEnabled());
         }
 
         [UsedImplicitly]
@@ -25,10 +26,19 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             Entity.Destroy();
         }
 
+        [UsedImplicitly]
+        private void OnEnable() => Entity.Enable();
+
+        [UsedImplicitly]
+        private void OnDisable() => Entity.Disable();
+
 #if UNITY_EDITOR
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RetrieveRuntimeInspector() {
             inspector.RetrieveRuntimeState();
+            var isEnabled = Entity.IsEnabled();
+            if (gameObject.activeSelf != isEnabled)
+                gameObject.SetActive(isEnabled);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
