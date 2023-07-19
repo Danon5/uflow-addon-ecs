@@ -23,6 +23,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private static readonly Dictionary<Type, MethodInfo> s_removeRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_tryRemoveRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_setEnabledRawCache = new();
+        private static readonly Dictionary<Type, MethodInfo> s_enableRawCache = new();
+        private static readonly Dictionary<Type, MethodInfo> s_disableRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_isEnabledRawCache = new();
         private static readonly object[] s_emptyObjectBuffer = Array.Empty<object>();
         private static readonly object[] s_singleObjectBuffer = new object[1];
@@ -30,7 +32,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         public World World => Worlds.Get(worldId);
         internal Bitset Bitset => Worlds.Get(worldId).GetEntityComponentBitset(id);
-        internal IEnumerable<Type> ComponentTypes => World.GetEntityComponentTypes(this);
+        internal List<Type> ComponentTypes => World.GetEntityComponentTypes(this);
         internal int ComponentCount => World.GetEntityComponentTypes(this).Count;
 
         internal Entity(int id, ushort gen, in short worldId) {
@@ -217,13 +219,6 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEnabled<T>(bool enabled) where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, enabled);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnabledRaw(in Type type, bool enabled) {
-            var method = GetOrCreateGenericMethod(s_setEnabledRawCache, type, nameof(SetEnabledRawInternal));
-            s_singleObjectBuffer[0] = enabled;
-            method.Invoke(this, s_singleObjectBuffer);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Enable<T>() where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, true);
@@ -234,6 +229,25 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled<T>() where T : IEcsComponent => World.IsEntityComponentEnabled<T>(this);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEnabledRaw(in Type type, bool enabled) {
+            var method = GetOrCreateGenericMethod(s_setEnabledRawCache, type, nameof(SetEnabledRawInternal));
+            s_singleObjectBuffer[0] = enabled;
+            method.Invoke(this, s_singleObjectBuffer);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void EnableRaw(in Type type) {
+            var method = GetOrCreateGenericMethod(s_enableRawCache, type, nameof(EnableRawInternal));
+            method.Invoke(this, s_emptyObjectBuffer);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DisableRaw(in Type type) {
+            var method = GetOrCreateGenericMethod(s_disableRawCache, type, nameof(DisableRawInternal));
+            method.Invoke(this, s_emptyObjectBuffer);
+        }
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabledRaw(in Type type) {
             var method = GetOrCreateGenericMethod(s_isEnabledRawCache, type, nameof(IsEnabledRawInternal));
@@ -259,6 +273,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryRemoveRawInternal<T>() where T : IEcsComponent => TryRemove<T>();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void EnableRawInternal<T>() where T : IEcsComponent => Enable<T>();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void DisableRawInternal<T>() where T : IEcsComponent => Disable<T>();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetEnabledRawInternal<T>(bool enabled) where T : IEcsComponent => SetEnabled<T>(enabled);

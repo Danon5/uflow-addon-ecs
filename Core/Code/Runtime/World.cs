@@ -18,7 +18,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private Bitset m_bitset;
 
         public int EntityCount { get; private set; }
+        public bool IsDeserializing { get; private set; }
         internal int NextEntityId => m_entityIdStack.NextId;
+        internal List<Type> ComponentTypes => GetWorldComponentTypes();
+        internal int ComponentCount => ComponentTypes.Count;
 
         public World() {
             id = Worlds.GetNextId();
@@ -146,10 +149,15 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             Publishers<EntityComponentParentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentParentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
+        internal IDisposable WhenReset(WorldResetHandler action) =>
+            Publishers<WorldResetEvent>.WorldInstance.Subscribe(
+                (in WorldResetEvent _) => action(), id);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Publish<T>(in T @event) => Publishers<T>.WorldInstance.Publish(@event, id);
 
-        public ref T Set<T>(in T component = default) where T : IEcsComponent {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T Set<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
             var stash = Stashes<T>.GetOrCreate(id);
             var alreadyHas = stash.WorldHas();
             if (alreadyHas) {
@@ -157,10 +165,13 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                 previousStash.WorldSet(Get<T>());
             }
             ref var compRef = ref stash.WorldSet(component);
-            m_bitset[Stashes<T>.Bit] = true;
             if (!alreadyHas) {
+                m_bitset[Stashes<T>.Bit] = enableIfAdded;
                 Publishers<WorldComponentAddedEvent<T>>.WorldInstance.Publish(new WorldComponentAddedEvent<T>(), id);
-                Publishers<WorldComponentEnabledEvent<T>>.WorldInstance.Publish(new WorldComponentEnabledEvent<T>(), id);
+                if (enableIfAdded)
+                    Publishers<WorldComponentEnabledEvent<T>>.WorldInstance.Publish(new WorldComponentEnabledEvent<T>(), id);
+                else
+                    Publishers<WorldComponentDisabledEvent<T>>.WorldInstance.Publish(new WorldComponentDisabledEvent<T>(), id); 
                 var previousStash = Stashes<T>.GetOrCreatePrevious(id);
                 previousStash.WorldSet(Get<T>());
                 m_componentTypes.Add(typeof(T));
@@ -293,11 +304,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CleanupSystemGroups() => Systems.CleanupGroups(id);
-        
-        public List<Type> GetWorldComponentTypes() => m_componentTypes;
-        
-        public List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
-        
+
         public Entity CreateEntity(bool enable = true) {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
@@ -395,5 +402,19 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Bitset GetEntityComponentBitset(int entityId) => m_entityInfos[entityId].bitset;
+        
+        internal List<Type> GetWorldComponentTypes() => m_componentTypes;
+        
+        internal List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
+
+        internal void ResetForSerialization() {
+            IsDeserializing = true;
+            Publish(new WorldResetEvent());
+            m_entityIdStack.Reset();
+            m_bitset.Clear();
+            m_componentTypes.Clear();
+            Array.Resize(ref m_entityInfos, 0);
+            IsDeserializing = false;
+        }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
-using UnityEngine;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -38,7 +37,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             UFlowUtils.Collections.EnsureIndex(ref s_subscriptions, worldId);
             s_stashes[worldId] ??= new Stash<T>();
             var world = Worlds.Get(worldId);
-            s_subscriptions[worldId] ??= new List<IDisposable> {
+            s_subscriptions[worldId] ??= new[] {
                 world.WhenEntityEnabled((in Entity entity) => {
                     if (!entity.Has<T>()) return;
                     world.Publish(new EntityComponentParentEnabledEvent<T>(entity));
@@ -54,6 +53,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                 world.WhenEntityRemoveComponents((in Entity entity) => {
                     if (!entity.Has<T>()) return;
                     entity.Remove<T>();
+                }),
+                world.WhenReset(() => {
+                    s_subscriptions[worldId]?.Dispose();
+                    Remove(worldId);
                 })
             }.MergeIntoGroup();
             return s_stashes[worldId];
@@ -92,6 +95,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private static void Remove(short worldId) {
             s_stashes[worldId].Clear();
             s_stashes[worldId] = null;
+            s_previousStashes[worldId].Clear();
+            s_previousStashes[worldId] = null;
         }
 
         private static void On(in WorldDestroyedEvent @event) {

@@ -223,7 +223,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public void WriteArrayUnsafe<T>(in ReadOnlySpan<T> span) where T : unmanaged {
             if (m_autoResize)
                 EnsureLength(ref m_buffer, span.Length);
-            WriteUnsafe((ushort)span.Length);
+            WriteUnsafe(span.Length);
             foreach (var value in span)
                 WriteUnsafe(value);
         }
@@ -243,7 +243,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ReadArrayUnsafe<T>() where T : unmanaged {
-            var length = ReadUnsafe<ushort>();
+            var length = ReadUnsafe<int>();
             var values = new T[length];
             for (var i = 0; i < length; i++)
                 values[i] = ReadUnsafe<T>();
@@ -252,9 +252,17 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadArrayIntoUnsafe<T>(in Span<T> span) where T : unmanaged {
-            var length = ReadUnsafe<ushort>();
+            var length = ReadUnsafe<int>();
             for (var i = 0; i < length; i++)
                 span[i] = ReadUnsafe<T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadArrayOverwriteUnsafe<T>(ref T[] array) where T : unmanaged {
+            var length = ReadUnsafe<int>();
+            Array.Resize(ref array, length);
+            for (var i = 0; i < length; i++)
+                array[i] = ReadUnsafe<T>();
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

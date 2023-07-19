@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace UFlow.Addon.Ecs.Core.Runtime {
     internal static class Systems {
         private static readonly Dictionary<short, Dictionary<Type, BaseSystemGroup>> s_groups;
+        private static IDisposable[] s_subscriptions;
 
         static Systems() {
             s_groups = new Dictionary<short, Dictionary<Type, BaseSystemGroup>>();
@@ -26,6 +27,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                 throw new Exception($"Type {type} is not a valid SystemGroup");
             group = Activator.CreateInstance(type) as BaseSystemGroup;
             s_groups[worldId].Add(type, group);
+            var world = Worlds.Get(worldId);
+            s_subscriptions[worldId] = new[] {
+                world.WhenReset(() => {
+                    ClearGroups(worldId);
+                })
+            }.MergeIntoGroup();
             return group;
         }
 
