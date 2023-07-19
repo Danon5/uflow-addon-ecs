@@ -82,11 +82,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SerializeWorld(in ByteBuffer buffer, in World world) {
-            s_singleObjectBuffer[0] = buffer;
+            s_doubleObjectBuffer[0] = buffer;
+            s_doubleObjectBuffer[1] = world;
             buffer.Write(world.ComponentCount);
             foreach (var componentType in world.ComponentTypes) {
                 buffer.Write(s_map.GetHash(componentType));
-                s_worldComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
+                s_worldComponentSerializeCache[componentType].Invoke(null, s_doubleObjectBuffer);
             }
             buffer.Write(world.EntityCount);
             foreach (var entity in world.GetEntitiesEnumerable())

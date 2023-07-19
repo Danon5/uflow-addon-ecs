@@ -70,6 +70,11 @@ namespace UFlow.Addon.ECS.Tests {
         public void WorldSerializeDeserializeTest() {
             var buffer = new ByteBuffer();
             var world = new World();
+            world.Set(new Test1 {
+                someData1 = 1,
+                someData2 = 2,
+                someData3 = 3
+            });
             var entity = world.CreateEntity();
             entity.Set(new Test1 {
                 someData1 = 1,
@@ -79,6 +84,9 @@ namespace UFlow.Addon.ECS.Tests {
             SaveSerializer.SerializeWorld(buffer, world);
             buffer.ResetCursor();
             SaveSerializer.DeserializeWorld(buffer, world);
+            Assert.That(world.Get<Test1>().someData1, Is.EqualTo(1));
+            Assert.That(world.Get<Test1>().someData2, Is.EqualTo(0));
+            Assert.That(world.Get<Test1>().someData3, Is.EqualTo(3));
             Assert.That(entity.Get<Test1>().someData1, Is.EqualTo(1));
             Assert.That(entity.Get<Test1>().someData2, Is.EqualTo(0));
             Assert.That(entity.Get<Test1>().someData3, Is.EqualTo(3));
