@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UFlow.Core.Runtime;
 
 namespace UFlow.Addon.Ecs.Core.Runtime {
     internal static class Systems {
@@ -8,6 +9,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         static Systems() {
             s_groups = new Dictionary<short, Dictionary<Type, BaseSystemGroup>>();
+            s_subscriptions = Array.Empty<IDisposable>();
             Publishers<WorldDestroyedEvent>.Global.Subscribe((in WorldDestroyedEvent @event) => ClearGroups(@event.worldId));
             ExternalEngineEvents.clearStaticCachesEvent += ClearStaticCache;
         }
@@ -21,13 +23,14 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         }
         
         public static BaseSystemGroup GetOrCreateGroup(short worldId, in Type type) {
+            var world = Worlds.Get(worldId);
             if (!s_groups.ContainsKey(worldId)) s_groups.Add(worldId, new Dictionary<Type, BaseSystemGroup>());
             if (s_groups[worldId].TryGetValue(type, out var group)) return group;
             if (!typeof(BaseSystemGroup).IsAssignableFrom(type))
                 throw new Exception($"Type {type} is not a valid SystemGroup");
             group = Activator.CreateInstance(type) as BaseSystemGroup;
             s_groups[worldId].Add(type, group);
-            var world = Worlds.Get(worldId);
+            UFlowUtils.Collections.EnsureIndex(ref s_subscriptions, worldId);
             s_subscriptions[worldId] = new[] {
                 world.WhenReset(() => {
                     ClearGroups(worldId);

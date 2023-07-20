@@ -47,8 +47,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private Dictionary<Type, EntityComponent> m_typeMap;
         private Queue<Type> m_typesToSet;
         private Queue<Type> m_typesToRemove;
-
+#endif
+        
         internal bool EntityEnabled => m_enabled;
+#if UNITY_EDITOR
         private bool ShouldDisplayRuntime => Application.isPlaying && m_entity.IsAlive();
         [UsedImplicitly] private Color AuthoringColor => new(.25f, .75f, 1f, 1f);
         [UsedImplicitly] private Color RuntimeColor => new(1f, .25f, 0f, 1f);
