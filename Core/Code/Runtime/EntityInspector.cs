@@ -7,7 +7,6 @@ using UFlow.Odin.Runtime;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
-
 namespace UFlow.Addon.Ecs.Core.Runtime {
     [Serializable]
     internal sealed class EntityInspector
@@ -22,7 +21,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 #endif
         [SerializeField]
         private bool m_enabled = true;
-        
+
 #if UNITY_EDITOR
         [ColoredFoldoutGroup("ComponentAuthoring", "$Color", GroupName = "Components")]
         [HideLabel, LabelText("Authoring")]
@@ -48,17 +47,19 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private Queue<Type> m_typesToSet;
         private Queue<Type> m_typesToRemove;
 #endif
-        
+
         internal bool EntityEnabled => m_enabled;
 #if UNITY_EDITOR
         private bool ShouldDisplayRuntime => Application.isPlaying && m_entity.IsAlive();
         [UsedImplicitly] private Color AuthoringColor => new(.25f, .75f, 1f, 1f);
         [UsedImplicitly] private Color RuntimeColor => new(1f, .25f, 0f, 1f);
-        [UsedImplicitly] private Color Color => ShouldDisplayRuntime ? 
-            m_enabled ? RuntimeColor : GetDisabledColor(RuntimeColor) : 
+
+        [UsedImplicitly]
+        private Color Color => ShouldDisplayRuntime ? m_enabled ? RuntimeColor : GetDisabledColor(RuntimeColor) :
             m_enabled ? AuthoringColor : GetDisabledColor(AuthoringColor);
+
         [UsedImplicitly] private Color DisabledColor => GetDisabledColor(Color);
-        
+
         public void OnBeforeSerialize() {
             foreach (var component in m_authoring)
                 component.inspector = this;
@@ -128,7 +129,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public void ApplyRuntimeState() {
             if (!m_entity.IsAlive()) return;
             if (m_world == null) return;
-            
+
             m_entity.SetEnabled(m_enabled);
 
             // enqueue removes
@@ -159,7 +160,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                 m_entity.SetEnabledRaw(type, component.enabled);
             }
         }
-        
+
         private void Add() => m_runtime.Add(new EntityComponent(this, default));
 
         private void SetComponentEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
@@ -181,7 +182,7 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             [ColoredFoldoutGroup("Default", "$Color", GroupName = "$Name")] [ToggleLeft]
 #endif
             public bool enabled;
-            
+
 #if UNITY_EDITOR
             [ColoredFoldoutGroup("Default", "$Color", GroupName = "$Name")]
             [ColoredBoxGroup("Default/Box", "$Color", GroupName = "Data")]
@@ -194,8 +195,10 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             [NonSerialized] public EntityInspector inspector;
 
             [UsedImplicitly] private string Name => value != null ? value.GetType().Name : "None";
-            [UsedImplicitly] private Color Color => (enabled && inspector.EntityEnabled) || !inspector.EntityEnabled ? 
-                inspector.Color : inspector.DisabledColor;
+            [UsedImplicitly]
+            private Color Color => (enabled && inspector.EntityEnabled) || !inspector.EntityEnabled
+                ? inspector.Color
+                : inspector.DisabledColor;
 #endif
 
             public EntityComponent() {

@@ -59,7 +59,8 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         public static void SerializeEntity(in ByteBuffer buffer, in Entity entity) {
             s_singleObjectBuffer[0] = buffer;
             s_currentEntity = entity;
-            buffer.Write((byte)s_currentEntity.ComponentCount);
+            var componentCount = (byte)s_currentEntity.ComponentCount;
+            buffer.Write(componentCount);
             foreach (var componentType in entity.ComponentTypes) {
                 buffer.Write(s_map.GetHash(componentType));
                 s_entityComponentSerializeCache[componentType].Invoke(null, s_singleObjectBuffer);

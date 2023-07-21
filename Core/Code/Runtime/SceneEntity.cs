@@ -4,16 +4,15 @@ using Sirenix.OdinInspector;
 using UFlow.Addon.Ecs.Core.Runtime.Components;
 using UFlow.Core.Runtime;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
 namespace UFlow.Addon.Ecs.Core.Runtime {
     public class SceneEntity : MonoBehaviour {
-        [SerializeField, InlineProperty, HideLabel] private EntityInspector m_inspector;
-        [SerializeField, HideInInspector] private bool m_isPrefab;
-        [SerializeField, HideInInspector] private string m_assetGuid;
+#if UNITY_EDITOR
+        [InlineProperty, HideLabel]
+#endif
+        [SerializeField]
+        private EntityInspector m_inspector;
         
         public World World { get; private set; }
         public Entity Entity { get; private set; }
@@ -24,9 +23,9 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             Entity = World.CreateEntity(m_inspector.EntityEnabled);
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
-            if (!m_isPrefab) return;
+            if (!TryGetComponent(out EntityPrefabSerializationKeyProvider keyProvider)) return;
             Entity.Set(new InstantiatedSceneEntity {
-                assetGuid = m_assetGuid
+                persistentKey = keyProvider.PersistentKey
             });
         }
 
@@ -43,14 +42,6 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         private void OnDisable() => Entity.Disable();
 
 #if UNITY_EDITOR
-        [UsedImplicitly]
-        private void OnValidate() {
-            if (Application.isPlaying) return;
-            m_isPrefab = PrefabUtility.GetPrefabAssetType(gameObject) is not PrefabAssetType.NotAPrefab or PrefabAssetType.MissingAsset;
-            if (!m_isPrefab) return;
-            m_assetGuid = AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(gameObject)).ToString();
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RetrieveRuntimeInspector() {
             m_inspector.RetrieveRuntimeState();
