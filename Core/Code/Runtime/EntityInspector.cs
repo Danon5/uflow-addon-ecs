@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using UFlow.Odin.Runtime;
 using UnityEngine;
@@ -15,28 +14,17 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 #endif
 
     {
-#if UNITY_EDITOR
-        [ColoredBoxGroup("Entity", "$Color", GroupName = "$m_entity")]
-        [ToggleLeft]
-#endif
-        [SerializeField]
+        [SerializeField, ColoredBoxGroup("Entity", nameof(Color), GroupName = "$" + nameof(m_entity)), ToggleLeft] 
         private bool m_enabled = true;
 
-#if UNITY_EDITOR
-        [ColoredFoldoutGroup("ComponentAuthoring", "$Color", GroupName = "Components")]
-        [HideLabel, LabelText("Authoring")]
-        [ListDrawerSettings(ShowFoldout = false)]
-        [HideIf(nameof(ShouldDisplayRuntime))]
-#endif
-        [SerializeField]
+        [SerializeField, ColoredFoldoutGroup("ComponentAuthoring", nameof(Color), GroupName = "Components"), HideLabel, 
+         LabelText("Authoring"), ListDrawerSettings(ShowFoldout = false), HideIf(nameof(ShouldDisplayRuntime))]
         private List<EntityComponent> m_authoring = new();
 
 #if UNITY_EDITOR
-        [ColoredFoldoutGroup("ComponentRuntime", "$Color", GroupName = "Components")]
-        [ShowInInspector, HideLabel, LabelText("Runtime")]
-        [ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add))]
-        [OnCollectionChanged(nameof(ApplyRuntimeState))]
-        [ShowIf(nameof(ShouldDisplayRuntime))]
+        [ShowInInspector, ColoredFoldoutGroup("ComponentRuntime", nameof(Color), GroupName = "Components"), HideLabel, 
+         LabelText("Runtime"), ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add)),
+         OnCollectionChanged(nameof(ApplyRuntimeState)), ShowIf(nameof(ShouldDisplayRuntime))]
         private List<EntityComponent> m_runtime = new();
 #endif
 
@@ -50,15 +38,12 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         internal bool EntityEnabled => m_enabled;
 #if UNITY_EDITOR
-        private bool ShouldDisplayRuntime => Application.isPlaying && m_entity.IsAlive();
-        [UsedImplicitly] private Color AuthoringColor => new(.25f, .75f, 1f, 1f);
-        [UsedImplicitly] private Color RuntimeColor => new(1f, .25f, 0f, 1f);
-
-        [UsedImplicitly]
-        private Color Color => ShouldDisplayRuntime ? m_enabled ? RuntimeColor : GetDisabledColor(RuntimeColor) :
+        internal Color AuthoringColor => new(.25f, .75f, 1f, 1f);
+        internal Color RuntimeColor => new(1f, .25f, 0f, 1f);
+        internal Color Color => ShouldDisplayRuntime ? m_enabled ? RuntimeColor : GetDisabledColor(RuntimeColor) :
             m_enabled ? AuthoringColor : GetDisabledColor(AuthoringColor);
-
-        [UsedImplicitly] private Color DisabledColor => GetDisabledColor(Color);
+        internal Color DisabledColor => GetDisabledColor(Color);
+        private bool ShouldDisplayRuntime => Application.isPlaying && m_entity.IsAlive();
 
         public void OnBeforeSerialize() {
             foreach (var component in m_authoring)
@@ -178,27 +163,20 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         [Serializable]
         [HideReferenceObjectPicker]
         internal sealed class EntityComponent {
-#if UNITY_EDITOR
-            [ColoredFoldoutGroup("Default", "$Color", GroupName = "$Name")] [ToggleLeft]
-#endif
+            [ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)), ToggleLeft]
             public bool enabled;
 
-#if UNITY_EDITOR
-            [ColoredFoldoutGroup("Default", "$Color", GroupName = "$Name")]
-            [ColoredBoxGroup("Default/Box", "$Color", GroupName = "Data")]
-            [InlineProperty, HideLabel]
-#endif
-            [SerializeReference]
+            [SerializeReference, ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)),
+             ColoredBoxGroup("Default/Box", nameof(Color), GroupName = "Data"),
+             InlineProperty, HideLabel]
             public IEcsComponent value;
 
 #if UNITY_EDITOR
             [NonSerialized] public EntityInspector inspector;
 
-            [UsedImplicitly] private string Name => value != null ? value.GetType().Name : "None";
-            [UsedImplicitly]
-            private Color Color => (enabled && inspector.EntityEnabled) || !inspector.EntityEnabled
-                ? inspector.Color
-                : inspector.DisabledColor;
+            private string Name => value != null ? value.GetType().Name : "None";
+            private Color Color => (enabled && inspector.EntityEnabled) || !inspector.EntityEnabled ? 
+                inspector.Color : inspector.DisabledColor;
 #endif
 
             public EntityComponent() {
