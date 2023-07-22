@@ -6,7 +6,7 @@ using UFlow.Odin.Runtime;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     [Serializable]
     internal sealed class EntityInspector
 #if UNITY_EDITOR

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using UFlow.Addon.Ecs.Core.Runtime;
+using UFlow.Addon.ECS.Core.Runtime;
 
 namespace UFlow.Addon.ECS.Tests {
     public sealed class ByteBufferTests {

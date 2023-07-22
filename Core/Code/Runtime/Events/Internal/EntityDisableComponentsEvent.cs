@@ -1,4 +1,4 @@
-﻿namespace UFlow.Addon.Ecs.Core.Runtime {
+﻿namespace UFlow.Addon.ECS.Core.Runtime {
     internal readonly struct EntityDisableComponentsEvent {
         public readonly Entity entity;
 

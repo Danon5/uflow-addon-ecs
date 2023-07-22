@@ -1,9 +1,9 @@
 ﻿using Sirenix.OdinInspector.Editor;
-using UFlow.Addon.Ecs.Core.Runtime;
+using UFlow.Addon.ECS.Core.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace UFlow.Addon.Ecs.Core.Editor {
+namespace UFlow.Addon.ECS.Core.Editor {
     [CustomEditor(typeof(SceneEntity), true)]
     [CanEditMultipleObjects]
     public sealed class SceneEntityEditor : OdinEditor {

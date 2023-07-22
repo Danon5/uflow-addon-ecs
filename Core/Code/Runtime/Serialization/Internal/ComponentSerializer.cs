@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
 // ReSharper disable StaticMemberInGenericType
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class ComponentSerializer<TAttribute, TComponent>
         where TAttribute : Attribute
         where TComponent : IEcsComponent {

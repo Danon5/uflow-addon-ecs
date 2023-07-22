@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     internal readonly struct GlobalSubscription<T> : IDisposable {
         public readonly GenericHandler<T> action;
 

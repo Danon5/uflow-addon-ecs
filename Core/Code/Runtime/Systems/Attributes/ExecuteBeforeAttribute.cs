@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class ExecuteBeforeAttribute : Attribute {
         public Type SystemType { get; }
 

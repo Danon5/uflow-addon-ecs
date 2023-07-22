@@ -1,6 +1,6 @@
 ﻿using UFlow.Core.Runtime;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class EcsModule : BaseBehaviourModule {
         public World World { get; private set; }
         

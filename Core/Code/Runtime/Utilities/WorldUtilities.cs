@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public static partial class EcsUtils {
         public static class Worlds {
             public static World CreateWorldFromType<T>() where T : BaseWorldType {

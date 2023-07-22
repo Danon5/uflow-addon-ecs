@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public abstract class BaseRunSystem : IPreSetupSystem, ISetupSystem, IRunSystem, IPreCleanupSystem, ICleanupSystem {
         private readonly World m_world;
         

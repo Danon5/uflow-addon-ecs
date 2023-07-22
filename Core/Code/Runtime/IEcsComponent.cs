@@ -1,3 +1,3 @@
-﻿namespace UFlow.Addon.Ecs.Core.Runtime {
+﻿namespace UFlow.Addon.ECS.Core.Runtime {
     public interface IEcsComponent { }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public sealed class EcsSerializableAttribute : Attribute {
         public readonly string id;

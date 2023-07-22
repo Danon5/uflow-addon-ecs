@@ -1,7 +1,7 @@
 #if IL2CPP_ENABLED
 using System;
 
-namespace UFlow.Addon.Ecs.Core.Runtime
+namespace UFlow.Addon.ECS.Core.Runtime
 {
     /// <summary>
     /// The code generation options available for IL to C++ conversion.

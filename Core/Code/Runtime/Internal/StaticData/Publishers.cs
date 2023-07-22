@@ -1,7 +1,7 @@
 ﻿using System;
 using UFlow.Core.Runtime;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]

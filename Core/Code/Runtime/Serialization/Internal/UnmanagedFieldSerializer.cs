@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     internal sealed class UnmanagedFieldSerializer<TObject, TField> : ISerializer<TObject> where TField : unmanaged {
         private readonly int m_offset;
 

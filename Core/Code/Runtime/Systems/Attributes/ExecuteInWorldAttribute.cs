@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class ExecuteInWorldAttribute : Attribute {
         public Type WorldType { get; }

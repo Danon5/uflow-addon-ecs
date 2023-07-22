@@ -1,4 +1,4 @@
-﻿namespace UFlow.Addon.Ecs.Core.Runtime {
+﻿namespace UFlow.Addon.ECS.Core.Runtime {
     internal interface IInternalDynamicEntityCollection {
         void EnsureAdded(in Entity entity);
         void EnsureRemoved(in Entity entity);

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     internal sealed class ArrayFieldSerializer<TObject, TField> : ISerializer<TObject> where TField : unmanaged {
         private readonly int m_offset;
 

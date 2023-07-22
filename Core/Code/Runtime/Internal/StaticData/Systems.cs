@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UFlow.Core.Runtime;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class Systems {
         private static readonly Dictionary<short, Dictionary<Type, BaseSystemGroup>> s_groups;
         private static IDisposable[] s_subscriptions;

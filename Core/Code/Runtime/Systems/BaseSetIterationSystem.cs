@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public abstract class BaseSetIterationSystem : IPreSetupSystem, ISetupSystem, IRunSystem, IPreCleanupSystem, ICleanupSystem {
         private readonly World m_world;
         private readonly DynamicEntitySet m_query;

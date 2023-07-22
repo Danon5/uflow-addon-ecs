@@ -6,7 +6,7 @@ using System.Reflection;
 
 // ReSharper disable SuspiciousTypeConversion.Global
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public abstract class BaseSystemGroup : IEnumerable<ISystem> {
         private readonly List<ISystem> m_systems;
 

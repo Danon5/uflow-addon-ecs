@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     [Flags]
     public enum QueryEnabledFlags : byte {
         Enabled = 0,
