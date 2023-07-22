@@ -4,26 +4,26 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
-    internal sealed class SaveTypeMap {
-        private readonly Dictionary<Type, int> m_typeToHash = new();
-        private readonly Dictionary<int, Type> m_hashToType = new();
+namespace UFlow.Addon.ECS.Core.Runtime {
+    internal static class SaveTypeMap {
+        private static readonly Dictionary<Type, int> s_typeToHash = new();
+        private static readonly Dictionary<int, Type> s_hashToType = new();
 
-        public void RegisterTypes() {
+        static SaveTypeMap() {
             foreach (var type in UFlowUtils.Reflection.GetAllInheritorsWithAttribute<IEcsComponent, EcsSerializableAttribute>()) {
                 var hash = type.GetCustomAttribute<EcsSerializableAttribute>().id.GetHashCode();
-                m_typeToHash[type] = hash;
-                m_hashToType[hash] = type;
+                s_typeToHash[type] = hash;
+                s_hashToType[hash] = type;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetHash(in Type type) => m_typeToHash[type];
+        public static int GetHash(in Type type) => s_typeToHash[type];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Type GetType(int hash) => m_hashToType[hash];
+        public static Type GetType(int hash) => s_hashToType[hash];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEnumerable<Type> GetRegisteredTypesEnumerable() => m_typeToHash.Keys;
+        public static IEnumerable<Type> GetRegisteredTypesEnumerable() => s_typeToHash.Keys;
     }
 }

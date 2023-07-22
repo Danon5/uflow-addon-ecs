@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -24,13 +24,13 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
             return nextId;
         }
 
-        public void RecycleId(int id) {
-            m_stack.Push(id);
-        }
+        public void RecycleId(int id) => m_stack.Push(id);
 
         public void Reset() {
             m_stack.Clear();
             NextId = m_startValue;
         }
+
+        public void OverrideNext(int id) => NextId = id;
     }
 }

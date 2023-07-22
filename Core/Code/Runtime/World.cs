@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Serialization.Core.Runtime")]
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
     [Il2CppSetOption(Option.NullChecks, false)]
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -321,6 +321,22 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
                 Publish(new EntityDisabledEvent(entity));
             return entity;
         }
+        
+        internal Entity CreateEntityWithId(int entityId, bool enable = true) {
+            UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
+            ref var info = ref m_entityInfos[entityId];
+            info.bitset[Bits.IsAlive] = true;
+            info.bitset[Bits.IsEnabled] = enable;
+            info.componentTypes = new List<Type>();
+            var entity = new Entity(entityId, info.gen, id);
+            EntityCount++;
+            Publish(new EntityCreatedEvent(entity));
+            if (enable)
+                Publish(new EntityEnabledEvent(entity));
+            else
+                Publish(new EntityDisabledEvent(entity));
+            return entity;
+        }
 
         internal void DestroyEntity(in Entity entity) {
             if (entity.IsEnabled()) {
@@ -407,10 +423,11 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
         
         internal List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
 
-        internal void ResetForDeserialization() {
+        internal void ResetForDeserialization(int nextId) {
             IsDeserializing = true;
             Publish(new WorldResetEvent());
             m_entityIdStack.Reset();
+            m_entityIdStack.OverrideNext(nextId);
             m_bitset.Clear();
             m_componentTypes.Clear();
             Array.Resize(ref m_entityInfos, 0);

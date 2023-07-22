@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using UFlow.Addon.Ecs.Core.Runtime;
+using UFlow.Addon.ECS.Core.Runtime;
 using UnityEngine;
 
 namespace UFlow.Addon.ECS.Tests {
@@ -30,10 +30,10 @@ namespace UFlow.Addon.ECS.Tests {
                 someData2 = 2,
                 someData3 = 3
             });
-            SaveSerializer.SerializeEntity(buffer, entity);
+            SaveSerializer.SerializeEntityAsNew(buffer, entity);
             buffer.ResetCursor();
             entity.Destroy();
-            var deserializedEntity = SaveSerializer.DeserializeEntity(buffer, world);
+            var deserializedEntity = SaveSerializer.DeserializeEntityAsNew(buffer, world);
             ref var test1 = ref deserializedEntity.Get<Test1>();
             Assert.That(test1.someData1, Is.EqualTo(1));
             Assert.That(test1.someData2, Is.EqualTo(0));
@@ -54,10 +54,10 @@ namespace UFlow.Addon.ECS.Tests {
                     3
                 }
             });
-            SaveSerializer.SerializeEntity(buffer, entity);
+            SaveSerializer.SerializeEntityAsNew(buffer, entity);
             buffer.ResetCursor();
             entity.Destroy();
-            var deserializedEntity = SaveSerializer.DeserializeEntity(buffer, world);
+            var deserializedEntity = SaveSerializer.DeserializeEntityAsNew(buffer, world);
             ref var test2 = ref deserializedEntity.Get<Test2>();
             Assert.That(test2.someDataArray1[0], Is.EqualTo(1));
             Assert.That(test2.someDataArray1[1], Is.EqualTo(2));

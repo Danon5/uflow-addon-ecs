@@ -1,6 +1,6 @@
 {
-    "name": "UFlow.Addon.Ecs.Core.Editor",
-    "rootNamespace": "UFlow.Addon.Ecs.Core.Editor",
+    "name": "UFlow.Addon.ECS.Core.Editor",
+    "rootNamespace": "UFlow.Addon.ECS.Core.Editor",
     "references": [
         "GUID:f4b25e78f096ead41bab888a001e186b",
         "GUID:289a3a9098eaac1458dd85157f9702bb"

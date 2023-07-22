@@ -1,6 +1,6 @@
 {
-    "name": "UFlow.Addon.Ecs.Core.Runtime",
-    "rootNamespace": "UFlow.Addon.Ecs.Core.Runtime",
+    "name": "UFlow.Addon.ECS.Core.Runtime",
+    "rootNamespace": "UFlow.Addon.ECS.Core.Runtime",
     "references": [
         "GUID:bb1ffefc3dfaace4eb1d1ecc2cf4e24a",
         "GUID:d11bb95fd3dae2d428e8ef2cceff8cd8",

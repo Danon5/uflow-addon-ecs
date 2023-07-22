@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Sirenix.OdinInspector;
-using UFlow.Addon.Ecs.Core.Runtime.Components;
+using UFlow.Addon.ECS.Core.Runtime.Components;
 using UFlow.Core.Runtime;
 using UFlow.Odin.Runtime;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEditor;
 #endif
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
-namespace UFlow.Addon.Ecs.Core.Runtime {
+namespace UFlow.Addon.ECS.Core.Runtime {
     public class SceneEntity : MonoBehaviour {
         [SerializeField, InlineProperty, HideLabel] private EntityInspector m_inspector;
         [SerializeField, HideInInspector] private bool m_isValidPrefab;
@@ -24,7 +24,6 @@ namespace UFlow.Addon.Ecs.Core.Runtime {
 
         public World World { get; private set; }
         public Entity Entity { get; private set; }
-        internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
         private bool IsPlaying => Application.isPlaying && m_instantiated;
         private bool IsValidPersistentKey => !m_isValidPrefab || !m_persistentKey.Equals(string.Empty);
