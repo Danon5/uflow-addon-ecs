@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UFlow.Addon.ECS.Core.Runtime.Components;
 using UFlow.Core.Runtime;
+using UnityEngine;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Serialization.Core.Runtime")]
 namespace UFlow.Addon.ECS.Core.Runtime {
@@ -19,7 +20,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private Bitset m_bitset;
 
         public int EntityCount { get; private set; }
-        public bool IsDeserializing { get; private set; }
+        public bool IsDeserializing { get; internal set; }
         internal int NextEntityId => m_entityIdStack.NextId;
         internal List<Type> ComponentTypes => GetWorldComponentTypes();
         internal int ComponentCount => ComponentTypes.Count;
@@ -310,17 +311,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
-            info.bitset[Bits.IsAlive] = true;
-            info.bitset[Bits.IsEnabled] = enable;
-            info.componentTypes = new List<Type>();
-            var entity = new Entity(entityId, info.gen, id);
-            EntityCount++;
-            Publish(new EntityCreatedEvent(entity));
-            if (enable)
-                Publish(new EntityEnabledEvent(entity));
-            else
-                Publish(new EntityDisabledEvent(entity));
-            return entity;
+            return CreateEntityWithIdAndGen(entityId, info.gen, enable);;
         }
         
         internal Entity CreateEntityWithIdAndGen(int entityId, ushort entityGen, bool enable = true) {
@@ -328,7 +319,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             ref var info = ref m_entityInfos[entityId];
             info.bitset[Bits.IsAlive] = true;
             info.bitset[Bits.IsEnabled] = enable;
-            info.componentTypes = new List<Type>();
+            if (info.componentTypes == null)
+                info.componentTypes = new List<Type>();
+            else
+                info.componentTypes.Clear();
             info.gen = entityGen;
             var entity = new Entity(entityId, entityGen, id);
             EntityCount++;
@@ -430,14 +424,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
 
         internal void ResetForDeserialization(int nextId) {
-            IsDeserializing = true;
             Publish(new WorldResetEvent());
+            EntityCount = 0;
             m_entityIdStack.Reset();
             m_entityIdStack.OverrideNext(nextId);
             m_bitset.Clear();
+            m_bitset[Bits.IsAlive] = true;
             m_componentTypes.Clear();
             Array.Resize(ref m_entityInfos, 0);
-            IsDeserializing = false;
         }
     }
 }

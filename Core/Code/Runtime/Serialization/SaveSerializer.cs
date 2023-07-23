@@ -14,6 +14,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private static readonly Dictionary<Type, MethodInfo> s_worldComponentDeserializeCache = new();
         private static readonly object[] s_singleObjectBuffer = new object[1];
         private static readonly object[] s_doubleObjectBuffer = new object[2];
+        private static readonly HashSet<Type> s_componentTypeBuffer = new();
+        private static readonly Queue<Type> s_componentRemoveQueue = new();
         private static Entity s_currentEntity;
 
         static SaveSerializer() {
@@ -95,6 +97,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public static void DeserializeWorld(in ByteBuffer buffer, in World world) {
             s_doubleObjectBuffer[0] = buffer;
             s_doubleObjectBuffer[1] = world;
+            world.IsDeserializing = true;
             world.ResetForDeserialization(buffer.ReadInt());
             var componentCount = buffer.ReadInt();
             for (var i = 0; i < componentCount; i++) {   
@@ -104,6 +107,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             var entityCount = buffer.ReadInt();
             for (var i = 0; i < entityCount; i++)
                 DeserializeEntity(buffer, world);
+            world.IsDeserializing = false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -183,9 +187,25 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     s_currentEntity = world.CreateEntityWithIdAndGen(buffer.ReadInt(), buffer.ReadUShort());
             }
             var componentCount = (int)buffer.ReadByte();
+            s_componentTypeBuffer.Clear();
             for (var i = 0; i < componentCount; i++) {
                 var componentType = SaveTypeMap.GetType(buffer.ReadInt());
-                s_entityComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
+                if (isInstantiatedSceneEntity)
+                    s_componentTypeBuffer.Add(componentType);
+                else
+                    s_entityComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
+            }
+            if (isInstantiatedSceneEntity) {
+                var instantiatedSceneEntityType = typeof(InstantiatedSceneEntity);
+                foreach (var componentType in s_currentEntity.ComponentTypes) {
+                    if (componentType == instantiatedSceneEntityType) continue;
+                    if (!s_componentTypeBuffer.Contains(componentType))
+                        s_componentRemoveQueue.Enqueue(componentType);
+                }
+                while (s_componentRemoveQueue.TryDequeue(out var componentType))
+                    s_currentEntity.RemoveRaw(componentType);
+                foreach (var componentType in s_componentTypeBuffer)
+                    s_entityComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
             }
             s_currentEntity.SetEnabled(buffer.ReadBool());
             return s_currentEntity;
