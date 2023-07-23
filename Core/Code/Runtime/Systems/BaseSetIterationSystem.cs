@@ -1,7 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
-    public abstract class BaseSetIterationSystem : IPreSetupSystem, ISetupSystem, IRunSystem, IPreCleanupSystem, ICleanupSystem {
+    public abstract class BaseSetIterationSystem : IPreSetupSystem, 
+                                                   ISetupSystem, 
+                                                   IRunSystem, 
+                                                   IPreCleanupSystem, 
+                                                   ICleanupSystem, 
+                                                   IResetSystem {
         private readonly World m_world;
         private readonly DynamicEntitySet m_query;
 
@@ -36,7 +41,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Cleanup() => Cleanup(m_world);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Reset() => Reset(m_world);
+
         protected virtual void PreSetup(World world) { }
+        
         protected virtual void Setup(World world) { }
 
         protected virtual void PreIterate(World world) { }
@@ -46,6 +55,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         protected virtual void PostIterate(World world) { }
         
         protected virtual void PreCleanup(World world) { }
+        
         protected virtual void Cleanup(World world) { }
+
+        protected virtual void Reset(World world) { }
     }
 }

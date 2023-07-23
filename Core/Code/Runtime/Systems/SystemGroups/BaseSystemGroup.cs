@@ -83,6 +83,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
         }
 
+        public void Reset() {
+            foreach (var system in m_systems) {
+                if (system is IResetSystem resetSystem)
+                    resetSystem.Reset();
+            }
+        }
+
         internal void Sort() {
             var systemBuffer = new List<ISystem>(m_systems);
             

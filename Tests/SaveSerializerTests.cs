@@ -12,9 +12,9 @@ namespace UFlow.Addon.ECS.Tests {
                 someData2 = 2,
                 someData3 = 3
             };
-            SaveSerializer.SerializeComponent(buffer, ref test1);
+            SaveSerialization.SerializeComponent(buffer, ref test1);
             buffer.ResetCursor();
-            var result = SaveSerializer.DeserializeComponent<Test1>(buffer);
+            var result = SaveSerialization.DeserializeComponent<Test1>(buffer);
             Assert.That(result.someData1, Is.EqualTo(1));
             Assert.That(result.someData2, Is.EqualTo(0));
             Assert.That(result.someData3, Is.EqualTo(3));
@@ -30,10 +30,10 @@ namespace UFlow.Addon.ECS.Tests {
                 someData2 = 2,
                 someData3 = 3
             });
-            SaveSerializer.SerializeEntityAsNew(buffer, entity);
+            SaveSerialization.SerializeEntityAsNew(buffer, entity);
             buffer.ResetCursor();
             entity.Destroy();
-            var deserializedEntity = SaveSerializer.DeserializeEntityAsNew(buffer, world);
+            var deserializedEntity = SaveSerialization.DeserializeEntityAsNew(buffer, world);
             ref var test1 = ref deserializedEntity.Get<Test1>();
             Assert.That(test1.someData1, Is.EqualTo(1));
             Assert.That(test1.someData2, Is.EqualTo(0));
@@ -54,10 +54,10 @@ namespace UFlow.Addon.ECS.Tests {
                     3
                 }
             });
-            SaveSerializer.SerializeEntityAsNew(buffer, entity);
+            SaveSerialization.SerializeEntityAsNew(buffer, entity);
             buffer.ResetCursor();
             entity.Destroy();
-            var deserializedEntity = SaveSerializer.DeserializeEntityAsNew(buffer, world);
+            var deserializedEntity = SaveSerialization.DeserializeEntityAsNew(buffer, world);
             ref var test2 = ref deserializedEntity.Get<Test2>();
             Assert.That(test2.someDataArray1[0], Is.EqualTo(1));
             Assert.That(test2.someDataArray1[1], Is.EqualTo(2));
@@ -81,9 +81,9 @@ namespace UFlow.Addon.ECS.Tests {
                 someData2 = 2,
                 someData3 = 3
             });
-            SaveSerializer.SerializeWorld(buffer, world);
+            SaveSerialization.SerializeWorld(buffer, world);
             buffer.ResetCursor();
-            SaveSerializer.DeserializeWorld(buffer, world);
+            SaveSerialization.DeserializeWorld(buffer, world);
             Assert.That(world.Get<Test1>().someData1, Is.EqualTo(1));
             Assert.That(world.Get<Test1>().someData2, Is.EqualTo(0));
             Assert.That(world.Get<Test1>().someData3, Is.EqualTo(3));

@@ -307,6 +307,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CleanupSystemGroups() => Systems.CleanupGroups(id);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ResetSystemGroups() => Systems.ResetGroups(id);
+
         public Entity CreateEntity(bool enable = true) {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);

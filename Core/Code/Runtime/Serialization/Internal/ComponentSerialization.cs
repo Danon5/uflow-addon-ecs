@@ -5,13 +5,13 @@ using UFlow.Core.Runtime;
 // ReSharper disable StaticMemberInGenericType
 
 namespace UFlow.Addon.ECS.Core.Runtime {
-    internal static class ComponentSerializer<TAttribute, TComponent>
+    internal static class ComponentSerialization<TAttribute, TComponent>
         where TAttribute : Attribute
         where TComponent : IEcsComponent {
         private static readonly List<ISerializer<TComponent>> s_fieldSerializers = new();
         private static readonly object[] s_objectBuffer = new object[1];
 
-        static ComponentSerializer() {
+        static ComponentSerialization() {
             var componentType = typeof(TComponent);
             var unmanagedSerializerType = typeof(UnmanagedFieldSerializer<,>);
             var arraySerializerType = typeof(ArrayFieldSerializer<,>);

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using UFlow.Core.Runtime;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class Systems {
         private static readonly Dictionary<short, Dictionary<Type, BaseSystemGroup>> s_groups;
-        private static IDisposable[] s_subscriptions;
 
         static Systems() {
             s_groups = new Dictionary<short, Dictionary<Type, BaseSystemGroup>>();
-            s_subscriptions = Array.Empty<IDisposable>();
             Publishers<WorldDestroyedEvent>.Global.Subscribe((in WorldDestroyedEvent @event) => ClearGroups(@event.worldId));
             ExternalEngineEvents.clearStaticCachesEvent += ClearStaticCache;
         }
@@ -23,19 +20,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
         
         public static BaseSystemGroup GetOrCreateGroup(short worldId, in Type type) {
-            var world = Worlds.Get(worldId);
             if (!s_groups.ContainsKey(worldId)) s_groups.Add(worldId, new Dictionary<Type, BaseSystemGroup>());
             if (s_groups[worldId].TryGetValue(type, out var group)) return group;
             if (!typeof(BaseSystemGroup).IsAssignableFrom(type))
                 throw new Exception($"Type {type} is not a valid SystemGroup");
             group = Activator.CreateInstance(type) as BaseSystemGroup;
             s_groups[worldId].Add(type, group);
-            UFlowUtils.Collections.EnsureIndex(ref s_subscriptions, worldId);
-            s_subscriptions[worldId] = new[] {
-                world.WhenReset(() => {
-                    ClearGroups(worldId);
-                })
-            }.MergeIntoGroup();
             return group;
         }
 
@@ -78,6 +68,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             group.Cleanup();
         }
 
+        public static void ResetGroup<T>(short worldId) {
+            var type = typeof(T);
+            if (!s_groups.ContainsKey(worldId)) return;
+            if (!s_groups[worldId].TryGetValue(type, out var group)) return;
+            group.Reset();
+        }
+
         public static void SetupGroups(short worldId) {
             if (!s_groups.TryGetValue(worldId, out var groups)) return;
             foreach (var group in groups)
@@ -88,6 +85,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!s_groups.TryGetValue(worldId, out var groups)) return;
             foreach (var group in groups)
                 group.Value.Cleanup();
+        }
+
+        public static void ResetGroups(short worldId) {
+            if (!s_groups.TryGetValue(worldId, out var groups)) return;
+            foreach (var group in groups)
+                group.Value.Reset();
         }
         
         internal static void SortSystems(short worldId) {

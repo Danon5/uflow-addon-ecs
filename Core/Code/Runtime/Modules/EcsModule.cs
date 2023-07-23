@@ -7,6 +7,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public override void Load() {
             World = EcsUtils.Worlds.CreateWorldFromType<DefaultWorld>();
             World.SetupSystemGroups();
+            World.WhenReset(() => World.ResetSystemGroups());
         }
 
         public override void Unload() {
