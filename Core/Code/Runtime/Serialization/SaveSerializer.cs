@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UFlow.Addon.ECS.Core.Runtime.Components;
+using UFlow.Core.Runtime;
+using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public static class SaveSerializer {
@@ -56,61 +58,22 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SerializeEntity(in ByteBuffer buffer, in Entity entity) {
-            s_singleObjectBuffer[0] = buffer;
-            s_currentEntity = entity;
-            buffer.Write(entity.id);
-            var componentCount = (byte)s_currentEntity.ComponentCount;
-            buffer.Write(componentCount);
-            foreach (var componentType in entity.ComponentTypes) {
-                buffer.Write(SaveTypeMap.GetHash(componentType));
-                s_entityComponentSerializeCache[componentType].Invoke(null, s_singleObjectBuffer);
-            }
-            buffer.Write(entity.IsEnabled());
+            SerializeEntityInternal(buffer, entity, false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity DeserializeEntity(in ByteBuffer buffer, in World world) {
-            s_singleObjectBuffer[0] = buffer;
-            s_currentEntity = world.CreateEntityWithId(buffer.ReadInt());
-            var componentCount = (int)buffer.ReadByte();
-            for (var i = 0; i < componentCount; i++) {
-                var componentType = SaveTypeMap.GetType(buffer.ReadInt());
-                s_entityComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
-            }
-            s_currentEntity.SetEnabled(buffer.ReadBool());
-            return s_currentEntity;
+            return DeserializeEntityInternal(buffer, world, false);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SerializeEntityAsNew(in ByteBuffer buffer, in Entity entity) {
-            s_singleObjectBuffer[0] = buffer;
-            s_currentEntity = entity;
-            var isInstantiatedSceneEntity = entity.Has<InstantiatedSceneEntity>();
-            buffer.Write(isInstantiatedSceneEntity);
-            if (isInstantiatedSceneEntity) {
-                var persistentKey = entity.Get<InstantiatedSceneEntity>().persistentKey;
-                buffer.Write(EntityPrefabMap.GetHash(persistentKey));
-            }
-            var componentCount = (byte)s_currentEntity.ComponentCount;
-            buffer.Write(componentCount);
-            foreach (var componentType in entity.ComponentTypes) {
-                buffer.Write(SaveTypeMap.GetHash(componentType));
-                s_entityComponentSerializeCache[componentType].Invoke(null, s_singleObjectBuffer);
-            }
-            buffer.Write(entity.IsEnabled());
+            SerializeEntityInternal(buffer, entity, true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity DeserializeEntityAsNew(in ByteBuffer buffer, in World world) {
-            s_singleObjectBuffer[0] = buffer;
-            s_currentEntity = world.CreateEntity();
-            var componentCount = (int)buffer.ReadByte();
-            for (var i = 0; i < componentCount; i++) {
-                var componentType = SaveTypeMap.GetType(buffer.ReadInt());
-                s_entityComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
-            }
-            s_currentEntity.SetEnabled(buffer.ReadBool());
-            return s_currentEntity;
+            return DeserializeEntityInternal(buffer, world, true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -167,6 +130,65 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             var enabled = buffer.ReadBool();
             ComponentSerializer<SaveAttribute, T>.Deserialize(buffer, ref world.Set<T>(default, enabled));
             world.SetEnabled<T>(enabled);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void SerializeEntityInternal(in ByteBuffer buffer, in Entity entity, bool asNew) {
+            EntityPrefabMap.EnsureInitialized();
+            s_singleObjectBuffer[0] = buffer;
+            s_currentEntity = entity;
+            var isInstantiatedSceneEntity = entity.Has<InstantiatedSceneEntity>();
+            buffer.Write(isInstantiatedSceneEntity);
+            if (isInstantiatedSceneEntity) {
+                var persistentKey = entity.Get<InstantiatedSceneEntity>().persistentKey;
+                buffer.Write(EntityPrefabMap.GetHash(persistentKey));
+            }
+            if (!asNew) {
+                buffer.Write(entity.id);
+                buffer.Write(entity.gen);
+            }
+            var componentCount = (byte)s_currentEntity.ComponentCount;
+            if (isInstantiatedSceneEntity)
+                componentCount--;
+            buffer.Write(componentCount);
+            var instantiatedSceneEntityType = typeof(InstantiatedSceneEntity);
+            foreach (var componentType in entity.ComponentTypes) {
+                if (componentType == instantiatedSceneEntityType) continue;
+                buffer.Write(SaveTypeMap.GetHash(componentType));
+                s_entityComponentSerializeCache[componentType].Invoke(null, s_singleObjectBuffer);
+            }
+            buffer.Write(entity.IsEnabled());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Entity DeserializeEntityInternal(in ByteBuffer buffer, in World world, bool asNew) {
+            EntityPrefabMap.EnsureInitialized();
+            s_singleObjectBuffer[0] = buffer;
+            var isInstantiatedSceneEntity = buffer.ReadBool();
+            if (asNew) {
+                if (isInstantiatedSceneEntity) {
+                    var persistentHash = buffer.ReadInt();
+                    s_currentEntity = EntityPrefabMap.GetPrefab(persistentHash).Instantiate().AsEntity();
+                }
+                else
+                    s_currentEntity = world.CreateEntity();
+            }
+            else {
+                if (isInstantiatedSceneEntity) {
+                    var persistentHash = buffer.ReadInt();
+                    s_currentEntity = EntityPrefabMap.GetPrefab(persistentHash).Instantiate()
+                        .AsEntityWithIdAndGen(buffer.ReadInt(), buffer.ReadUShort());
+                }
+                else
+                    s_currentEntity = world.CreateEntityWithIdAndGen(buffer.ReadInt(), buffer.ReadUShort());
+            }
+            var componentCount = (int)buffer.ReadByte();
+            for (var i = 0; i < componentCount; i++) {
+                var componentType = SaveTypeMap.GetType(buffer.ReadInt());
+                s_entityComponentDeserializeCache[componentType].Invoke(null, s_singleObjectBuffer);
+            }
+            s_currentEntity.SetEnabled(buffer.ReadBool());
+            return s_currentEntity;
         }
     }
 }

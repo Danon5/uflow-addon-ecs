@@ -8,6 +8,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class SaveTypeMap {
         private static readonly Dictionary<Type, int> s_typeToHash = new();
         private static readonly Dictionary<int, Type> s_hashToType = new();
+        private static bool s_initialized;
 
         static SaveTypeMap() {
             foreach (var type in UFlowUtils.Reflection.GetAllInheritorsWithAttribute<IEcsComponent, EcsSerializableAttribute>()) {

@@ -1,22 +1,30 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
 using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class EntityPrefabMap {
         private static readonly Dictionary<string, int> s_keyToHash = new();
-        private static readonly Dictionary<int, GameObject> S_hashToPrefab = new();
+        private static readonly Dictionary<int, ContentRef<GameObject>> s_hashToPrefab = new();
+        private static bool s_initialized;
 
-        static EntityPrefabMap() {
+        public static void EnsureInitialized() {
+            if (s_initialized) return;
             foreach (var contentRef in Root.Singleton.Context.GetAllContentRefsEnumerable()) {
                 if (contentRef is not ContentRef<GameObject> objectRef) continue;
                 if (!objectRef.IsAssetAssigned() || !objectRef.Asset.TryGetComponent(out SceneEntity sceneEntity)) continue;
-                
+                var hash = sceneEntity.PersistentKey.GetHashCode();
+                s_keyToHash.Add(sceneEntity.PersistentKey, hash);
+                s_hashToPrefab.Add(hash, objectRef);
             }
+            s_initialized = true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetHash(in string key) => s_keyToHash[key];
 
-        public static GameObject GetPrefab(int hash) => S_hashToPrefab[hash];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ContentRef<GameObject> GetPrefab(int hash) => s_hashToPrefab[hash];
     }
 }
