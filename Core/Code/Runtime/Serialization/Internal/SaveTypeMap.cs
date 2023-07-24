@@ -12,7 +12,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         static SaveTypeMap() {
             foreach (var type in UFlowUtils.Reflection.GetAllInheritorsWithAttribute<IEcsComponent, EcsSerializableAttribute>()) {
-                var hash = type.GetCustomAttribute<EcsSerializableAttribute>().id.GetHashCode();
+                var hash = type.GetCustomAttribute<EcsSerializableAttribute>().persistentKey.GetHashCode();
                 s_typeToHash[type] = hash;
                 s_hashToType[hash] = type;
             }

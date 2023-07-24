@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using UFlow.Addon.ECS.Core.Runtime.Components;
 using UFlow.Core.Runtime;
-using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public static class SaveSerialization {
@@ -41,20 +40,20 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SerializeComponent<T>(in ByteBuffer buffer, ref T component) where T : IEcsComponent {
             buffer.Write(SaveTypeMap.GetHash(typeof(T)));
-            ComponentSerialization<SaveAttribute, T>.Serialize(buffer, ref component);
+            ObjectSerialization<SaveAttribute, T>.Serialize(buffer, ref component);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DeserializeComponent<T>(in ByteBuffer buffer, ref T component) where T : IEcsComponent {
             buffer.ReadInt();
-            ComponentSerialization<SaveAttribute, T>.Deserialize(buffer, ref component);
+            ObjectSerialization<SaveAttribute, T>.Deserialize(buffer, ref component);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T DeserializeComponent<T>(in ByteBuffer buffer) where T : IEcsComponent, new() {
             var component = new T();
             buffer.ReadInt();
-            ComponentSerialization<SaveAttribute, T>.Deserialize(buffer, ref component);
+            ObjectSerialization<SaveAttribute, T>.Deserialize(buffer, ref component);
             return component;
         }
 
@@ -113,26 +112,26 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SerializeEntityComponent<T>(in ByteBuffer buffer) where T : IEcsComponent {
             buffer.Write(s_currentEntity.IsEnabled<T>());
-            ComponentSerialization<SaveAttribute, T>.Serialize(buffer, ref s_currentEntity.Get<T>());
+            ObjectSerialization<SaveAttribute, T>.Serialize(buffer, ref s_currentEntity.Get<T>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void DeserializeEntityComponent<T>(in ByteBuffer buffer) where T : IEcsComponent {
             var enabled = buffer.ReadBool();
-            ComponentSerialization<SaveAttribute, T>.Deserialize(buffer, ref s_currentEntity.Set<T>(default, enabled));
+            ObjectSerialization<SaveAttribute, T>.Deserialize(buffer, ref s_currentEntity.Set<T>(default, enabled));
             s_currentEntity.SetEnabled<T>(enabled);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SerializeWorldComponent<T>(in ByteBuffer buffer, in World world) where T : IEcsComponent {
             buffer.Write(world.IsEnabled<T>());
-            ComponentSerialization<SaveAttribute, T>.Serialize(buffer, ref world.Get<T>());
+            ObjectSerialization<SaveAttribute, T>.Serialize(buffer, ref world.Get<T>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void DeserializeWorldComponent<T>(in ByteBuffer buffer, in World world) where T : IEcsComponent {
             var enabled = buffer.ReadBool();
-            ComponentSerialization<SaveAttribute, T>.Deserialize(buffer, ref world.Set<T>(default, enabled));
+            ObjectSerialization<SaveAttribute, T>.Deserialize(buffer, ref world.Set<T>(default, enabled));
             world.SetEnabled<T>(enabled);
         }
 

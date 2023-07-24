@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UFlow.Addon.ECS.Core.Runtime.Components;
 using UFlow.Core.Runtime;
-using UnityEngine;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Serialization.Core.Runtime")]
 namespace UFlow.Addon.ECS.Core.Runtime {
@@ -314,7 +313,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
-            return CreateEntityWithIdAndGen(entityId, info.gen, enable);;
+            return CreateEntityWithIdAndGen(entityId, info.gen, enable);
         }
         
         internal Entity CreateEntityWithIdAndGen(int entityId, ushort entityGen, bool enable = true) {

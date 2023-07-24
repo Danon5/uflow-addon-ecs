@@ -25,6 +25,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!typeof(BaseSystemGroup).IsAssignableFrom(type))
                 throw new Exception($"Type {type} is not a valid SystemGroup");
             group = Activator.CreateInstance(type) as BaseSystemGroup;
+            group!.SetEnabled(true);
             s_groups[worldId].Add(type, group);
             return group;
         }
@@ -41,17 +42,41 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!s_groups[worldId].TryGetValue(type, out var group)) return;
             group.Setup();
         }
+
+        public static void SetGroupEnabled(short worldId, in Type type, bool value) {
+            if (!s_groups.ContainsKey(worldId)) return;
+            if (!s_groups[worldId].TryGetValue(type, out var group)) return;
+            group.SetEnabled(value);
+        }
+        
+        public static void EnableGroup(short worldId, in Type type) {
+            if (!s_groups.ContainsKey(worldId)) return;
+            if (!s_groups[worldId].TryGetValue(type, out var group)) return;
+            group.Enable();
+        }
+        
+        public static void DisableGroup(short worldId, in Type type) {
+            if (!s_groups.ContainsKey(worldId)) return;
+            if (!s_groups[worldId].TryGetValue(type, out var group)) return;
+            group.Disable();
+        }
+        
+        public static bool IsGroupEnabled(short worldId, in Type type) {
+            if (!s_groups.ContainsKey(worldId)) return false;
+            if (!s_groups[worldId].TryGetValue(type, out var group)) return false;
+            return group.IsEnabled();
+        }
         
         public static void RunGroup(short worldId, in Type type) {
             if (!s_groups.ContainsKey(worldId)) return;
-            if (!s_groups[worldId].TryGetValue(type, out var group)) return;
+            if (!s_groups[worldId].TryGetValue(type, out var group) || !group.IsEnabled()) return;
             group.Run();
         }
         
         public static void RunGroup<T>(short worldId) {
             var type = typeof(T);
             if (!s_groups.ContainsKey(worldId)) return;
-            if (!s_groups[worldId].TryGetValue(type, out var group)) return;
+            if (!s_groups[worldId].TryGetValue(type, out var group) || !group.IsEnabled()) return;
             group.Run();
         }
         

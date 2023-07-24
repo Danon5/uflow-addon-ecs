@@ -4,10 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
-    internal sealed class ArrayFieldSerializer<TObject, TField> : ISerializer<TObject> where TField : unmanaged {
+    internal sealed class UnmanagedArrayFieldSerializer<TObject, TField> : ISerializer<TObject> where TField : unmanaged {
         private readonly int m_offset;
 
-        public ArrayFieldSerializer(in FieldInfo fieldInfo) => m_offset = (int)Marshal.OffsetOf<TObject>(fieldInfo.Name);
+        public UnmanagedArrayFieldSerializer(in FieldInfo fieldInfo) => m_offset = (int)Marshal.OffsetOf<TObject>(fieldInfo.Name);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void Serialize(in ByteBuffer buffer, ref TObject value) {

@@ -9,7 +9,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                                                    IResetSystem {
         private readonly World m_world;
         private readonly DynamicEntitySet m_query;
-
+        private bool m_enabled;
+        
         public BaseSetIterationSystem(in World world, QueryBuilder query) {
             m_world = world;
             m_query = query.AsSet();
@@ -43,6 +44,18 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset() => Reset(m_world);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEnabled(bool value) => m_enabled = value;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Enable() => m_enabled = true;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Disable() => m_enabled = false;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsEnabled() => m_enabled;
 
         protected virtual void PreSetup(World world) { }
         

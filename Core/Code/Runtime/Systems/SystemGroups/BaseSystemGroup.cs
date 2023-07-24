@@ -3,18 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public abstract class BaseSystemGroup : IEnumerable<ISystem> {
         private readonly List<ISystem> m_systems;
-
+        private bool m_enabled;
+        
         internal BaseSystemGroup() {
             m_systems = new List<ISystem>();
         }
 
         public BaseSystemGroup Add(in ISystem system) {
+            if (system is IRunSystem runSystem)
+                runSystem.Enable();
             m_systems.Add(system);
             return this;
         }
@@ -54,19 +57,20 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run() {
             foreach (var system in m_systems) {
-                if (system is IRunSystem runSystem)
+                if (system is IRunSystem runSystem && runSystem.IsEnabled())
                     runSystem.PreRun();
             }
             
             foreach (var system in m_systems) {
-                if (system is IRunSystem runSystem)
+                if (system is IRunSystem runSystem && runSystem.IsEnabled())
                     runSystem.Run();
             }
             
             foreach (var system in m_systems) {
-                if (system is IRunSystem runSystem)
+                if (system is IRunSystem runSystem && runSystem.IsEnabled())
                     runSystem.PostRun();
             }
         }
@@ -89,6 +93,18 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     resetSystem.Reset();
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEnabled(bool value) => m_enabled = value;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Enable() => m_enabled = true;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Disable() => m_enabled = false;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsEnabled() => m_enabled;
 
         internal void Sort() {
             var systemBuffer = new List<ISystem>(m_systems);

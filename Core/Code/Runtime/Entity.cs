@@ -206,7 +206,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnabled(bool enabled) => World.SetEntityEnabled(this, enabled);
+        public void SetEnabled(bool value) => World.SetEntityEnabled(this, value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Enable() => World.SetEntityEnabled(this, true);
@@ -218,7 +218,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool IsEnabled() => World.IsEntityEnabled(this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnabled<T>(bool enabled) where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, enabled);
+        public void SetEnabled<T>(bool value) where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Enable<T>() where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, true);
@@ -230,9 +230,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool IsEnabled<T>() where T : IEcsComponent => World.IsEntityComponentEnabled<T>(this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnabledRaw(in Type type, bool enabled) {
+        public void SetEnabledRaw(in Type type, bool value) {
             var method = GetOrCreateGenericMethod(s_setEnabledRawCache, type, nameof(SetEnabledRawInternal));
-            s_singleObjectBuffer[0] = enabled;
+            s_singleObjectBuffer[0] = value;
             method.Invoke(this, s_singleObjectBuffer);
         }
         
@@ -281,7 +281,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private void DisableRawInternal<T>() where T : IEcsComponent => Disable<T>();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetEnabledRawInternal<T>(bool enabled) where T : IEcsComponent => SetEnabled<T>(enabled);
+        private void SetEnabledRawInternal<T>(bool value) where T : IEcsComponent => SetEnabled<T>(value);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsEnabledRawInternal<T>() where T : IEcsComponent => IsEnabled<T>();
