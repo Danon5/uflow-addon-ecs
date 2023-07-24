@@ -292,13 +292,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public BaseSystemGroup GetOrCreateSystemGroup(in Type type) => Systems.GetOrCreateGroup(id, type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetupSystemGroup<T>() => Systems.SetupGroup<T>(id);
+        public void SetupSystemGroup<T>() where T : BaseSystemGroup => Systems.SetupGroup<T>(id);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RunSystemGroup<T>() => Systems.RunGroup<T>(id);
+        public void RunSystemGroup<T>() where T : BaseSystemGroup => Systems.RunGroup<T>(id);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void CleanupSystemGroup<T>() => Systems.CleanupGroup<T>(id);
+        public void CleanupSystemGroup<T>() where T : BaseSystemGroup => Systems.CleanupGroup<T>(id);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetupSystemGroups() => Systems.SetupGroups(id);
@@ -308,6 +308,18 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ResetSystemGroups() => Systems.ResetGroups(id);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetSystemGroupEnabled<T>(bool value) where T : BaseSystemGroup => Systems.SetGroupEnabled<T>(id, value);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void EnableSystemGroup<T>() where T : BaseSystemGroup => Systems.EnableGroup<T>(id);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DisableSystemGroup<T>() where T : BaseSystemGroup => Systems.DisableGroup<T>(id);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsSystemGroupEnabled<T>() where T : BaseSystemGroup => Systems.IsGroupEnabled<T>(id);
 
         public Entity CreateEntity(bool enable = true) {
             var entityId = m_entityIdStack.GetNextId();
