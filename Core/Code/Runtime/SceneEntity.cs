@@ -134,6 +134,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 #endif
 
-        protected virtual World GetWorld() => UFlowUtils.Modules.Get<EcsModule>().World;
+        protected virtual World GetWorld() => EcsModule.Get().World;
     }
 }
