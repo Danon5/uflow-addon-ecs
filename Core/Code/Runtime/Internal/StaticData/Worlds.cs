@@ -40,6 +40,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static World Get(short worldId) => s_worlds[worldId];
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short GetNextId() => (short)s_worldIdStack.GetNextId();
         
         private static void ClearStaticCaches() {

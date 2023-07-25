@@ -54,7 +54,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     entity.Remove<T>();
                 }),
                 world.WhenReset(() => {
-                    s_subscriptions[worldId]?.Dispose();
                     Remove(worldId);
                 })
             }.MergeIntoGroup();

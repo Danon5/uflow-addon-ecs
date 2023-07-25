@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
@@ -47,11 +48,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(int entityId) {
+            if (m_components.Get(entityId) is IDisposable disposable)
+                disposable.Dispose();
             m_components.Remove(entityId);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WorldRemove() {
+            if (m_components.GetBufferValue() is IDisposable disposable)
+                disposable.Dispose();
             m_components.RemoveBufferValue();
         }
 

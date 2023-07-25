@@ -328,6 +328,25 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return CreateEntityWithIdAndGen(entityId, info.gen, enable);
         }
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Entity GetEntity(int entityId) {
+            ref var info = ref m_entityInfos[entityId];
+            return new Entity(entityId, info.gen, id);
+        }
+
+        public IEnumerable<Entity> GetEntitiesEnumerable() {
+            for (var i = 1; i < NextEntityId; i++) {
+                var info = m_entityInfos[i];
+                if (!info.bitset[Bits.IsAlive]) continue;
+                yield return new Entity(i, info.gen, id);
+            }
+        }
+
+        public void DestroyAllEntities() {
+            foreach (var entity in GetEntitiesEnumerable())
+                entity.Destroy();
+        }
+        
         internal Entity CreateEntityWithIdAndGen(int entityId, ushort entityGen, bool enable = true) {
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
@@ -417,20 +436,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal void RemoveEntityComponentType(in Entity entity, in Type type) => m_entityInfos[entity.id].componentTypes.Remove(type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Entity GetEntity(int entityId) {
-            ref var info = ref m_entityInfos[entityId];
-            return new Entity(entityId, info.gen, id);
-        }
-
-        internal IEnumerable<Entity> GetEntitiesEnumerable() {
-            for (var i = 1; i < NextEntityId; i++) {
-                var info = m_entityInfos[i];
-                if (!info.bitset[Bits.IsAlive]) continue;
-                yield return new Entity(i, info.gen, id);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Bitset GetEntityComponentBitset(int entityId) => m_entityInfos[entityId].bitset;
         
         internal List<Type> GetWorldComponentTypes() => m_componentTypes;
@@ -438,6 +443,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
 
         internal void ResetForDeserialization(int nextId) {
+            DestroyAllEntities();
             Publish(new WorldResetEvent());
             EntityCount = 0;
             m_entityIdStack.Reset();

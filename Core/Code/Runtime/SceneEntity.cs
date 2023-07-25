@@ -19,6 +19,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
          ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying)), 
          ValidateInput(nameof(IsValidPersistentKey), "Persistent Key is required")]
         private string m_persistentKey;
+        private bool m_destroying;
         private bool m_destroyingDirectly;
 #if UNITY_EDITOR
         private bool m_instantiated;
@@ -41,6 +42,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [UsedImplicitly]
         private void OnDestroy() {
+            m_destroying = true;
             if (m_destroyingDirectly) return;
             if (World == null) return;
             if (!World.IsAlive()) return;
@@ -90,6 +92,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         public void DestroyEntity() {
+            if (m_destroying) return;
             m_destroyingDirectly = true;
             Destroy(gameObject);
         }
