@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
 
@@ -12,11 +13,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
     internal static class Stashes<T> where T : IEcsComponent {
         public static readonly Bit Bit = Bit.GetNextBit();
+        internal static readonly bool IsComponentTypeDisposable;
         private static Stash<T>[] s_stashes;
         private static Stash<T>[] s_previousStashes;
         private static IDisposable[] s_subscriptions;
 
         static Stashes() {
+            IsComponentTypeDisposable = typeof(T).GetMethod("Dispose", BindingFlags.Public | BindingFlags.Instance) != null;
             s_stashes = Array.Empty<Stash<T>>();
             s_previousStashes = Array.Empty<Stash<T>>();
             s_subscriptions = Array.Empty<IDisposable>();

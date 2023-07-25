@@ -7,7 +7,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    internal sealed class Stash<T> {
+    internal sealed class Stash<T> where T : IEcsComponent {
         private readonly SparseArray<T> m_components;
 
         public int Count => m_components.Count;
@@ -48,15 +48,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(int entityId) {
-            if (m_components.Get(entityId) is IDisposable disposable)
-                disposable.Dispose();
+            if (Stashes<T>.IsComponentTypeDisposable)
+                m_components.Get(entityId).Dispose();
             m_components.Remove(entityId);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WorldRemove() {
-            if (m_components.GetBufferValue() is IDisposable disposable)
-                disposable.Dispose();
+            if (Stashes<T>.IsComponentTypeDisposable)
+                m_components.GetBufferValue().Dispose();
             m_components.RemoveBufferValue();
         }
 
