@@ -11,39 +11,25 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public int Count => m_components.Count;
 
-        public Stash(int initialCapacity = 1) {
-            m_components = new SparseArray<T>(initialCapacity);
-        }
+        public Stash(int initialCapacity = 1) => m_components = new SparseArray<T>(initialCapacity);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Set(int entityId, in T component) {
-            return ref m_components.Set(entityId, component);
-        }
+        public ref T Set(int entityId, in T component) => ref m_components.Set(entityId, component);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T WorldSet(in T component) {
-            return ref m_components.SetBufferValue(component);
-        }
+        public ref T WorldSet(in T component) => ref m_components.SetBufferValue(component);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Get(int entityId) {
-            return ref m_components.Get(entityId);
-        }
+        public ref T Get(int entityId) => ref m_components.Get(entityId);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T WorldGet() {
-            return ref m_components.GetBufferValue();
-        }
+        public ref T WorldGet() => ref m_components.GetBufferValue();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Has(int entityId) {
-            return m_components.Has(entityId);
-        }
-
+        public bool Has(int entityId) => m_components.Has(entityId);
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool WorldHas() {
-            return m_components.HasBufferValue();
-        }
+        public bool WorldHas() => m_components.HasBufferValue();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(int entityId) {
@@ -60,8 +46,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear() {
-            m_components.Clear();
-        }
+        public void Clear() => m_components.Clear();
     }
 }
