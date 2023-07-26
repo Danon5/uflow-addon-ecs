@@ -29,6 +29,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool Has(int entityId) => m_components.Has(entityId);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
         public bool WorldHas() => m_components.HasBufferValue();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
