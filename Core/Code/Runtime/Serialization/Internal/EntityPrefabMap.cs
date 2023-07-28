@@ -11,7 +11,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public static void EnsureInitialized() {
             if (s_initialized) return;
-            foreach (var contentRef in Root.Singleton.Context.GetAllContentRefsEnumerable()) {
+            foreach (var contentRef in Root.Singleton.Context.contentModule.GetAllContentRefsEnumerable()) {
                 if (contentRef is not ContentRef<GameObject> objectRef) continue;
                 if (!objectRef.IsAssetAssigned() || !objectRef.Asset.TryGetComponent(out SceneEntity sceneEntity)) continue;
                 var hash = sceneEntity.PersistentKey.GetHashCode();
