@@ -10,16 +10,16 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void Serialize(in ByteBuffer buffer, ref TObject value) {
-            var statePtr = Unsafe.AsPointer(ref value);
-            var fieldPtr = (TField*)((byte*)statePtr + m_offset);
+            var objPtr = Unsafe.AsPointer(ref value);
+            var fieldPtr = (TField*)((byte*)objPtr + m_offset);
             var fieldValue = Unsafe.Read<TField>(fieldPtr);
             buffer.WriteUnsafe(fieldValue);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void Deserialize(in ByteBuffer buffer, ref TObject value) {
-            var statePtr = Unsafe.AsPointer(ref value);
-            var fieldPtr = (TField*)((byte*)statePtr + m_offset);
+            var objPtr = Unsafe.AsPointer(ref value);
+            var fieldPtr = (TField*)((byte*)objPtr + m_offset);
             Unsafe.Write(fieldPtr, buffer.ReadUnsafe<TField>());
         }
     }
