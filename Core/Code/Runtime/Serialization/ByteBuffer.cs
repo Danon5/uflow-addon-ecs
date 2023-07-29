@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class ByteBuffer {
@@ -72,6 +73,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(double value) => WriteUnsafe(value);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(char value) => WriteUnsafe(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(string value) {
+            Write((ushort)value.Length);
+            Encoding.UTF8.GetBytes(value, m_buffer.AsSpan(Cursor, Capacity - Cursor));
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in ReadOnlySpan<sbyte> values) => WriteArrayUnsafe(values);
@@ -102,6 +112,16 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(in ReadOnlySpan<double> values) => WriteArrayUnsafe(values);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(in ReadOnlySpan<char> values) => WriteArrayUnsafe(values);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(in ReadOnlySpan<string> values) {
+            Write(values.Length);
+            foreach (var value in values)
+                Write(value);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public sbyte ReadSByte() => ReadUnsafe<sbyte>();
@@ -135,6 +155,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double ReadDouble() => ReadUnsafe<double>();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public char ReadChar() => ReadUnsafe<char>();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ReadString() {
+            var length = ReadUnsafe<ushort>();
+            return Encoding.UTF8.GetString(m_buffer.AsSpan(Cursor, length));
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public sbyte[] ReadSByteArray() => ReadArrayUnsafe<sbyte>();
@@ -167,6 +196,18 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public double[] ReadDoubleArray() => ReadArrayUnsafe<double>();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public char[] ReadCharArray() => ReadArrayUnsafe<char>();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string[] ReadStringArray() {
+            var length = ReadUnsafe<int>();
+            var arr = new string[length];
+            for (var i = 0; i < length; i++)
+                arr[i] = ReadString();
+            return arr;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadSByteArrayInto(in Span<sbyte> span) => ReadArrayIntoUnsafe(span);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -195,6 +236,16 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadDoubleArrayInto(in Span<double> span) => ReadArrayIntoUnsafe(span);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadCharArrayInto(in Span<char> span) => ReadArrayIntoUnsafe(span);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadStringArrayInto(in Span<string> span) {
+            var length = ReadUnsafe<int>();
+            for (var i = 0; i < length; i++)
+                span[i] = ReadString();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ResetCursor() => Cursor = 0;

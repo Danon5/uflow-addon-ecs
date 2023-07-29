@@ -39,5 +39,14 @@ namespace UFlow.Addon.ECS.Tests {
             Assert.That(buffer.ReadInt(), Is.EqualTo(4));
             Assert.That(buffer.ReadInt(), Is.EqualTo(5));
         }
+
+        [Test]
+        public void StringWriteReadTest() {
+            var buffer = new ByteBuffer();
+            var str = "Testing string";
+            buffer.Write(str);
+            buffer.ResetCursor();
+            Assert.That(buffer.ReadString(), Is.EqualTo(str));
+        }
     }
 }
