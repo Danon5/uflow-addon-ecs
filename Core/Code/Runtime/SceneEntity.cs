@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Sirenix.OdinInspector;
-using UFlow.Addon.ECS.Core.Runtime.Components;
 using UFlow.Core.Runtime;
 using UFlow.Odin.Runtime;
 using UnityEngine;
@@ -84,10 +83,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
-            Entity.Set(new InstantiatedSceneEntity {
-                sceneEntity = this,
-                persistentKey = m_persistentKey
-            });
+            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this, m_persistentKey));
             return Entity;
         }
 
@@ -106,10 +102,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
-            Entity.Set(new InstantiatedSceneEntity {
-                sceneEntity = this,
-                persistentKey = m_persistentKey
-            });
+            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this, m_persistentKey));
             return Entity;
         }
 

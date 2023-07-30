@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UFlow.Addon.ECS.Core.Runtime.Components;
 using UFlow.Core.Runtime;
 
-[assembly: InternalsVisibleTo("UFlow.Addon.Serialization.Core.Runtime")]
 namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
     [Il2CppSetOption(Option.NullChecks, false)]
@@ -374,8 +372,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 Publish(new EntityDisableComponentsEvent(entity));
                 Publish(new EntityDisabledEvent(entity));
             }
-            if (Stashes<InstantiatedSceneEntity>.TryGet(id, out var stash) && stash.Has(entity.id))
-                stash.Get(entity.id).sceneEntity.DestroyEntity();
+            LogicHook<EntityDestroyedHook>.Execute(new EntityDestroyedHook(id, entity));
             Publish(new EntityRemoveComponentsEvent(entity));
             m_entityIdStack.RecycleId(entity.id);
             ref var info = ref m_entityInfos[entity.id];
