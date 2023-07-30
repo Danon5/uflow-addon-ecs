@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using UFlow.Addon.ECS.Core.Runtime;
-using UnityEngine;
 
 namespace UFlow.Addon.ECS.Tests {
     public sealed class SaveSerializerTests {
