@@ -12,11 +12,21 @@ using UnityEditor;
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
 namespace UFlow.Addon.ECS.Core.Runtime {
     public class SceneEntity : MonoBehaviour {
-        [SerializeField, InlineProperty, HideLabel] private EntityInspector m_inspector;
-        [SerializeField, HideInInspector] private bool m_isValidPrefab;
-        [SerializeField, ColoredBoxGroup("Serialization", Color = nameof(Color)), 
+#if UNITY_EDITOR
+        [InlineProperty, HideLabel]
+#endif
+        private EntityInspector m_inspector;
+#if UNITY_EDITOR
+        [HideInInspector]
+#endif
+        [SerializeField]
+        private bool m_isValidPrefab;
+#if UNITY_EDITOR
+        [ColoredBoxGroup("Serialization", Color = nameof(Color)), 
          ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying)), 
          ValidateInput(nameof(IsValidPersistentKey), "Persistent Key is required")]
+#endif
+        [SerializeField]
         private string m_persistentKey;
         private bool m_destroying;
         private bool m_destroyingDirectly;
@@ -35,7 +45,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [UsedImplicitly]
         private void Awake() {
+#if UNITY_EDITOR
             m_instantiated = true;
+#endif
             World = GetWorld();
         }
 

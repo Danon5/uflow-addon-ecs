@@ -14,11 +14,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
 
     {
-        [SerializeField, ColoredBoxGroup("Entity", nameof(Color), GroupName = "$" + nameof(m_entity)), ToggleLeft] 
+#if UNITIY_EDITOR
+        [ColoredBoxGroup("Entity", nameof(Color), GroupName = "$" + nameof(m_entity)), ToggleLeft]
+#endif
+        [SerializeField]
         private bool m_enabled = true;
 
-        [SerializeField, ColoredFoldoutGroup("ComponentAuthoring", nameof(Color), GroupName = "Components"), HideLabel, 
+#if UNITIY_EDITOR
+        [ColoredFoldoutGroup("ComponentAuthoring", nameof(Color), GroupName = "Components"), HideLabel, 
          LabelText("Authoring"), ListDrawerSettings(ShowFoldout = false), HideIf(nameof(ShouldDisplayRuntime))]
+#endif
+        [SerializeField]
         private List<EntityComponent> m_authoring = new();
 
 #if UNITY_EDITOR
@@ -163,12 +169,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [Serializable]
         [HideReferenceObjectPicker]
         internal sealed class EntityComponent {
+#if UNITY_EDITOR
             [ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)), ToggleLeft]
+#endif
             public bool enabled;
 
-            [SerializeReference, ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)),
+#if UNITY_EDITOR
+            [ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)),
              ColoredBoxGroup("Default/Box", nameof(Color), GroupName = "Data"),
              InlineProperty, HideLabel]
+#endif
+            [SerializeReference]
             public IEcsComponent value;
 
 #if UNITY_EDITOR
