@@ -14,13 +14,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
 
     {
-#if UNITIY_EDITOR
+#if UNITY_EDITOR
         [ColoredBoxGroup("Entity", nameof(Color), GroupName = "$" + nameof(m_entity)), ToggleLeft]
 #endif
         [SerializeField]
         private bool m_enabled = true;
 
-#if UNITIY_EDITOR
+#if UNITY_EDITOR
         [ColoredFoldoutGroup("ComponentAuthoring", nameof(Color), GroupName = "Components"), HideLabel, 
          LabelText("Authoring"), ListDrawerSettings(ShowFoldout = false), HideIf(nameof(ShouldDisplayRuntime))]
 #endif
