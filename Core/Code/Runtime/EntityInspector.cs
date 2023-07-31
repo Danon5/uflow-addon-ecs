@@ -25,19 +25,19 @@ namespace UFlow.Addon.ECS.Core.Runtime {
          LabelText("Authoring"), ListDrawerSettings(ShowFoldout = false), HideIf(nameof(ShouldDisplayRuntime))]
 #endif
         [SerializeField]
-        private List<EntityComponent> m_authoring = new();
+        private List<InspectorComponent> m_authoring = new();
 
 #if UNITY_EDITOR
         [ShowInInspector, ColoredFoldoutGroup("ComponentRuntime", nameof(Color), GroupName = "Components"), HideLabel, 
          LabelText("Runtime"), ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add)),
          OnCollectionChanged(nameof(ApplyRuntimeState)), ShowIf(nameof(ShouldDisplayRuntime))]
-        private List<EntityComponent> m_runtime = new();
+        private List<InspectorComponent> m_runtime = new();
 #endif
 
         private Entity m_entity;
         private World m_world;
 #if UNITY_EDITOR
-        private Dictionary<Type, EntityComponent> m_typeMap;
+        private Dictionary<Type, InspectorComponent> m_typeMap;
         private Queue<Type> m_typesToSet;
         private Queue<Type> m_typesToRemove;
 #endif
@@ -70,7 +70,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_entity = entity;
             m_world = entity.World;
 #if UNITY_EDITOR
-            m_typeMap = new Dictionary<Type, EntityComponent>();
+            m_typeMap = new Dictionary<Type, InspectorComponent>();
             m_typesToSet = new Queue<Type>();
             m_typesToRemove = new Queue<Type>();
 #endif
@@ -108,7 +108,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             while (m_typesToSet.TryDequeue(out var type)) {
                 var componentValue = m_entity.GetRaw(type);
                 if (!m_typeMap.ContainsKey(type)) {
-                    var component = new EntityComponent(this, componentValue);
+                    var component = new InspectorComponent(this, componentValue);
                     m_typeMap.Add(type, component);
                     m_runtime.Add(component);
                 }
@@ -152,7 +152,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
         }
 
-        private void Add() => m_runtime.Add(new EntityComponent(this, default));
+        private void Add() => m_runtime.Add(new InspectorComponent(this, default));
 
         private void SetComponentEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
 
@@ -168,7 +168,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [Serializable]
         [HideReferenceObjectPicker]
-        internal sealed class EntityComponent {
+        internal sealed class InspectorComponent {
 #if UNITY_EDITOR
             [ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)), ToggleLeft]
 #endif
@@ -190,12 +190,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 inspector.Color : inspector.DisabledColor;
 #endif
 
-            public EntityComponent() {
+            public InspectorComponent() {
                 enabled = true;
             }
 
 #if UNITY_EDITOR
-            public EntityComponent(in EntityInspector inspector, in IEcsComponent value) {
+            public InspectorComponent(in EntityInspector inspector, in IEcsComponent value) {
                 this.inspector = inspector;
                 this.value = value;
                 enabled = true;
