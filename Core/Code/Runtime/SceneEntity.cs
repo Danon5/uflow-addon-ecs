@@ -15,6 +15,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #if UNITY_EDITOR
         [InlineProperty, HideLabel]
 #endif
+        [SerializeField]
         private EntityInspector m_inspector;
 #if UNITY_EDITOR
         [HideInInspector]
