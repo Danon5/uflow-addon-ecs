@@ -48,6 +48,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
 
             public static void Unsubscribe(in WorldInstanceSubscription<T> subscription) {
+                if (subscription.worldId >= s_actions.Length) return;
                 s_actions[subscription.worldId] -= subscription.action;
             }
             
