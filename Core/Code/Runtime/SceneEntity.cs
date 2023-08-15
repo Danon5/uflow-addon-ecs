@@ -94,6 +94,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (Entity.IsAlive())
                 throw new Exception("Attempting to create a SceneEntity multiple times.");
             Entity = World.CreateEntity(m_inspector.EntityEnabled);
+            Entity.Set(new GameObjectRef {
+                value = gameObject
+            });
+            Entity.Set(new TransformRef {
+                value = transform
+            });
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
