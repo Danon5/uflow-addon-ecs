@@ -7,6 +7,7 @@ using UFlow.Odin.Runtime;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
@@ -83,7 +84,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private void OnValidate() {
             if (Application.isPlaying) return;
             m_isValidPrefab = PrefabUtility.GetPrefabAssetType(gameObject) is not
-                PrefabAssetType.NotAPrefab or PrefabAssetType.MissingAsset;
+                PrefabAssetType.NotAPrefab or PrefabAssetType.MissingAsset || PrefabStageUtility.GetPrefabStage(gameObject);
         }
 #endif
 
