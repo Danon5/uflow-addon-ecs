@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using Rewired.Utils.Attributes;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
+    [Preserve]
     public abstract class BaseRunDeltaSystem : IPreSetupSystem, 
                                                ISetupSystem, 
                                                IRunDeltaSystem, 

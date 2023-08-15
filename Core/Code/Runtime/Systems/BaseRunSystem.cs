@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using UnityEngine.Scripting;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
+    [Preserve]
     public abstract class BaseRunSystem : IPreSetupSystem, 
                                           ISetupSystem, 
                                           IRunSystem, 
