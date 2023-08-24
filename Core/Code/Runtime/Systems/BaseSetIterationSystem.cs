@@ -22,9 +22,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void PreSetup() => PreSetup(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Setup() {
-            Setup(m_world);
-        }
+        public void Setup() => Setup(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreRun() => PreIterate(m_world);
