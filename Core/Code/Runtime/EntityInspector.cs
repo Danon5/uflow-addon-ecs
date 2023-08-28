@@ -179,8 +179,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
              ColoredBoxGroup("Default/Box", nameof(Color), GroupName = "Data"),
              InlineProperty, HideLabel]
 #endif
-            [SerializeReference]
-            public IEcsComponent value;
+            [SerializeReference] public IEcsComponent value;
 
 #if UNITY_EDITOR
             [NonSerialized] public EntityInspector inspector;
@@ -190,9 +189,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 inspector.Color : inspector.DisabledColor;
 #endif
 
-            public InspectorComponent() {
-                enabled = true;
-            }
+            public InspectorComponent() => enabled = true;
 
 #if UNITY_EDITOR
             public InspectorComponent(in EntityInspector inspector, in IEcsComponent value) {
