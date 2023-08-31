@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using UnityEngine;
+
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace UFlow.Addon.ECS.Core.Runtime {
@@ -16,8 +18,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         public BaseSystemGroup Add(in ISystem system) {
-            if (system is IRunSystem runSystem)
-                runSystem.Enable();
+            switch (system) {
+                case IRunSystem runSystem:
+                    runSystem.Enable();
+                    break;
+                case IRunDeltaSystem runDeltaSystem:
+                    runDeltaSystem.Enable();
+                    break;
+            }
             m_systems.Add(system);
             return this;
         }
@@ -65,8 +73,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
             
             foreach (var system in m_systems) {
-                if (system is IRunSystem runSystem && runSystem.IsEnabled())
-                    runSystem.Run();
+                switch (system) {
+                    case IRunSystem runSystem when runSystem.IsEnabled():
+                        runSystem.Run();
+                        break;
+                    case IRunDeltaSystem runDeltaSystem when runDeltaSystem.IsEnabled():
+                        runDeltaSystem.Run(Time.deltaTime);
+                        break;
+                }
             }
             
             foreach (var system in m_systems) {

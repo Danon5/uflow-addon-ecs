@@ -10,6 +10,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                                                ICleanupSystem, 
                                                IResetSystem {
         private readonly World m_world;
+        private bool m_enabled;
         
         public BaseRunDeltaSystem(in World world) {
             m_world = world;
@@ -29,6 +30,18 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PostRun(float delta) => PostRun(m_world, delta);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetEnabled(bool value) => m_enabled = value;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Enable() => m_enabled = true;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Disable() => m_enabled = false;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsEnabled() => m_enabled;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreCleanup() => PreCleanup(m_world);
