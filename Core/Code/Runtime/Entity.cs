@@ -71,7 +71,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void Destroy() => World.DestroyEntity(this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsAlive() => World.IsEntityAlive(this);
+        public bool IsAlive() => World != null && World.IsEntityAlive(this);
 
         public ref T Set<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
             var stash = Stashes<T>.GetOrCreate(worldId);
