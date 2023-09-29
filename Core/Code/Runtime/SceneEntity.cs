@@ -51,6 +51,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_instantiated = true;
 #endif
             World = GetWorld();
+            CreateEntity();
         }
 
         [UsedImplicitly]

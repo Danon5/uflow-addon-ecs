@@ -7,7 +7,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public static Entity AsEntity(this GameObject gameObject) {
             if (!gameObject.TryGetComponent(out SceneEntity sceneEntity))
                 sceneEntity = gameObject.AddComponent<SceneEntity>();
-            return sceneEntity.CreateEntity();
+            return sceneEntity.Entity.IsAlive() ? sceneEntity.Entity : sceneEntity.CreateEntity();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
