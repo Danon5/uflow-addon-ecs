@@ -2,9 +2,9 @@
     "name": "UFlow.Addon.ECS.Core.Editor",
     "rootNamespace": "UFlow.Addon.ECS.Core.Editor",
     "references": [
-        "GUID:f4b25e78f096ead41bab888a001e186b",
-        "GUID:289a3a9098eaac1458dd85157f9702bb",
-        "GUID:bb1ffefc3dfaace4eb1d1ecc2cf4e24a"
+        "UFlow.Addon.ECS.Core.Runtime",
+        "UFlow.Core.Editor",
+        "UFlow.Core.Runtime"
     ],
     "includePlatforms": [
         "Editor"
