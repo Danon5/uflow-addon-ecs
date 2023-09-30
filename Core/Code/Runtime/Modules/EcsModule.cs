@@ -28,5 +28,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             World.RunSystemGroup<LateFrameSimulationSystemGroup>();
             World.RunSystemGroup<LateFrameRenderSystemGroup>();
         }
+
+        public override void OnDrawGizmos() => World.RunSystemGroup<GizmoSystemGroup>();
+
+        public override void OnGUI() => World.RunSystemGroup<GUISystemGroup>();
     }
 }
