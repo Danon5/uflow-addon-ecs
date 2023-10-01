@@ -52,6 +52,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
             World = GetWorld();
             CreateEntity();
+            World.WhenEntityDestroyed((in Entity e) => {
+                if (e == Entity)
+                    DestroyEntity();
+            });
         }
 
         [UsedImplicitly]
