@@ -13,10 +13,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private readonly World m_world;
         private readonly DynamicEntitySet m_query;
         private bool m_enabled;
-        
+
+        protected EntityCommandBuffer CommandBuffer { get; }
+
         public BaseSetIterationSystem(in World world, QueryBuilder query) {
             m_world = world;
             m_query = query.AsSet();
+            CommandBuffer = new EntityCommandBuffer();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,7 +38,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PostRun() => PostIterate(m_world);
+        public void PostRun() {
+            CommandBuffer.ExecuteCommands();
+            PostIterate(m_world);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreCleanup() => PreCleanup(m_world);
