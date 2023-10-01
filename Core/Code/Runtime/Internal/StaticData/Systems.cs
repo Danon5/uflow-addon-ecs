@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class Systems {
@@ -142,6 +143,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         private static void ClearStaticCache() {
+            foreach (var group in s_groups)
+                group.Value.Clear();
             s_groups.Clear();
         }
     }

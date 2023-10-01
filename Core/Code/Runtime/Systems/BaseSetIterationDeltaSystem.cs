@@ -8,7 +8,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                                                         IRunDeltaSystem, 
                                                         IPreCleanupSystem, 
                                                         ICleanupSystem, 
-                                                        IResetSystem {
+                                                        IResetSystem,
+                                                        IEnableDisableSystem {
         private readonly World m_world;
         private readonly DynamicEntitySet m_query;
         private bool m_enabled;

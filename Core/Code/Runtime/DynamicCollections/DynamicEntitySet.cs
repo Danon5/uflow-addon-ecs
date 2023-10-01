@@ -9,6 +9,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     public sealed class DynamicEntitySet : IDynamicEntityCollection, IInternalDynamicEntityCollection, IDisposable {
+        public event Action<Entity> OnEntityAdded;
+        public event Action<Entity> OnEntityRemoved;
         private readonly DynamicEntityCollectionUpdater m_updater;
         private readonly SparseArray<Entity> m_entities;
 
@@ -29,11 +31,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void EnsureAdded(in Entity entity) {
             if (m_entities.Has(entity.id)) return;
             m_entities.Set(entity.id, entity);
+            OnEntityAdded?.Invoke(entity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void EnsureRemoved(in Entity entity) {
             if (!m_entities.Has(entity.id)) return;
+            OnEntityRemoved?.Invoke(entity);
             m_entities.Remove(entity.id);
         }
 
@@ -41,6 +45,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void ResetCache() {
             if (m_entities.Count == 0) return;
             m_entities.Clear();
+            foreach (var entity in m_entities)
+                OnEntityRemoved?.Invoke(entity);
         }
 
         public void Dispose() => m_updater?.Dispose();

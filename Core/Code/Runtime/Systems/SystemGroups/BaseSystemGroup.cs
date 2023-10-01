@@ -13,19 +13,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private readonly List<ISystem> m_systems;
         private bool m_enabled;
         
-        internal BaseSystemGroup() {
+        public BaseSystemGroup() {
             m_systems = new List<ISystem>();
         }
 
         public BaseSystemGroup Add(in ISystem system) {
-            switch (system) {
-                case IRunSystem runSystem:
-                    runSystem.Enable();
-                    break;
-                case IRunDeltaSystem runDeltaSystem:
-                    runDeltaSystem.Enable();
-                    break;
-            }
+            if (system is IEnableDisableSystem enableDisableSystem)
+                enableDisableSystem.Enable();
             m_systems.Add(system);
             return this;
         }
@@ -68,23 +62,23 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run() {
             foreach (var system in m_systems) {
-                if (system is IRunSystem runSystem && runSystem.IsEnabled())
+                if (system is IRunSystem runSystem && ShouldRun(system))
                     runSystem.PreRun();
             }
             
             foreach (var system in m_systems) {
                 switch (system) {
-                    case IRunSystem runSystem when runSystem.IsEnabled():
+                    case IRunSystem runSystem when ShouldRun(system):
                         runSystem.Run();
                         break;
-                    case IRunDeltaSystem runDeltaSystem when runDeltaSystem.IsEnabled():
+                    case IRunDeltaSystem runDeltaSystem when ShouldRun(system):
                         runDeltaSystem.Run(Time.deltaTime);
                         break;
                 }
             }
             
             foreach (var system in m_systems) {
-                if (system is IRunSystem runSystem && runSystem.IsEnabled())
+                if (system is IRunSystem runSystem && ShouldRun(system))
                     runSystem.PostRun();
             }
         }
@@ -165,5 +159,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             var afterAttribute = sourceType.GetCustomAttribute<ExecuteAfterAttribute>();
             return afterAttribute != null && afterAttribute.SystemType == otherType;
         }
+
+        private static bool ShouldRun(in ISystem system) =>
+            system is not IEnableDisableSystem enableDisableSystem || enableDisableSystem.IsEnabled();
     }
 }

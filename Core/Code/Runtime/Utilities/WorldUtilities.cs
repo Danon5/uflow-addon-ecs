@@ -9,7 +9,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             public static World CreateWorldFromType<T>() where T : BaseWorldType {
                 var world = new World();
                 var systemInfos = GetSystemInfosForWorldType(typeof(T));
-                var defaultGroupType = typeof(FixedSimulationSystemGroup);
+                var defaultGroupType = typeof(DefaultSystemGroup);
 
                 foreach (var systemInfo in systemInfos) {
                     var group = world.GetOrCreateSystemGroup(systemInfo.groupType ?? defaultGroupType);

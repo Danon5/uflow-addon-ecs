@@ -3,18 +3,27 @@ using UnityEngine.Scripting;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     [Preserve]
-    public abstract class BaseRunSystem : IPreSetupSystem, 
-                                          ISetupSystem, 
-                                          IRunSystem, 
-                                          IPreCleanupSystem, 
-                                          ICleanupSystem, 
-                                          IResetSystem,
-                                          IEnableDisableSystem {
+    public abstract class BaseSetCallbackSystem : IPreSetupSystem, 
+                                         ISetupSystem,
+                                         IPreCleanupSystem, 
+                                         ICleanupSystem, 
+                                         IResetSystem,
+                                         IEnableDisableSystem {
         private readonly World m_world;
+        private readonly DynamicEntitySet m_query;
         private bool m_enabled;
 
-        public BaseRunSystem(in World world) {
+        public BaseSetCallbackSystem(in World world, QueryBuilder query) {
             m_world = world;
+            m_query = query.AsSet();
+            m_query.OnEntityAdded += e => {
+                if (!m_enabled) return;
+                EntityAdded(m_world, e);
+            };
+            m_query.OnEntityRemoved += e => {
+                if (!m_enabled) return;
+                EntityRemoved(m_world, e);
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -22,15 +31,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Setup() => Setup(m_world);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PreRun() => PreRun(m_world);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Run() => Run(m_world);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PostRun() => PostRun(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreCleanup() => PreCleanup(m_world);
@@ -57,11 +57,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         protected virtual void Setup(World world) { }
         
-        protected virtual void PreRun(World world) { }
+        protected virtual void EntityAdded(World world, in Entity entity) { }
         
-        protected virtual void Run(World world) { }
-        
-        protected virtual void PostRun(World world) { }
+        protected virtual void EntityRemoved(World world, in Entity entity) { }
         
         protected virtual void PreCleanup(World world) { }
         
