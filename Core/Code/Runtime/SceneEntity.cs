@@ -102,9 +102,16 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Entity.Set(new GameObjectRef {
                 value = gameObject
             });
-            Entity.Set(new TransformRef {
-                value = transform
-            });
+            if (TryGetComponent(out RectTransform rectTransform)) {
+                Entity.Set(new RectTransformRef {
+                    value = rectTransform
+                });
+            }
+            else {
+                Entity.Set(new TransformRef {
+                    value = transform
+                });
+            }
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
