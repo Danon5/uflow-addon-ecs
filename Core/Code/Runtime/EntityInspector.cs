@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 using Sirenix.OdinInspector;
 using UFlow.Odin.Runtime;
 using UnityEngine;
+#if UNITY_EDITOR
+using Sirenix.OdinInspector.Editor;
+#endif
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
 namespace UFlow.Addon.ECS.Core.Runtime {
@@ -28,9 +31,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private List<InspectorComponent> m_authoring = new();
 
 #if UNITY_EDITOR
-        [ShowInInspector, ColoredFoldoutGroup("ComponentRuntime", nameof(Color), GroupName = "Components"), HideLabel, 
-         LabelText("Runtime"), ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add)),
-         OnCollectionChanged(nameof(ApplyRuntimeState)), ShowIf(nameof(ShouldDisplayRuntime))]
+        [SerializeField, ColoredFoldoutGroup("ComponentRuntime", nameof(Color), GroupName = "Components"), HideLabel,
+         LabelText("Runtime"), ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add)), 
+         ShowIf(nameof(ShouldDisplayRuntime))]
         private List<InspectorComponent> m_runtime = new();
 #endif
 
@@ -153,7 +156,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
         }
 
-        private void Add() => m_runtime.Add(new InspectorComponent(this, default));
+        private void Add(InspectorProperty property) {
+            var instance = new InspectorComponent(this, default);
+            var collectionResolver = (ICollectionResolver)property.ChildResolver;
+            var values = new object[] { instance };
+            collectionResolver.QueueAdd(values);
+            collectionResolver.ApplyChanges();
+        }
 
         private void SetComponentEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
 

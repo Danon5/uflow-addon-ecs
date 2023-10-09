@@ -34,10 +34,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private bool m_destroyingDirectly;
 #if UNITY_EDITOR
         private bool m_instantiated;
+        private bool m_requiresRuntimeRetrieval;
 #endif
 
         public World World { get; private set; }
         public Entity Entity { get; private set; }
+        internal bool IsEditorFocused { get; set; }
         internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
         private bool IsPlaying => Application.isPlaying && m_instantiated;
