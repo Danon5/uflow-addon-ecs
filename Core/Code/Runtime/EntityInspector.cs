@@ -141,6 +141,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 var type = component.value.GetType();
                 if (!m_typeMap.ContainsKey(type))
                     m_typeMap.Add(type, component);
+                if (component.value.Equals(m_entity.GetRaw(type))) continue;
                 m_typesToSet.Enqueue(type);
             }
 
