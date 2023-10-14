@@ -111,7 +111,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in Type type, in IEcsComponent component, bool enableIfAdded = true) {
+        public IEcsComponent SetRaw(in IEcsComponent component, in Type type, bool enableIfAdded = true) {
             var method = GetOrCreateGenericMethod(s_setRawCache, type, nameof(SetRawInternal));
             s_doubleObjectBuffer[0] = component;
             s_doubleObjectBuffer[1] = enableIfAdded;
@@ -120,7 +120,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEcsComponent SetRaw(in IEcsComponent component, bool enableIfAdded = true) => 
-            SetRaw(component.GetType(), component, enableIfAdded);
+            SetRaw(component, component.GetType(), enableIfAdded);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void NotifyChanged<T>() where T : IEcsComponent {
@@ -255,10 +255,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         private MethodInfo GetOrCreateGenericMethod(in Dictionary<Type, MethodInfo> cache, in Type type, in string methodName) {
-            if (!cache.TryGetValue(type, out var method)) {
-                method = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance)!.MakeGenericMethod(type);
-                cache.Add(type, method);
-            }
+            if (cache.TryGetValue(type, out var method)) return method;
+            method = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance)!.MakeGenericMethod(type);
+            cache.Add(type, method);
             return method;
         }
 

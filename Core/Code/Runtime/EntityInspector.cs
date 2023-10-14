@@ -77,8 +77,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_typesToSet = new Queue<Type>();
             m_typesToRemove = new Queue<Type>();
 #endif
-            foreach (var component in m_authoring)
+            foreach (var component in m_authoring) {
+                if (component.value == null) continue;
                 entity.SetRaw(component.value, component.enabled);
+            }
         }
 
 #if UNITY_EDITOR
@@ -151,7 +153,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             // apply sets
             while (m_typesToSet.TryDequeue(out var type)) {
                 var component = m_typeMap[type];
-                m_entity.SetRaw(type, component.value, component.enabled);
+                m_entity.SetRaw(component.value, type, component.enabled);
                 m_entity.SetEnabledRaw(type, component.enabled);
             }
         }
@@ -183,17 +185,16 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             [ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)), ToggleLeft]
 #endif
             public bool enabled;
-
 #if UNITY_EDITOR
             [ColoredFoldoutGroup("Default", nameof(Color), GroupName = "$" + nameof(Name)),
              ColoredBoxGroup("Default/Box", nameof(Color), GroupName = "Data"),
              InlineProperty, HideLabel]
 #endif
-            [SerializeReference] public IEcsComponent value;
-
+            [SerializeReference]
+            public IEcsComponent value;
 #if UNITY_EDITOR
             [NonSerialized] public EntityInspector inspector;
-
+            
             private string Name => value != null ? value.GetType().Name : "None";
             private Color Color => (enabled && inspector.EntityEnabled) || !inspector.EntityEnabled ? 
                 inspector.Color : inspector.DisabledColor;
