@@ -24,8 +24,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [SerializeField]
         private bool m_isValidPrefab;
 #if UNITY_EDITOR
+        [ColoredBoxGroup("Serialization", Color = nameof(Color))]
+#endif
+        [SerializeField]
+        private bool m_enableSerialization;
+#if UNITY_EDITOR
         [ColoredBoxGroup("Serialization", Color = nameof(Color)), 
-         ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying)), 
+         ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying) + "&& " + nameof(m_enableSerialization)), 
          ValidateInput(nameof(IsValidPersistentKey), "Persistent Key is required")]
 #endif
         [SerializeField]
@@ -36,14 +41,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private bool m_instantiated;
         private bool m_requiresRuntimeRetrieval;
 #endif
-
+        
         public World World { get; private set; }
         public Entity Entity { get; private set; }
         internal bool IsEditorFocused { get; set; }
         internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
         internal bool IsPlaying => Application.isPlaying && m_instantiated;
-        private bool IsValidPersistentKey => !m_isValidPrefab || !m_persistentKey.Equals(string.Empty);
+        private bool IsValidPersistentKey => !m_enableSerialization && !m_isValidPrefab || !m_persistentKey.Equals(string.Empty);
         private Color Color => m_inspector.Color;
 #endif
 
