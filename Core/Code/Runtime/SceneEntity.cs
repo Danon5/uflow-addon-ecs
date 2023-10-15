@@ -42,7 +42,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal bool IsEditorFocused { get; set; }
         internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
-        private bool IsPlaying => Application.isPlaying && m_instantiated;
+        internal bool IsPlaying => Application.isPlaying && m_instantiated;
         private bool IsValidPersistentKey => !m_isValidPrefab || !m_persistentKey.Equals(string.Empty);
         private Color Color => m_inspector.Color;
 #endif
