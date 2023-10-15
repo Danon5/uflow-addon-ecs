@@ -13,8 +13,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private readonly World m_world;
         private bool m_enabled;
         
+        protected EntityCommandBuffer CommandBuffer { get; }
+        
         public BaseRunDeltaSystem(in World world) {
             m_world = world;
+            CommandBuffer = new EntityCommandBuffer();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -28,9 +31,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run(float delta) => Run(m_world, delta);
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PostRun(float delta) => PostRun(m_world, delta);
+        public void PostRun(float delta) {
+            ExecuteCommandBuffers();
+            PostRun(m_world, delta);
+        }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEnabled(bool value) => m_enabled = value;
@@ -52,6 +58,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset() => Reset(m_world);
+        
+        internal virtual void ExecuteCommandBuffers() {
+            CommandBuffer.ExecuteCommands();
+        }
 
         protected virtual void PreSetup(World world) { }
         

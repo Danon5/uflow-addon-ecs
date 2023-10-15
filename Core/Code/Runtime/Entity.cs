@@ -20,6 +20,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [FieldOffset(6)] private readonly short worldId;
         private static readonly Dictionary<Type, MethodInfo> s_setRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_getRawCache = new();
+        private static readonly Dictionary<Type, MethodInfo> s_hasRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_removeRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_tryRemoveRawCache = new();
         private static readonly Dictionary<Type, MethodInfo> s_setEnabledRawCache = new();
@@ -111,18 +112,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in IEcsComponent component, in Type type, bool enableIfAdded = true) {
-            var method = GetOrCreateGenericMethod(s_setRawCache, type, nameof(SetRawInternal));
-            s_doubleObjectBuffer[0] = component;
-            s_doubleObjectBuffer[1] = enableIfAdded;
-            return method.Invoke(this, s_doubleObjectBuffer) as IEcsComponent;
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in IEcsComponent component, bool enableIfAdded = true) => 
-            SetRaw(component, component.GetType(), enableIfAdded);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void NotifyChanged<T>() where T : IEcsComponent {
             Publishers<EntityComponentChangedEvent<T>>.WorldInstance.Publish(new EntityComponentChangedEvent<T>(this), worldId);
             var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
@@ -148,12 +137,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
             component = stash.Get(id);
             return true;
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent GetRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_getRawCache, type, nameof(GetRawInternal));
-            return (IEcsComponent)method.Invoke(this, s_emptyObjectBuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -192,18 +175,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Remove<T>();
             return true;
         }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_removeRawCache, type, nameof(RemoveRawInternal));
-            method.Invoke(this, s_emptyObjectBuffer);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryRemoveRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_tryRemoveRawCache, type, nameof(TryRemoveRawInternal));
-            return (bool)method.Invoke(this, s_emptyObjectBuffer);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEnabled(bool value) => World.SetEntityEnabled(this, value);
@@ -228,6 +199,42 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled<T>() where T : IEcsComponent => World.IsEntityComponentEnabled<T>(this);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEcsComponent SetRaw(in IEcsComponent component, in Type type, bool enableIfAdded = true) {
+            var method = GetOrCreateGenericMethod(s_setRawCache, type, nameof(SetRawInternal));
+            s_doubleObjectBuffer[0] = component;
+            s_doubleObjectBuffer[1] = enableIfAdded;
+            return method.Invoke(this, s_doubleObjectBuffer) as IEcsComponent;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEcsComponent SetRaw(in IEcsComponent component, bool enableIfAdded = true) => 
+            SetRaw(component, component.GetType(), enableIfAdded);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveRaw(in Type type) {
+            var method = GetOrCreateGenericMethod(s_removeRawCache, type, nameof(RemoveRawInternal));
+            method.Invoke(this, s_emptyObjectBuffer);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEcsComponent GetRaw(in Type type) {
+            var method = GetOrCreateGenericMethod(s_getRawCache, type, nameof(GetRawInternal));
+            return (IEcsComponent)method.Invoke(this, s_emptyObjectBuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool HasRaw(in Type type) {
+            var method = GetOrCreateGenericMethod(s_hasRawCache, type, nameof(HasRawInternal));
+            return (bool)method.Invoke(this, s_emptyObjectBuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryRemoveRaw(in Type type) {
+            var method = GetOrCreateGenericMethod(s_tryRemoveRawCache, type, nameof(TryRemoveRawInternal));
+            return (bool)method.Invoke(this, s_emptyObjectBuffer);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetEnabledRaw(in Type type, bool value) {
@@ -266,6 +273,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T GetRawInternal<T>() where T : IEcsComponent => Get<T>();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool HasRawInternal<T>() where T : IEcsComponent => Has<T>();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void RemoveRawInternal<T>() where T : IEcsComponent => Remove<T>();

@@ -39,7 +39,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PostRun() {
-            CommandBuffer.ExecuteCommands();
+            ExecuteCommandBuffers();
             PostIterate(m_world);
         }
 
@@ -63,6 +63,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled() => m_enabled;
+        
+        internal virtual void ExecuteCommandBuffers() {
+            CommandBuffer.ExecuteCommands();
+        }
 
         protected virtual void PreSetup(World world) { }
         

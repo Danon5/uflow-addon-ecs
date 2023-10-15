@@ -13,8 +13,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private readonly World m_world;
         private bool m_enabled;
 
+        protected EntityCommandBuffer CommandBuffer { get; }
+        
         public BaseRunSystem(in World world) {
             m_world = world;
+            CommandBuffer = new EntityCommandBuffer();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -28,9 +31,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run() => Run(m_world);
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PostRun() => PostRun(m_world);
+        public void PostRun() {
+            ExecuteCommandBuffers();
+            PostRun(m_world);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreCleanup() => PreCleanup(m_world);
@@ -52,6 +58,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled() => m_enabled;
+        
+        internal virtual void ExecuteCommandBuffers() {
+            CommandBuffer.ExecuteCommands();
+        }
 
         protected virtual void PreSetup(World world) { }
         
