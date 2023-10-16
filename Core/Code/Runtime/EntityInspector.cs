@@ -116,9 +116,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     var component = new InspectorComponent(this, componentValue);
                     m_typeMap.Add(type, component);
                     m_runtime.Add(component);
+                    component.enabled = m_entity.IsEnabledRaw(type);
                 }
-                else
-                    m_typeMap[type].value = componentValue;
+                else {
+                    var component = m_typeMap[type];
+                    component.value = componentValue;
+                    component.enabled = m_entity.IsEnabledRaw(type);
+                }
             }
         }
 
@@ -146,7 +150,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 var type = component.value.GetType();
                 if (!m_typeMap.ContainsKey(type))
                     m_typeMap.Add(type, component);
-                if (component.value.Equals(m_entity.GetRaw(type))) continue;
+                if (component.enabled == m_entity.IsEnabledRaw(type) && component.value.Equals(m_entity.GetRaw(type))) continue;
                 m_typesToSet.Enqueue(type);
             }
 
@@ -165,8 +169,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             collectionResolver.QueueAdd(values);
             collectionResolver.ApplyChanges();
         }
-
-        private void SetComponentEnabled(in Type type, bool enabled) => m_entity.SetEnabledRaw(type, enabled);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Color GetDisabledColor(in Color color) {
