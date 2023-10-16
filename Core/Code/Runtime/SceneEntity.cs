@@ -24,13 +24,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [SerializeField]
         private bool m_isValidPrefab;
 #if UNITY_EDITOR
-        [ColoredBoxGroup("Serialization", Color = nameof(Color))]
+        [ColoredBoxGroup("Serialization", Color = nameof(Color)), ShowIf("@" + nameof(GlobalSerializationEnabled))]
 #endif
         [SerializeField]
         private bool m_enableSerialization;
 #if UNITY_EDITOR
         [ColoredBoxGroup("Serialization", Color = nameof(Color)), 
-         ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying) + "&& " + nameof(m_enableSerialization)), 
+         ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying) + "&& " + 
+             nameof(m_enableSerialization) + "&&" + nameof(GlobalSerializationEnabled)), 
          ValidateInput(nameof(IsValidPersistentKey), "Persistent Key is required")]
 #endif
         [SerializeField]
@@ -48,8 +49,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
         internal bool IsPlaying => Application.isPlaying && m_instantiated;
+        internal bool IsDirty => m_inspector.IsDirty;
         private bool IsValidPersistentKey => !m_enableSerialization && !m_isValidPrefab || 
             (m_persistentKey != null && !m_persistentKey.Equals(string.Empty));
+        private bool GlobalSerializationEnabled => UFlowUtils.Addons.GetSettings<ECSAddonSettings>().EnableSerialization;
         private Color Color => m_inspector.Color;
 #endif
 
@@ -164,6 +167,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!World.IsAlive()) return;
             if (!Entity.IsAlive()) return;
             m_inspector.ApplyRuntimeState();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void ResetIsDirty() {
+            if (World == null) return;
+            if (!World.IsAlive()) return;
+            if (!Entity.IsAlive()) return;
+            m_inspector.IsDirty = false;
         }
 #endif
 

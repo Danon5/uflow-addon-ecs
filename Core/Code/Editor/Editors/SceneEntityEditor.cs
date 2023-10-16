@@ -1,5 +1,6 @@
 ﻿using Sirenix.OdinInspector.Editor;
 using UFlow.Addon.ECS.Core.Runtime;
+using UFlow.Core.Runtime;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,7 +30,10 @@ namespace UFlow.Addon.ECS.Core.Editor {
             var sceneEntity = target as SceneEntity;
             if (!Application.isPlaying || sceneEntity == null || !sceneEntity.Entity.IsAlive()) return;
             sceneEntity.RetrieveRuntimeInspector();
+            if (!UFlowUtils.Addons.GetSettings<ECSAddonSettings>().EnableRealtimeInspector) return;
+            if (!sceneEntity.IsDirty) return;
             Repaint();
+            sceneEntity.ResetIsDirty();
         }
     }
 }

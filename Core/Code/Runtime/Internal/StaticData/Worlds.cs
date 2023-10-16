@@ -39,6 +39,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static World Get(short worldId) => s_worlds[worldId];
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Has(short worldId) => s_worlds.Length > 0 && 
+            worldId >= 0 && worldId < s_worlds.Length && s_worlds[worldId] != null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short GetNextId() => (short)s_worldIdStack.GetNextId();

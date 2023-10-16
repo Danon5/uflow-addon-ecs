@@ -47,6 +47,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         internal bool EntityEnabled => m_enabled;
 #if UNITY_EDITOR
+        internal bool IsDirty { get; set; }
         internal Color AuthoringColor => new(.25f, .75f, 1f, 1f);
         internal Color RuntimeColor => new(1f, .25f, 0f, 1f);
         internal Color Color => ShouldDisplayRuntime ? m_enabled ? RuntimeColor : GetDisabledColor(RuntimeColor) :
@@ -80,6 +81,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             foreach (var component in m_authoring) {
                 if (component.value == null) continue;
                 entity.SetRaw(component.value, component.enabled);
+                IsDirty = true;
             }
         }
 
@@ -103,6 +105,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             while (m_typesToRemove.TryDequeue(out var type)) {
                 m_runtime.Remove(m_typeMap[type]);
                 m_typeMap.Remove(type);
+                IsDirty = true;
             }
 
             // enqueue sets
@@ -123,6 +126,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     component.value = componentValue;
                     component.enabled = m_entity.IsEnabledRaw(type);
                 }
+                IsDirty = true;
             }
         }
 
@@ -142,6 +146,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             while (m_typesToRemove.TryDequeue(out var type)) {
                 m_typeMap.Remove(type);
                 m_entity.RemoveRaw(type);
+                IsDirty = true;
             }
 
             // enqueue sets
@@ -159,6 +164,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 var component = m_typeMap[type];
                 m_entity.SetRaw(component.value, type, component.enabled);
                 m_entity.SetEnabledRaw(type, component.enabled);
+                IsDirty = true;
             }
         }
 

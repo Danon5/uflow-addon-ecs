@@ -31,7 +31,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private static readonly object[] s_singleObjectBuffer = new object[1];
         private static readonly object[] s_doubleObjectBuffer = new object[2];
 
-        public World World => Worlds.Get(worldId);
+        public World World => Worlds.Has(worldId) ? Worlds.Get(worldId) : default;
         internal Bitset Bitset => Worlds.Get(worldId).GetEntityComponentBitset(id);
         internal List<Type> ComponentTypes => World.GetEntityComponentTypes(this);
         internal int ComponentCount => World.GetEntityComponentTypes(this).Count;

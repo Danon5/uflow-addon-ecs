@@ -384,7 +384,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool IsEntityAlive(in Entity entity) {
-            if (!IsAlive() || m_entityInfos.Length == 0 || entity.id >= m_entityInfos.Length) return false;
+            if (!IsAlive() || m_entityInfos.Length == 0 || entity.id == 0 || entity.id >= m_entityInfos.Length) return false;
             ref var info = ref m_entityInfos[entity.id];
             return info.gen == entity.gen && info.bitset[Bits.IsAlive];
         }
