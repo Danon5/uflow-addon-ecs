@@ -1,5 +1,5 @@
 ﻿namespace UFlow.Addon.ECS.Core.Runtime {
-    internal interface IEntityCommand {
+    internal interface IEcsCommand {
         void Execute(in Entity entity);
     }
 }

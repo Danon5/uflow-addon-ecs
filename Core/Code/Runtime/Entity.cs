@@ -119,8 +119,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T SetWithNotify<T>(in T component, bool enabled = true) where T : IEcsComponent {
-            ref var compRef = ref Set(component, enabled);
+        public ref T SetWithNotify<T>(in T component, bool enableIfAdded = true) where T : IEcsComponent {
+            ref var compRef = ref Set(component, enableIfAdded);
             NotifyChanged<T>();
             return ref compRef;
         }
