@@ -48,7 +48,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
         internal bool IsPlaying => Application.isPlaying && m_instantiated;
-        private bool IsValidPersistentKey => !m_enableSerialization && !m_isValidPrefab || !m_persistentKey.Equals(string.Empty);
+        private bool IsValidPersistentKey => !m_enableSerialization && !m_isValidPrefab || 
+            (m_persistentKey != null && !m_persistentKey.Equals(string.Empty));
         private Color Color => m_inspector.Color;
 #endif
 
