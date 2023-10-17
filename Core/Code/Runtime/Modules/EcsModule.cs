@@ -1,4 +1,5 @@
 ﻿using UFlow.Core.Runtime;
+// ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class EcsModule : BaseBehaviourModule<EcsModule> {
