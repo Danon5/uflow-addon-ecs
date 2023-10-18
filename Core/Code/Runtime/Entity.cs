@@ -154,6 +154,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Has<T>() where T : IEcsComponent => IsAlive() && Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool HasAndEnabled<T>() where T : IEcsComponent => IsAlive() && Has<T>() && IsEnabled<T>();
 
         public void Remove<T>() where T : IEcsComponent {
             if (!Stashes<T>.TryGet(worldId, out var stash) || !stash.Has(id))
