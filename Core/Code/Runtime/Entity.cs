@@ -87,8 +87,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Publish(new EntityComponentAddedEvent<T>(this), worldId);
                 if (enableIfAdded && IsEnabled())
                     Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Publish(new EntityComponentEnabledEvent<T>(this), worldId);
-                else
-                    Publishers<EntityComponentDisabledEvent<T>>.WorldInstance.Publish(new EntityComponentDisabledEvent<T>(this), worldId);
                 var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
                 previousStash.Set(id, Get<T>());
                 World.AddEntityComponentType(this, typeof(T));
@@ -97,17 +95,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Add<T>(in T component = default) where T : IEcsComponent {
+        public ref T Add<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
             if (Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id))
                 throw new Exception($"Entity already has component of type {typeof(T)}");
-            return ref Set(component);
+            return ref Set(component, enableIfAdded);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryAdd<T>(in T component = default) where T : IEcsComponent {
+        public bool TryAdd<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
             if (Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id))
                 return false;
-            Set(component);
+            Set(component, enableIfAdded);
             return true;
         }
 
@@ -117,6 +115,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 Add<T>();
             else if (!IsEnabled<T>())
                 Enable<T>();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void EnsureAddedAndDisabled<T>() where T : IEcsComponent {
+            if (!Has<T>())
+                Add<T>(default, false);
+            else if (IsEnabled<T>())
+                Disable<T>();
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
