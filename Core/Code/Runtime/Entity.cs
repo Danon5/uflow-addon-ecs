@@ -112,6 +112,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void EnsureAddedAndEnabled<T>() where T : IEcsComponent {
+            if (!Has<T>())
+                Add<T>();
+            else if (!IsEnabled<T>())
+                Enable<T>();
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void NotifyChanged<T>() where T : IEcsComponent {
             Publishers<EntityComponentChangedEvent<T>>.WorldInstance.Publish(new EntityComponentChangedEvent<T>(this), worldId);
             var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
