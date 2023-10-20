@@ -53,7 +53,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void PreCleanup() => PreCleanup(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Cleanup() => Cleanup(m_world);
+        public void Cleanup() {
+            Cleanup(m_world);
+            CommandBuffer.Dispose();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset() => Reset(m_world);

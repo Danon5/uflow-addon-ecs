@@ -110,19 +110,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndEnabled<T>() where T : IEcsComponent {
-            if (!Has<T>())
-                Add<T>();
-            else if (!IsEnabled<T>())
-                Enable<T>();
-        }
+        public void EnsureAddedAndEnabled<T>() where T : IEcsComponent => EnsureAddedAndSetEnabled<T>(true);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void EnsureAddedAndDisabled<T>() where T : IEcsComponent => EnsureAddedAndSetEnabled<T>(false);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndDisabled<T>() where T : IEcsComponent {
+        public void EnsureAddedAndSetEnabled<T>(bool state) where T : IEcsComponent {
             if (!Has<T>())
-                Add<T>(default, false);
-            else if (IsEnabled<T>())
-                Disable<T>();
+                Add<T>(default, state);
+            else if (IsEnabled<T>() != state)
+                SetEnabled<T>(state);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

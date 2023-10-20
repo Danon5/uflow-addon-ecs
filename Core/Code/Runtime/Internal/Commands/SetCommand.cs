@@ -1,5 +1,5 @@
 ﻿namespace UFlow.Addon.ECS.Core.Runtime {
-    public sealed class SetCommand<T> : IEcsCommand where T : IEcsComponent {
+    internal readonly struct SetCommand<T> : IEcsCommand where T : IEcsComponent {
         private readonly T m_component;
         private readonly bool m_enableIfAdded;
 
