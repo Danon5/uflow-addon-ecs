@@ -83,10 +83,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
             ref var compRef = ref stash.Set(id, component);
             if (!alreadyHas) {
-                World.SetComponentBit<T>(this, enableIfAdded);
+                SetEnabled<T>(enableIfAdded);
                 Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Publish(new EntityComponentAddedEvent<T>(this), worldId);
-                if (enableIfAdded && IsEnabled())
-                    Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Publish(new EntityComponentEnabledEvent<T>(this), worldId);
                 var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
                 previousStash.Set(id, Get<T>());
                 World.AddEntityComponentType(this, typeof(T));
