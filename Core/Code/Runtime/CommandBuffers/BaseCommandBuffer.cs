@@ -16,7 +16,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             ExternalEngineEvents.clearStaticCachesEvent += ClearStaticCache;
         }
 
-        public BaseCommandBuffer() => Id = s_idStack.GetNextId();
+        protected BaseCommandBuffer() => Id = s_idStack.GetNextId();
 
         public void Dispose() {
             OnDisposed?.Invoke(this);
@@ -32,6 +32,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         protected void EnqueueCommand<T>(in Entity entity, in T command) where T : IEcsCommand {
             EnsureCommandQueueAllocated<T>();
             Commands<T>.Enqueue(Id, entity, command);
+            m_queue.Enqueue(typeof(T));
         }
         
         private static void ClearStaticCache() {
@@ -46,7 +47,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         private static TryExecuteNextCommandDelegate GetOrCreateTryExecuteNextCommandDelegate(Type commandType) {
             if (s_delegates.TryGetValue(commandType, out var @delegate)) return @delegate;
-            @delegate = typeof(Commands<>).MakeGenericType().GetMethod("TryExecuteNextCommand")
+            @delegate = typeof(Commands<>).MakeGenericType(commandType).GetMethod("TryExecuteNextCommand")
                 !.CreateDelegate(typeof(TryExecuteNextCommandDelegate)) as TryExecuteNextCommandDelegate;
             s_delegates.Add(commandType, @delegate);
             return @delegate;
