@@ -16,26 +16,22 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #if UNITY_EDITOR
         [InlineProperty, HideLabel]
 #endif
-        [SerializeField]
-        private EntityInspector m_inspector;
+        [SerializeField] private EntityInspector m_inspector;
 #if UNITY_EDITOR
         [HideInInspector]
 #endif
-        [SerializeField]
-        private bool m_isValidPrefab;
+        [SerializeField] private bool m_isValidPrefab;
 #if UNITY_EDITOR
         [ColoredBoxGroup("Serialization", Color = nameof(Color)), ShowIf("@" + nameof(GlobalSerializationEnabled))]
 #endif
-        [SerializeField]
-        private bool m_enableSerialization;
+        [SerializeField] private bool m_enableSerialization;
 #if UNITY_EDITOR
         [ColoredBoxGroup("Serialization", Color = nameof(Color)), 
          ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying) + "&& " + 
              nameof(m_enableSerialization) + "&&" + nameof(GlobalSerializationEnabled)), 
          ValidateInput(nameof(IsValidPersistentKey), "Persistent Key is required")]
 #endif
-        [SerializeField]
-        private string m_persistentKey;
+        [SerializeField] private string m_persistentKey;
         private bool m_destroying;
         private bool m_destroyingDirectly;
 #if UNITY_EDITOR
@@ -52,7 +48,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal bool IsDirty => m_inspector.IsDirty;
         private bool IsValidPersistentKey => !m_enableSerialization && !m_isValidPrefab || 
             (m_persistentKey != null && !m_persistentKey.Equals(string.Empty));
-        private bool GlobalSerializationEnabled => UFlowUtils.Addons.GetSettings<ECSAddonSettings>().EnableSerialization;
+        private bool GlobalSerializationEnabled {
+            get {
+                var settings = UFlowUtils.Addons.GetSettings<ECSAddonSettings>();
+                return settings != null && settings.EnableSerialization;
+            }
+        }
         private Color Color => m_inspector.Color;
 #endif
 
@@ -178,6 +179,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 #endif
 
-        protected virtual World GetWorld() => EcsModule.Get().World;
+        protected virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
     }
 }
