@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UFlow.Core.Runtime;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public static partial class EcsUtils {
@@ -25,7 +26,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             private static IEnumerable<ReflectedSystemInfo> GetSystemInfosForWorldType(in Type worldType) {
                 var baseSystemType = typeof(ISystem);
                 var systems = new List<ReflectedSystemInfo>();
-                var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
+                var types = UFlowUtils.Reflection.GetAllTypes(UFlowUtils.Reflection.CommonExclusionNamespaces);
                 foreach (var type in types) {
                     if (!baseSystemType.IsAssignableFrom(type)) continue;
                     var attribute = type.GetCustomAttribute<ExecuteInWorldAttribute>();
@@ -37,8 +38,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                                 "Cannot automatically create an instance of it. " +
                                 "Remove the [ExecuteInWorld] attribute if you do not want it to be created automatically, or remove the " +
                                 "extra parameters from the constructor to resolve the issue.");
-                        foreach (var groupType in type.GetCustomAttribute<ExecuteInGroupAttribute>().GroupTypes)
-                            systems.Add(new ReflectedSystemInfo(type, groupType));
+                        var groupAttribute = type.GetCustomAttribute<ExecuteInGroupAttribute>();
+                        if (groupAttribute != null) {
+                            foreach (var groupType in groupAttribute.GroupTypes)
+                                systems.Add(new ReflectedSystemInfo(type, groupType));
+                        }
+                        else
+                            systems.Add(new ReflectedSystemInfo(type, default));
                     }
                 }
                 
