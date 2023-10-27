@@ -37,8 +37,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                                 "Cannot automatically create an instance of it. " +
                                 "Remove the [ExecuteInWorld] attribute if you do not want it to be created automatically, or remove the " +
                                 "extra parameters from the constructor to resolve the issue.");
-                        var groupType = type.GetCustomAttribute<ExecuteInGroupAttribute>()?.GroupType;
-                        systems.Add(new ReflectedSystemInfo(type, groupType));
+                        foreach (var groupType in type.GetCustomAttribute<ExecuteInGroupAttribute>().GroupTypes)
+                            systems.Add(new ReflectedSystemInfo(type, groupType));
                     }
                 }
                 
