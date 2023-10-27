@@ -51,6 +51,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public void Dispose() => m_updater?.Dispose();
 
+        public Entity First() => m_entities.Count > 0 ? m_entities.First() : default;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SparseArray<Entity>.Enumerator GetEnumerator() => m_entities.GetEnumerator();
     }

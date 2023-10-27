@@ -100,6 +100,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Count = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T First() => ref m_dense[1];
+
 #if IL2CPP_ENABLED
         [Il2CppSetOption(Option.NullChecks, false)]
         [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
