@@ -164,12 +164,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         private static bool ShouldPlaceBefore(in Type sourceType, in Type otherType) {
             var beforeAttribute = sourceType.GetCustomAttribute<ExecuteBeforeAttribute>();
-            return beforeAttribute != null && beforeAttribute.SystemType == otherType;
+            return beforeAttribute != null && beforeAttribute.SystemTypes.Contains(otherType);
         }
         
         private static bool ShouldPlaceAfter(in Type sourceType, in Type otherType) {
             var afterAttribute = sourceType.GetCustomAttribute<ExecuteAfterAttribute>();
-            return afterAttribute != null && afterAttribute.SystemType == otherType;
+            return afterAttribute != null && afterAttribute.SystemTypes.Contains(otherType);
         }
 
         private static bool ShouldRun(in ISystem system) =>

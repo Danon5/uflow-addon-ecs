@@ -2,10 +2,10 @@
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class ExecuteBeforeAttribute : Attribute {
-        public Type SystemType { get; }
+        public Type[] SystemTypes { get; }
 
-        public ExecuteBeforeAttribute(Type systemType) {
-            SystemType = systemType;
+        public ExecuteBeforeAttribute(params Type[] systemTypes) {
+            SystemTypes = systemTypes;
         }
     }
 }
