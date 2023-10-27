@@ -3,10 +3,10 @@
 namespace UFlow.Addon.ECS.Core.Runtime {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class ExecuteInWorldAttribute : Attribute {
-        public Type WorldType { get; }
+        public Type[] WorldTypes { get; }
 
-        public ExecuteInWorldAttribute(Type worldType) {
-            WorldType = worldType;
+        public ExecuteInWorldAttribute(params Type[] worldTypes) {
+            WorldTypes = worldTypes;
         }
     }
 }

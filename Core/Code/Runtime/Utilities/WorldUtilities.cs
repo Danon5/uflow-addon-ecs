@@ -30,14 +30,16 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     if (!baseSystemType.IsAssignableFrom(type)) continue;
                     var attribute = type.GetCustomAttribute<ExecuteInWorldAttribute>();
                     if (attribute == null) continue;
-                    if (attribute.WorldType != worldType) continue;
-                    if (type.GetConstructors()[0].GetParameters().Length > 1)
-                        throw new Exception($"System {type} has more than just the World parameter in the constructor! " +
-                            "Cannot automatically create an instance of it. " +
-                            "Remove the [ExecuteInWorld] attribute if you do not want it to be created automatically, or remove the " +
-                            "extra parameters from the constructor to resolve the issue.");
-                    var groupType = type.GetCustomAttribute<ExecuteInGroupAttribute>()?.GroupType;
-                    systems.Add(new ReflectedSystemInfo(type, groupType));
+                    foreach (var systemWorldType in attribute.WorldTypes) {
+                        if (systemWorldType != worldType) continue;
+                        if (type.GetConstructors()[0].GetParameters().Length > 1)
+                            throw new Exception($"System {type} has more than just the World parameter in the constructor! " +
+                                "Cannot automatically create an instance of it. " +
+                                "Remove the [ExecuteInWorld] attribute if you do not want it to be created automatically, or remove the " +
+                                "extra parameters from the constructor to resolve the issue.");
+                        var groupType = type.GetCustomAttribute<ExecuteInGroupAttribute>()?.GroupType;
+                        systems.Add(new ReflectedSystemInfo(type, groupType));
+                    }
                 }
                 
                 return systems;
