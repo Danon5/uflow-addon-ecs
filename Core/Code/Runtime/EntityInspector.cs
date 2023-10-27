@@ -81,7 +81,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             foreach (var component in m_authoring) {
                 if (component.value == null) continue;
                 entity.SetRaw(component.value, component.enabled);
+#if UNITY_EDITOR
                 IsDirty = true;
+#endif
             }
         }
 
