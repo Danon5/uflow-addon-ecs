@@ -12,7 +12,7 @@ using UnityEditor.SceneManagement;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
 namespace UFlow.Addon.ECS.Core.Runtime {
-    public class SceneEntity : MonoBehaviour {
+    public class SceneEntity : MonoBehaviour, ISceneEntity {
 #if UNITY_EDITOR
         [InlineProperty, HideLabel]
 #endif
@@ -41,6 +41,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         public World World { get; private set; }
         public Entity Entity { get; private set; }
+        public GameObject GameObject => gameObject;
         internal bool IsEditorFocused { get; set; }
         internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
@@ -137,7 +138,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Destroy(gameObject);
         }
         
-        internal Entity CreateEntityWithIdAndGen(int id, ushort gen) {
+        public Entity CreateEntityWithIdAndGen(int id, ushort gen) {
             if (World == null)
                 throw new Exception("Attempting to create a SceneEntity with no valid world.");
             if (Entity.IsAlive())
@@ -179,6 +180,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 #endif
 
-        protected virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
+        public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
     }
 }
