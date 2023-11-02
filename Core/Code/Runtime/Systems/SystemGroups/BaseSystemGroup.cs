@@ -127,17 +127,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool IsEnabled() => m_enabled;
 
         internal void Sort() {
-            Debug.Log($"{GetType().Name} systems before:");
-            foreach (var system in m_systems)
-                Debug.Log($"{system.GetType().Name}");
             var sortedSystems = new List<ISystem>();
             foreach (var system in m_systems)
                 AddSortedSystem(system, sortedSystems);
             m_systems.Clear();
             m_systems.AddRange(sortedSystems);
-            Debug.Log($"{GetType().Name} systems after:");
-            foreach (var system in m_systems)
-                Debug.Log($"{system.GetType().Name}");
         }
 
         private void AddSortedSystem(ISystem system, List<ISystem> sortedSystems) {
