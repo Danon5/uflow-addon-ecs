@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
+using UFlow.Core.Runtime;
 using UnityEngine;
 
 // ReSharper disable SuspiciousTypeConversion.Global
@@ -127,52 +127,58 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool IsEnabled() => m_enabled;
 
         internal void Sort() {
-            var systemBuffer = new List<ISystem>(m_systems);
-            
-            foreach (var system in m_systems) {
-                var systemType = system.GetType();
-                foreach (var otherSystem in m_systems) {
-                    if (ReferenceEquals(system, otherSystem)) continue;
-                    var otherSystemType = otherSystem.GetType();
-                    
-                    if (ShouldPlaceBefore(systemType, otherSystemType)) {
-                        MoveValueTo(systemBuffer, systemBuffer.IndexOf(system), 
-                            Math.Max(systemBuffer.IndexOf(otherSystem) - 1, 0));
-                        break;
-                    }
-                    
-                    if (ShouldPlaceAfter(systemType, otherSystemType)) {
-                        MoveValueTo(systemBuffer, systemBuffer.IndexOf(system), 
-                            Math.Min(systemBuffer.IndexOf(otherSystem) + 1, systemBuffer.Count - 1));
-                        break;
-                    }
-                }
-            }
-            
+            Debug.Log($"{GetType().Name} systems before:");
+            foreach (var system in m_systems)
+                Debug.Log($"{system.GetType().Name}");
+            var sortedSystems = new List<ISystem>();
+            foreach (var system in m_systems)
+                AddSortedSystem(system, sortedSystems);
             m_systems.Clear();
-            m_systems.AddRange(systemBuffer);
+            m_systems.AddRange(sortedSystems);
+            Debug.Log($"{GetType().Name} systems after:");
+            foreach (var system in m_systems)
+                Debug.Log($"{system.GetType().Name}");
         }
 
-        private static void MoveValueTo(in List<ISystem> list, in int a, in int b) {
-            var temp = list[a];
-            list.RemoveAt(a);
-            if (b >= list.Count)
-                list.Add(temp);
-            else
-                list.Insert(b, temp);
+        private void AddSortedSystem(ISystem system, List<ISystem> sortedSystems) {
+            if (sortedSystems.Count == 0) {
+                sortedSystems.Add(system);
+                return;
+            }
+            var systemsThatMustExecuteBefore = new HashSet<ISystem>();
+            PopulateWithSystemsThatExecuteBefore(system, systemsThatMustExecuteBefore);
+            foreach (var sortedSystem in sortedSystems) {
+                if (!systemsThatMustExecuteBefore.Contains(sortedSystem)) continue;
+                sortedSystems.Insert(sortedSystems.IndexOf(sortedSystem), system);
+                return;
+            }
+            sortedSystems.Add(system);
         }
 
-        private static bool ShouldPlaceBefore(in Type sourceType, in Type otherType) {
-            var beforeAttribute = sourceType.GetCustomAttribute<ExecuteBeforeAttribute>();
-            return beforeAttribute != null && beforeAttribute.SystemTypes.Contains(otherType);
-        }
-        
-        private static bool ShouldPlaceAfter(in Type sourceType, in Type otherType) {
-            var afterAttribute = sourceType.GetCustomAttribute<ExecuteAfterAttribute>();
-            return afterAttribute != null && afterAttribute.SystemTypes.Contains(otherType);
+        private void PopulateWithSystemsThatExecuteBefore(ISystem system, ISet<ISystem> systems) {
+            var systemType = system.GetType();
+            foreach (var otherSystem in m_systems) {
+                if (ReferenceEquals(system, otherSystem)) continue;
+                var otherType = otherSystem.GetType();
+                if (!ShouldExecuteBefore(systemType, otherType)) continue;
+                systems.Add(otherSystem);
+                PopulateWithSystemsThatExecuteBefore(otherSystem, systems);
+            }
         }
 
-        private static bool ShouldRun(in ISystem system) =>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool ShouldExecuteBefore(Type sourceType, Type otherType) {
+            if (UFlowUtils.Reflection.TryGetAttribute(sourceType, out ExecuteBeforeAttribute sourceAttribute) &&
+                sourceAttribute.SystemTypes.Contains(otherType))
+                return true;
+            if (UFlowUtils.Reflection.TryGetAttribute(otherType, out ExecuteAfterAttribute otherAttribute) &&
+                otherAttribute.SystemTypes.Contains(sourceType))
+                return true;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool ShouldRun(ISystem system) =>
             system is not IEnableDisableSystem enableDisableSystem || enableDisableSystem.IsEnabled();
     }
 }
