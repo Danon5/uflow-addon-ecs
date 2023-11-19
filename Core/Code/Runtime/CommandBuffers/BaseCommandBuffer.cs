@@ -5,14 +5,14 @@ using System.Runtime.CompilerServices;
 namespace UFlow.Addon.ECS.Core.Runtime {
     public abstract class BaseCommandBuffer : IDisposable {
         internal event Action<BaseCommandBuffer> OnDisposed;
-        private static readonly IdStack s_idStack;
+        private static readonly EcsIdStack s_idStack;
         private static readonly Dictionary<Type, TryExecuteNextCommandDelegate> s_delegates = new();
         private readonly Queue<Type> m_queue = new();
 
         internal int Id { get; }
 
         static BaseCommandBuffer() {
-            s_idStack = new IdStack(0);
+            s_idStack = new EcsIdStack(0);
             ExternalEngineEvents.clearStaticCachesEvent += ClearStaticCache;
         }
 

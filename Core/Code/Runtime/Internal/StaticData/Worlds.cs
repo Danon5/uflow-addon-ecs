@@ -9,11 +9,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     internal static class Worlds {
-        private static readonly IdStack s_worldIdStack;
+        private static readonly EcsIdStack s_worldIdStack;
         private static World[] s_worlds;
 
         static Worlds() {
-            s_worldIdStack = new IdStack(0);
+            s_worldIdStack = new EcsIdStack(0);
             s_worlds = Array.Empty<World>();
             ExternalEngineEvents.clearStaticCachesEvent += ClearStaticCaches;
         }

@@ -11,7 +11,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
     public sealed class World {
         internal readonly short id;
-        private readonly IdStack m_entityIdStack;
+        private readonly EcsIdStack m_entityIdStack;
         private readonly List<Type> m_componentTypes;
         private EntityInfo[] m_entityInfos;
         private Bitset m_bitset;
@@ -24,7 +24,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public World() {
             id = Worlds.GetNextId();
-            m_entityIdStack = new IdStack(1);
+            m_entityIdStack = new EcsIdStack(1);
             m_componentTypes = new List<Type>();
             m_entityInfos = Array.Empty<EntityInfo>();
             m_bitset[Bits.IsAlive] = true;

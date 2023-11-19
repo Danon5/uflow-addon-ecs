@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
@@ -6,13 +6,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    internal sealed class IdStack {
+    internal sealed class EcsIdStack {
         private readonly Stack<int> m_stack;
         private readonly int m_startValue;
 
         public int NextId { get; private set; }
 
-        public IdStack(int startValue) {
+        public EcsIdStack(int startValue) {
             m_startValue = startValue;
             m_stack = new Stack<int>();
             NextId = startValue;
