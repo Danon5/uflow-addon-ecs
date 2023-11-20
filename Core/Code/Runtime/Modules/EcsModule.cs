@@ -2,11 +2,11 @@
 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 namespace UFlow.Addon.ECS.Core.Runtime {
-    public sealed class EcsModule<T> : BaseBehaviourModule<EcsModule<T>> {
+    public sealed class EcsModule<T> : BaseBehaviourModule<EcsModule<T>> where T : BaseWorldType {
         public World World { get; private set; }
         
         public override void LoadDirect() {
-            World = EcsUtils.Worlds.CreateWorldFromType<DefaultWorld>();
+            World = EcsUtils.Worlds.CreateWorldFromType<T>();
             World.SetupSystemGroups();
             World.WhenReset(() => World.ResetSystemGroups());
         }
