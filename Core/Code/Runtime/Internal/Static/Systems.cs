@@ -5,10 +5,9 @@ using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class Systems {
-        private static readonly Dictionary<short, Dictionary<Type, BaseSystemGroup>> s_groups;
+        private static readonly Dictionary<short, Dictionary<Type, BaseSystemGroup>> s_groups = new();
 
         static Systems() {
-            s_groups = new Dictionary<short, Dictionary<Type, BaseSystemGroup>>();
             Publishers<WorldDestroyedEvent>.Global.Subscribe((in WorldDestroyedEvent @event) => ClearGroups(@event.worldId));
             ExternalEngineEvents.clearStaticCachesEvent += ClearStaticCache;
         }

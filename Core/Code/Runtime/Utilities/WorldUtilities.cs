@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UFlow.Core.Runtime;
 
@@ -11,15 +10,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 var world = new World();
                 var systemInfos = GetSystemInfosForWorldType(typeof(T));
                 var defaultGroupType = typeof(DefaultSystemGroup);
-
                 foreach (var systemInfo in systemInfos) {
                     var group = world.GetOrCreateSystemGroup(systemInfo.groupType ?? defaultGroupType);
                     var system = Activator.CreateInstance(systemInfo.systemType, world);
                     group.Add(system as ISystem);
                 }
-                
                 Systems.SortSystems(world.id);
-
+                LogicHook<WorldCreatedFromTypeHook>.Execute(new WorldCreatedFromTypeHook(world, typeof(T)));
                 return world;
             }
 
@@ -47,7 +44,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                             systems.Add(new ReflectedSystemInfo(type, default));
                     }
                 }
-                
                 return systems;
             }
 
