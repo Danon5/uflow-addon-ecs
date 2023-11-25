@@ -24,7 +24,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #if UNITY_EDITOR
         [ColoredBoxGroup("Serialization", Color = nameof(Color))]
 #endif
-        [SerializeField, ReadOnly] private string m_guid;
+        [SerializeField] private string m_guid;
         private bool m_destroying;
         private bool m_destroyingDirectly;
 #if UNITY_EDITOR
