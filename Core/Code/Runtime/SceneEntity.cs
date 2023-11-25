@@ -12,7 +12,7 @@ using UnityEditor.SceneManagement;
 
 [assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
 namespace UFlow.Addon.ECS.Core.Runtime {
-    public class SceneEntity : MonoBehaviour, ISceneEntity {
+    public class SceneEntity : MonoBehaviour, ISceneEntity, ISerializationCallbackReceiver {
 #if UNITY_EDITOR
         [InlineProperty, HideLabel]
 #endif
@@ -22,16 +22,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
         [SerializeField] private bool m_isValidPrefab;
 #if UNITY_EDITOR
-        [ColoredBoxGroup("Serialization", Color = nameof(Color)), ShowIf("@" + nameof(GlobalSerializationEnabled))]
+        [ColoredBoxGroup("Serialization", Color = nameof(Color))]
 #endif
-        [SerializeField] private bool m_enableSerialization;
-#if UNITY_EDITOR
-        [ColoredBoxGroup("Serialization", Color = nameof(Color)), 
-         ShowIf("@" + nameof(m_isValidPrefab) + "&& !" + nameof(IsPlaying) + "&& " + 
-             nameof(m_enableSerialization) + "&&" + nameof(GlobalSerializationEnabled)), 
-         ValidateInput(nameof(IsValidPersistentKey), "Persistent Key is required")]
-#endif
-        [SerializeField] private string m_persistentKey;
+        [SerializeField, ReadOnly] private string m_guid;
         private bool m_destroying;
         private bool m_destroyingDirectly;
 #if UNITY_EDITOR
@@ -42,19 +35,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public World World { get; private set; }
         public Entity Entity { get; private set; }
         public GameObject GameObject => gameObject;
-        internal bool IsEditorFocused { get; set; }
-        internal string PersistentKey => m_persistentKey;
 #if UNITY_EDITOR
+        internal string Guid => m_guid;
         internal bool IsPlaying => Application.isPlaying && m_instantiated;
         internal bool IsDirty => m_inspector.IsDirty;
-        private bool IsValidPersistentKey => !m_enableSerialization && !m_isValidPrefab || 
-            (m_persistentKey != null && !m_persistentKey.Equals(string.Empty));
-        private bool GlobalSerializationEnabled {
-            get {
-                var settings = UFlowUtils.Addons.GetSettings<ECSAddonSettings>();
-                return settings != null && settings.EnableSerialization;
-            }
-        }
         private Color Color => m_inspector.Color;
 #endif
 
@@ -106,6 +90,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 #endif
 
+        public void OnBeforeSerialize() {
+#if UNITY_EDITOR
+            if (string.IsNullOrEmpty(m_guid))
+                m_guid = System.Guid.NewGuid().ToString();
+#endif
+        }
+        
+        public void OnAfterDeserialize() { }
+
         public Entity CreateEntity() {
             if (World == null)
                 throw new Exception("Attempting to create a SceneEntity with no valid world.");
@@ -128,7 +121,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
-            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this, m_persistentKey));
+            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this));
             return Entity;
         }
 
@@ -147,7 +140,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
-            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this, m_persistentKey));
+            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this));
             return Entity;
         }
 
@@ -177,6 +170,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!World.IsAlive()) return;
             if (!Entity.IsAlive()) return;
             m_inspector.IsDirty = false;
+        }
+
+        [Button, ColoredBoxGroup("Serialization")]
+        private void RegenerateGuid() {
+            if (!EditorUtility.DisplayDialog(
+                "Regenerate Guid Confirmation",
+                "Regenerating this guid could break serialization of any existing save data. Are you sure you wish to regenerate it?",
+                "Yes",
+                "Cancel")) 
+                return;
+            m_guid = System.Guid.NewGuid().ToString();
         }
 #endif
 
