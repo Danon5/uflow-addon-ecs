@@ -8,7 +8,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public override void LoadDirect() {
             World = EcsUtils.Worlds.CreateWorldFromType<T>();
             World.SetupSystemGroups();
-            World.WhenReset(() => World.ResetSystemGroups());
+            World.SubscribeReset(() => World.ResetSystemGroups());
         }
 
         public override void UnloadDirect() {

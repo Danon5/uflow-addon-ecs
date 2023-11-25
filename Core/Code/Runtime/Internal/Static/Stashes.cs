@@ -40,15 +40,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             s_stashes[worldId] ??= new Stash<T>();
             var world = Worlds.Get(worldId);
             s_subscriptions[worldId] ??= new[] {
-                world.WhenEntityEnabled((in Entity entity) => {
+                world.SubscribeEntityEnabled((in Entity entity) => {
                     if (!entity.Has<T>()) return;
                     world.Publish(new EntityComponentParentEnabledEvent<T>(entity));
                 }),
-                world.WhenEntityDisabled((in Entity entity) => {
+                world.SubscribeEntityDisabled((in Entity entity) => {
                     if (!entity.Has<T>()) return;
                     world.Publish(new EntityComponentParentDisabledEvent<T>(entity));
                 }),
-                world.WhenEntityDisableComponents((in Entity entity) => {
+                world.SubscribeEntityDisableComponents((in Entity entity) => {
                     if (!entity.Has<T>()) return;
                     entity.Disable<T>();
                 }),
@@ -56,7 +56,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     if (!entity.Has<T>()) return;
                     entity.Remove<T>();
                 }),
-                world.WhenReset(() => {
+                world.SubscribeReset(() => {
                     Remove(worldId);
                 })
             }.MergeIntoGroup();

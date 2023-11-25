@@ -43,98 +43,98 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsAlive() => m_bitset[Bits.IsAlive];
 
-        public IDisposable When<T>(GenericHandler<T> action) => Publishers<T>.WorldInstance.Subscribe(action, id);
+        public IDisposable Subscribe<T>(GenericHandler<T> action) => Publishers<T>.WorldInstance.Subscribe(action, id);
 
-        public IDisposable WhenWorldDestroying(WorldDestroyingHandler action) => 
+        public IDisposable SubscribeWorldDestroying(WorldDestroyingHandler action) => 
             Publishers<WorldDestroyingEvent>.WorldInstance.Subscribe(
                 (in WorldDestroyingEvent _) => action(this), id);
 
-        public IDisposable WhenWorldDestroyed(WorldDestroyedHandler action) => 
+        public IDisposable SubscribeWorldDestroyed(WorldDestroyedHandler action) => 
             Publishers<WorldDestroyedEvent>.WorldInstance.Subscribe(
                 (in WorldDestroyedEvent _) => action(), id);
 
-        public IDisposable WhenWorldComponentAdded<T>(WorldComponentAddedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentAdded<T>(WorldComponentAddedHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentAddedEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentAddedEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable WhenWorldComponentEnabled<T>(WorldComponentEnabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentEnabled<T>(WorldComponentEnabledHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentEnabledEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentEnabledEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable WhenWorldComponentChanged<T>(WorldComponentChangedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentChanged<T>(WorldComponentChangedHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentChangedEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentChangedEvent<T> _) => action(GetPrevious<T>(), ref Get<T>()), id);
 
-        public IDisposable WhenWorldComponentDisabling<T>(WorldComponentDisablingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentDisabling<T>(WorldComponentDisablingHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentDisablingEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentDisablingEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable WhenWorldComponentDisabled<T>(WorldComponentDisabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentDisabled<T>(WorldComponentDisabledHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentDisabledEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable WhenWorldComponentRemoving<T>(WorldComponentRemovingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentRemoving<T>(WorldComponentRemovingHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentRemovingEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentRemovingEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable WhenWorldComponentRemoved<T>(WorldComponentRemovedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentRemoved<T>(WorldComponentRemovedHandler<T> action) where T : IEcsComponent =>
             Publishers<WorldComponentRemovedEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentRemovedEvent<T> @event) => action(@event.component), id);
 
-        public IDisposable WhenEntityCreated(EntityCreatedHandler action) =>
+        public IDisposable SubscribeEntityCreated(EntityCreatedHandler action) =>
             Publishers<EntityCreatedEvent>.WorldInstance.Subscribe(
                 (in EntityCreatedEvent @event) => action(@event.entity), id);
 
-        public IDisposable WhenEntityEnabled(EntityEnabledHandler action) =>
+        public IDisposable SubscribeEntityEnabled(EntityEnabledHandler action) =>
             Publishers<EntityEnabledEvent>.WorldInstance.Subscribe(
                 (in EntityEnabledEvent @event) => action(@event.entity), id);
 
-        public IDisposable WhenEntityDisabling(EntityDisablingHandler action) =>
+        public IDisposable SubscribeEntityDisabling(EntityDisablingHandler action) =>
             Publishers<EntityDisablingEvent>.WorldInstance.Subscribe(
                 (in EntityDisablingEvent @event) => action(@event.entity), id);
 
-        public IDisposable WhenEntityDisabled(EntityDisabledHandler action) =>
+        public IDisposable SubscribeEntityDisabled(EntityDisabledHandler action) =>
             Publishers<EntityDisabledEvent>.WorldInstance.Subscribe(
                 (in EntityDisabledEvent @event) => action(@event.entity), id);
 
-        public IDisposable WhenEntityDestroying(EntityDestroyingHandler action) =>
+        public IDisposable SubscribeEntityDestroying(EntityDestroyingHandler action) =>
             Publishers<EntityDestroyingEvent>.WorldInstance.Subscribe(
                 (in EntityDestroyingEvent @event) => action(@event.entity), id);
 
-        public IDisposable WhenEntityDestroyed(EntityDestroyedHandler action) =>
+        public IDisposable SubscribeEntityDestroyed(EntityDestroyedHandler action) =>
             Publishers<EntityDestroyedEvent>.WorldInstance.Subscribe(
                 (in EntityDestroyedEvent @event) => action(@event.entity), id);
 
-        public IDisposable WhenEntityComponentAdded<T>(EntityComponentAddedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentAdded<T>(EntityComponentAddedHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentAddedEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable WhenEntityComponentEnabled<T>(EntityComponentEnabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentEnabled<T>(EntityComponentEnabledHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentEnabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable WhenEntityComponentChanged<T>(EntityComponentChangedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentChanged<T>(EntityComponentChangedHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentChangedEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentChangedEvent<T> @event) => 
                     action(@event.entity, @event.entity.GetPrevious<T>(), ref @event.entity.Get<T>()), id);
 
-        public IDisposable WhenEntityComponentDisabling<T>(EntityComponentDisablingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentDisabling<T>(EntityComponentDisablingHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentDisablingEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentDisablingEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable WhenEntityComponentDisabled<T>(EntityComponentDisabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentDisabled<T>(EntityComponentDisabledHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable WhenEntityComponentRemoving<T>(EntityComponentRemovingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentRemoving<T>(EntityComponentRemovingHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentRemovingEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentRemovingEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable WhenEntityComponentRemoved<T>(EntityComponentRemovedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentRemoved<T>(EntityComponentRemovedHandler<T> action) where T : IEcsComponent =>
             Publishers<EntityComponentRemovedEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentRemovedEvent<T> @event) => action(@event.entity, @event.component), id);
 
-        internal IDisposable WhenEntityDisableComponents(EntityDisableComponentsHandler action) =>
+        internal IDisposable SubscribeEntityDisableComponents(EntityDisableComponentsHandler action) =>
             Publishers<EntityDisableComponentsEvent>.WorldInstance.Subscribe(
                 (in EntityDisableComponentsEvent @event) => action(@event.entity), id);
 
@@ -142,15 +142,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Publishers<EntityRemoveComponentsEvent>.WorldInstance.Subscribe(
                 (in EntityRemoveComponentsEvent @event) => action(@event.entity), id);
         
-        internal IDisposable WhenEntityComponentParentEnabled<T>(EntityComponentParentEnabledHandler<T> action) where T : IEcsComponent =>
+        internal IDisposable SubscribeEntityComponentParentEnabled<T>(EntityComponentParentEnabledHandler<T> action) 
+            where T : IEcsComponent =>
             Publishers<EntityComponentParentEnabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentParentEnabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
         
-        internal IDisposable WhenEntityComponentParentDisabled<T>(EntityComponentParentDisabledHandler<T> action) where T : IEcsComponent =>
+        internal IDisposable SubscribeEntityComponentParentDisabled<T>(EntityComponentParentDisabledHandler<T> action) 
+            where T : IEcsComponent =>
             Publishers<EntityComponentParentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentParentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        internal IDisposable WhenReset(WorldResetHandler action) =>
+        internal IDisposable SubscribeReset(WorldResetHandler action) =>
             Publishers<WorldResetEvent>.WorldInstance.Subscribe(
                 (in WorldResetEvent _) => action(), id);
 
