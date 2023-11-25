@@ -118,6 +118,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     value = transform
                 });
             }
+            Entity.Set(new SceneEntityRef {
+                value = this
+            });
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
