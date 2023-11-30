@@ -9,6 +9,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             public static World CreateWorldFromType<T>() where T : BaseWorldType {
                 var world = new World();
                 var systemInfos = GetSystemInfosForWorldType(typeof(T));
+                LogicHook<WorldCreatedFromTypeSystemsGatheredHook>.Execute(
+                    new WorldCreatedFromTypeSystemsGatheredHook(world, typeof(T), systemInfos));
                 var defaultGroupType = typeof(DefaultSystemGroup);
                 foreach (var systemInfo in systemInfos) {
                     var group = world.GetOrCreateSystemGroup(systemInfo.groupType ?? defaultGroupType);
@@ -20,7 +22,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 return world;
             }
 
-            private static IEnumerable<ReflectedSystemInfo> GetSystemInfosForWorldType(in Type worldType) {
+            private static List<ReflectedSystemInfo> GetSystemInfosForWorldType(in Type worldType) {
                 var baseSystemType = typeof(ISystem);
                 var systems = new List<ReflectedSystemInfo>();
                 var types = UFlowUtils.Reflection.GetAllTypes(UFlowUtils.Reflection.CommonExclusionNamespaces);
@@ -47,7 +49,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 return systems;
             }
 
-            private readonly struct ReflectedSystemInfo {
+            public readonly struct ReflectedSystemInfo {
                 public readonly Type systemType;
                 public readonly Type groupType;
                 

@@ -40,6 +40,17 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_bitset.Clear();
         }
 
+        public void Reset() {
+            DestroyAllEntities();
+            Publish(new WorldResetEvent());
+            EntityCount = 0;
+            m_entityIdStack.Reset();
+            m_bitset.Clear();
+            m_bitset[Bits.IsAlive] = true;
+            m_componentTypes.Clear();
+            Array.Resize(ref m_entityInfos, 0);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsAlive() => m_bitset[Bits.IsAlive];
 
@@ -442,17 +453,5 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal List<Type> GetWorldComponentTypes() => m_componentTypes;
         
         internal List<Type> GetEntityComponentTypes(in Entity entity) => m_entityInfos[entity.id].componentTypes;
-
-        internal void ResetForDeserialization(int nextId) {
-            DestroyAllEntities();
-            Publish(new WorldResetEvent());
-            EntityCount = 0;
-            m_entityIdStack.Reset();
-            m_entityIdStack.OverrideNext(nextId);
-            m_bitset.Clear();
-            m_bitset[Bits.IsAlive] = true;
-            m_componentTypes.Clear();
-            Array.Resize(ref m_entityInfos, 0);
-        }
     }
 }

@@ -105,22 +105,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (Entity.IsAlive())
                 throw new Exception("Attempting to create a SceneEntity multiple times.");
             Entity = World.CreateEntity(m_inspector.EntityEnabled);
-            Entity.Set(new GameObjectRef {
-                value = gameObject
-            });
-            if (TryGetComponent(out RectTransform rectTransform)) {
-                Entity.Set(new RectTransformRef {
-                    value = rectTransform
-                });
-            }
-            else {
-                Entity.Set(new TransformRef {
-                    value = transform
-                });
-            }
-            Entity.Set(new SceneEntityRef {
-                value = this
-            });
+            AddSpecialComponentsBeforeBaking();
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
@@ -147,6 +132,27 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return Entity;
         }
 
+        public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
+
+        protected virtual void AddSpecialComponentsBeforeBaking() {
+            Entity.Set(new GameObjectRef {
+                value = gameObject
+            });
+            if (TryGetComponent(out RectTransform rectTransform)) {
+                Entity.Set(new RectTransformRef {
+                    value = rectTransform
+                });
+            }
+            else {
+                Entity.Set(new TransformRef {
+                    value = transform
+                });
+            }
+            Entity.Set(new SceneEntityRef {
+                value = this
+            });
+        }
+        
 #if UNITY_EDITOR
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RetrieveRuntimeInspector() {
@@ -186,7 +192,5 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_guid = System.Guid.NewGuid().ToString();
         }
 #endif
-
-        public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
     }
 }
