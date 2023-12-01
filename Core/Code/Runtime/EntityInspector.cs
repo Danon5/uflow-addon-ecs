@@ -164,7 +164,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             // apply sets
             while (m_typesToSet.TryDequeue(out var type)) {
                 var component = m_typeMap[type];
-                m_entity.SetRaw(component.value, type, component.enabled);
+                m_entity.SetRaw(component.value, component.enabled);
                 m_entity.SetEnabledRaw(type, component.enabled);
                 IsDirty = true;
             }

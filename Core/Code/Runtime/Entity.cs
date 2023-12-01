@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-#if UNITY_EDITOR
-using UnityEngine;
-#endif
 
 namespace UFlow.Addon.ECS.Core.Runtime {
 #if IL2CPP_ENABLED
@@ -18,18 +14,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [FieldOffset(0)] internal readonly int id;
         [FieldOffset(4)] internal readonly ushort gen;
         [FieldOffset(6)] private readonly short worldId;
-        private static readonly Dictionary<Type, MethodInfo> s_setRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_getRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_hasRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_removeRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_tryRemoveRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_setEnabledRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_enableRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_disableRawCache = new();
-        private static readonly Dictionary<Type, MethodInfo> s_isEnabledRawCache = new();
-        private static readonly object[] s_emptyObjectBuffer = Array.Empty<object>();
-        private static readonly object[] s_singleObjectBuffer = new object[1];
-        private static readonly object[] s_doubleObjectBuffer = new object[2];
 
         public World World => Worlds.Has(worldId) ? Worlds.Get(worldId) : default;
         internal Bitset Bitset => Worlds.Get(worldId).GetEntityComponentBitset(id);
@@ -41,18 +25,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             this.gen = gen;
             this.worldId = worldId;
         }
-        
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod]
-        private static void InitializeOnLoad() {
-            s_setRawCache.Clear();
-            s_getRawCache.Clear();
-            s_removeRawCache.Clear();
-            s_tryRemoveRawCache.Clear();
-            s_setEnabledRawCache.Clear();
-            s_isEnabledRawCache.Clear();
-        }
-#endif
 
         public static implicit operator int(in Entity entity) => entity.id;
 
@@ -212,100 +184,45 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled<T>() where T : IEcsComponent => World.IsEntityComponentEnabled<T>(this);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in IEcsComponent component, in Type type, bool enableIfAdded = true) {
-            var method = GetOrCreateGenericMethod(s_setRawCache, type, nameof(SetRawInternal));
-            s_doubleObjectBuffer[0] = component;
-            s_doubleObjectBuffer[1] = enableIfAdded;
-            return method.Invoke(this, s_doubleObjectBuffer) as IEcsComponent;
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent SetRaw(in IEcsComponent component, bool enableIfAdded = true) => 
-            SetRaw(component, component.GetType(), enableIfAdded);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_removeRawCache, type, nameof(RemoveRawInternal));
-            method.Invoke(this, s_emptyObjectBuffer);
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent GetRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_getRawCache, type, nameof(GetRawInternal));
-            return (IEcsComponent)method.Invoke(this, s_emptyObjectBuffer);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool HasRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_hasRawCache, type, nameof(HasRawInternal));
-            return (bool)method.Invoke(this, s_emptyObjectBuffer);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryRemoveRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_tryRemoveRawCache, type, nameof(TryRemoveRawInternal));
-            return (bool)method.Invoke(this, s_emptyObjectBuffer);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnabledRaw(in Type type, bool value) {
-            var method = GetOrCreateGenericMethod(s_setEnabledRawCache, type, nameof(SetEnabledRawInternal));
-            s_singleObjectBuffer[0] = value;
-            method.Invoke(this, s_singleObjectBuffer);
-        }
+        public void SetRaw(Type type, IEcsComponent value, bool enableIfAdded = true) =>
+            RawComponentMethodCache.InvokeSet(this, type, value, enableIfAdded);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnableRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_enableRawCache, type, nameof(EnableRawInternal));
-            method.Invoke(this, s_emptyObjectBuffer);
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DisableRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_disableRawCache, type, nameof(DisableRawInternal));
-            method.Invoke(this, s_emptyObjectBuffer);
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsEnabledRaw(in Type type) {
-            var method = GetOrCreateGenericMethod(s_isEnabledRawCache, type, nameof(IsEnabledRawInternal));
-            return (bool)method.Invoke(this, s_emptyObjectBuffer);
-        }
-
-        private MethodInfo GetOrCreateGenericMethod(in Dictionary<Type, MethodInfo> cache, in Type type, in string methodName) {
-            if (cache.TryGetValue(type, out var method)) return method;
-            method = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance)!.MakeGenericMethod(type);
-            cache.Add(type, method);
-            return method;
-        }
+        public void SetRaw(IEcsComponent value, bool enableIfAdded = true) =>
+            RawComponentMethodCache.InvokeSet(this, value.GetType(), value, enableIfAdded);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private T SetRawInternal<T>(T component, bool enableIfAdded) where T : IEcsComponent => Set(component, enableIfAdded);
+        public IEcsComponent GetRaw(Type type) => 
+            RawComponentMethodCache.InvokeGet(this, type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private T GetRawInternal<T>() where T : IEcsComponent => Get<T>();
+        public bool HasRaw(Type type) => 
+            RawComponentMethodCache.InvokeHas(this, type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool HasRawInternal<T>() where T : IEcsComponent => Has<T>();
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RemoveRawInternal<T>() where T : IEcsComponent => Remove<T>();
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryRemoveRawInternal<T>() where T : IEcsComponent => TryRemove<T>();
+        public void RemoveRaw(Type type) => 
+            RawComponentMethodCache.InvokeRemove(this, type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnableRawInternal<T>() where T : IEcsComponent => Enable<T>();
+        public bool TryRemoveRaw(Type type) => 
+            RawComponentMethodCache.InvokeTryRemove(this, type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DisableRawInternal<T>() where T : IEcsComponent => Disable<T>();
-        
+        public void SetEnabledRaw(Type type, bool value) => 
+            RawComponentMethodCache.InvokeSetEnabled(this, type, value);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetEnabledRawInternal<T>(bool value) where T : IEcsComponent => SetEnabled<T>(value);
-        
+        public void EnableRaw(Type type) => 
+            RawComponentMethodCache.InvokeSetEnabled(this, type, true);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsEnabledRawInternal<T>() where T : IEcsComponent => IsEnabled<T>();
+        public void DisableRaw(Type type) => 
+            RawComponentMethodCache.InvokeSetEnabled(this, type, false);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsEnabledRaw(Type type) => 
+            RawComponentMethodCache.InvokeIsEnabled(this, type);
     }
 }
