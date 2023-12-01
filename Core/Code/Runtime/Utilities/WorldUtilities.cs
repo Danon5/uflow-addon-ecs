@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UFlow.Core.Runtime;
+using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public static partial class EcsUtils {
@@ -15,6 +16,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 foreach (var systemInfo in systemInfos) {
                     var group = world.GetOrCreateSystemGroup(systemInfo.groupType ?? defaultGroupType);
                     var system = Activator.CreateInstance(systemInfo.systemType, world);
+                    if (system is IRunSystem && systemInfo.groupType == null)
+                        Debug.LogWarning(
+                            $"{system.GetType().Name} is a Run system, but it has no [ExecuteInGroup] attribute. Is this intentional?");
                     group.Add(system as ISystem);
                 }
                 Systems.SortSystems(world.id);
