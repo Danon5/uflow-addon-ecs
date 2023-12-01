@@ -28,14 +28,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAdded(in Entity entity) {
+        void IInternalDynamicEntityCollection.EnsureAdded(in Entity entity) {
             if (m_entities.Has(entity.id)) return;
             m_entities.Set(entity.id, entity);
             OnEntityAdded?.Invoke(entity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureRemoved(in Entity entity) {
+        void IInternalDynamicEntityCollection.EnsureRemoved(in Entity entity) {
             if (!m_entities.Has(entity.id)) return;
             OnEntityRemoved?.Invoke(entity);
             m_entities.Remove(entity.id);
@@ -55,5 +55,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SparseArray<Entity>.Enumerator GetEnumerator() => m_entities.GetEnumerator();
+
+        public bool Contains(in Entity entity) => m_entities.Has(entity.id);
     }
 }

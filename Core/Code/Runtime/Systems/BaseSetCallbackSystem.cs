@@ -53,6 +53,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled() => m_enabled;
 
+        protected bool QueryContains(in Entity entity) => m_query.Contains(entity);
+
         protected virtual void PreSetup(World world) { }
         
         protected virtual void Setup(World world) { }

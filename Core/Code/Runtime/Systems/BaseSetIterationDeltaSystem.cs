@@ -73,6 +73,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             CommandBuffer.ExecuteCommands();
         }
         
+        protected bool QueryContains(in Entity entity) => m_query.Contains(entity);
+        
         protected virtual void PreSetup(World world) { }
         
         protected virtual void Setup(World world) { }
