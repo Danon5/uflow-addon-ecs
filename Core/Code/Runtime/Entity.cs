@@ -12,7 +12,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [StructLayout(LayoutKind.Explicit)]
     public readonly struct Entity : IEquatable<Entity> {
         [FieldOffset(0)] internal readonly int id;
-        [FieldOffset(4)] internal readonly ushort gen;
+        [FieldOffset(4)] internal readonly uint gen;
         [FieldOffset(6)] private readonly short worldId;
 
         public World World => Worlds.Has(worldId) ? Worlds.Get(worldId) : default;
@@ -20,7 +20,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal List<Type> ComponentTypes => World.GetEntityComponentTypes(this);
         internal int ComponentCount => World.GetEntityComponentTypes(this).Count;
 
-        internal Entity(int id, ushort gen, in short worldId) {
+        internal Entity(int id, uint gen, in short worldId) {
             this.id = id;
             this.gen = gen;
             this.worldId = worldId;
