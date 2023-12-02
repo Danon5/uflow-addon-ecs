@@ -334,11 +334,20 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsSystemGroupEnabled<T>() where T : BaseSystemGroup => Systems.IsGroupEnabled<T>(id);
 
-        public Entity CreateEntity(bool enable = true) {
+        public Entity CreateEntity(bool enable = true, bool delayEvents = false) {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
-            return CreateEntityWithIdAndGen(entityId, info.gen, enable);
+            return CreateEntityWithIdAndGen(entityId, info.gen, enable, delayEvents);
+        }
+
+        public void EmitDelayedCreationEvents(in Entity entity) {
+            var enable = m_entityInfos[entity].bitset[Bits.IsEnabled];
+            Publish(new EntityCreatedEvent(entity));
+            if (enable)
+                Publish(new EntityEnabledEvent(entity));
+            else
+                Publish(new EntityDisabledEvent(entity));
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -360,7 +369,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 entity.Destroy();
         }
         
-        internal Entity CreateEntityWithIdAndGen(int entityId, ushort entityGen, bool enable = true) {
+        internal Entity CreateEntityWithIdAndGen(int entityId, ushort entityGen, bool enable = true, bool delayEvents = false) {
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
             info.bitset[Bits.IsAlive] = true;
@@ -372,11 +381,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             info.gen = entityGen;
             var entity = new Entity(entityId, entityGen, id);
             EntityCount++;
-            Publish(new EntityCreatedEvent(entity));
-            if (enable)
-                Publish(new EntityEnabledEvent(entity));
-            else
-                Publish(new EntityDisabledEvent(entity));
+            if (!delayEvents) {
+                Publish(new EntityCreatedEvent(entity));
+                if (enable)
+                    Publish(new EntityEnabledEvent(entity));
+                else
+                    Publish(new EntityDisabledEvent(entity));
+            }
             return entity;
         }
 

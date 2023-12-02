@@ -27,6 +27,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [SerializeField] private string m_guid;
         private bool m_destroying;
         private bool m_destroyingDirectly;
+        private IDisposable m_destroyedSubscription;
 #if UNITY_EDITOR
         private bool m_instantiated;
         private bool m_requiresRuntimeRetrieval;
@@ -43,20 +44,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
 
         [UsedImplicitly]
-        private void Awake() {
-#if UNITY_EDITOR
-            m_instantiated = true;
-#endif
-            World = GetWorld();
-            CreateEntity();
-            World.SubscribeEntityDestroyed((in Entity e) => {
-                if (e == Entity)
-                    DestroyEntity();
-            });
-        }
+        protected virtual void Awake() => Initialize();
 
         [UsedImplicitly]
-        private void OnDestroy() {
+        protected virtual void OnDestroy() {
+            m_destroyedSubscription?.Dispose();
             m_destroying = true;
             if (m_destroyingDirectly) return;
             if (World == null) return;
@@ -66,7 +58,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [UsedImplicitly]
-        private void OnEnable() {
+        protected virtual void OnEnable() {
             if (World == null) return;
             if (!World.IsAlive()) return;
             if (!Entity.IsAlive()) return;
@@ -74,7 +66,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [UsedImplicitly]
-        private void OnDisable() {
+        protected virtual void OnDisable() {
             if (World == null) return;
             if (!World.IsAlive()) return;
             if (!Entity.IsAlive()) return;
@@ -99,13 +91,18 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         public void OnAfterDeserialize() { }
 
-        public Entity CreateEntity() {
+        public Entity CreateEntity(bool delayBakingAndFinalization = false) {
             if (World == null)
                 throw new Exception("Attempting to create a SceneEntity with no valid world.");
             if (Entity.IsAlive())
                 throw new Exception("Attempting to create a SceneEntity multiple times.");
-            Entity = World.CreateEntity(m_inspector.EntityEnabled);
+            Entity = World.CreateEntity(m_inspector.EntityEnabled, delayBakingAndFinalization);
             AddSpecialComponentsBeforeBaking();
+            return delayBakingAndFinalization ? Entity : BakeAndFinalize();
+        }
+        
+        public Entity BakeAndFinalize() {
+            World.EmitDelayedCreationEvents(Entity);
             m_inspector.BakeAuthoringComponents(Entity);
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
@@ -134,6 +131,19 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
 
+        protected void Initialize(bool autoCreate = true) {
+#if UNITY_EDITOR
+            m_instantiated = true;
+#endif
+            World = GetWorld();
+            if (autoCreate)
+                CreateEntity();
+            m_destroyedSubscription = World.SubscribeEntityDestroyed((in Entity e) => {
+                if (e == Entity)
+                    DestroyEntity();
+            });
+        }
+        
         protected virtual void AddSpecialComponentsBeforeBaking() {
             Entity.Set(new GameObjectRef {
                 value = gameObject
@@ -152,7 +162,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 value = this
             });
         }
-        
+
 #if UNITY_EDITOR
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RetrieveRuntimeInspector() {
