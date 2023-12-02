@@ -143,7 +143,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void Remove<T>() where T : IEcsComponent {
             if (!Stashes<T>.TryGet(worldId, out var stash) || !stash.Has(id))
                 throw new Exception($"Entity does not have component of type {typeof(T)}");
-            ref var comp = ref stash.Get(id);
+            var comp = stash.Get(id);
             if (IsEnabled())
                 Disable<T>();
             Publishers<EntityComponentRemovingEvent<T>>.WorldInstance.Publish(new EntityComponentRemovingEvent<T>(this), worldId);
