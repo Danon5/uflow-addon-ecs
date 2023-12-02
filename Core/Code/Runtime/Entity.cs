@@ -13,7 +13,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     public readonly struct Entity : IEquatable<Entity> {
         [FieldOffset(0)] internal readonly int id;
         [FieldOffset(4)] internal readonly uint gen;
-        [FieldOffset(6)] private readonly short worldId;
+        [FieldOffset(8)] private readonly short worldId;
 
         public World World => Worlds.Has(worldId) ? Worlds.Get(worldId) : default;
         internal Bitset Bitset => Worlds.Get(worldId).GetEntityComponentBitset(id);

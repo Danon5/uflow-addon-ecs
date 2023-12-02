@@ -8,7 +8,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     internal struct EntityInfo {
-        public ushort gen;
+        public uint gen;
         public Bitset bitset;
         public List<Type> componentTypes;
     }

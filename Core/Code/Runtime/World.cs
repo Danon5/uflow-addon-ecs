@@ -369,7 +369,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 entity.Destroy();
         }
         
-        internal Entity CreateEntityWithIdAndGen(int entityId, ushort entityGen, bool enable = true, bool delayEvents = false) {
+        internal Entity CreateEntityWithIdAndGen(int entityId, uint entityGen, bool enable = true, bool delayEvents = false) {
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
             info.bitset[Bits.IsAlive] = true;
@@ -393,7 +393,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         internal void DestroyEntity(in Entity entity) {
             if (!entity.IsAlive())
-                throw new Exception("Attempting to destroy already destroyed entity.");
+                throw new Exception($"Attempting to destroy {entity}, but it is already destroyed.");
             if (entity.IsEnabled()) {
                 Publish(new EntityDisableComponentsEvent(entity));
                 Publish(new EntityDisabledEvent(entity));
