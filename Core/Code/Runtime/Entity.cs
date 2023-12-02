@@ -56,10 +56,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             ref var compRef = ref stash.Set(id, component);
             if (!alreadyHas) {
                 SetEnabled<T>(enableIfAdded);
+                World.AddEntityComponentType(this, typeof(T));
                 Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Publish(new EntityComponentAddedEvent<T>(this), worldId);
                 var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
                 previousStash.Set(id, Get<T>());
-                World.AddEntityComponentType(this, typeof(T));
             }
             return ref compRef;
         }
@@ -149,8 +149,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Publishers<EntityComponentRemovingEvent<T>>.WorldInstance.Publish(new EntityComponentRemovingEvent<T>(this), worldId);
             stash.Remove(id);
             World.SetComponentBit<T>(this, false);
-            Publishers<EntityComponentRemovedEvent<T>>.WorldInstance.Publish(new EntityComponentRemovedEvent<T>(this, comp), worldId);
             World.RemoveEntityComponentType(this, typeof(T));
+            Publishers<EntityComponentRemovedEvent<T>>.WorldInstance.Publish(new EntityComponentRemovedEvent<T>(this, comp), worldId);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

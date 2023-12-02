@@ -181,6 +181,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             ref var compRef = ref stash.WorldSet(component);
             if (!alreadyHas) {
                 m_bitset[Stashes<T>.Bit] = enableIfAdded;
+                m_componentTypes.Add(typeof(T));
                 Publishers<WorldComponentAddedEvent<T>>.WorldInstance.Publish(new WorldComponentAddedEvent<T>(), id);
                 if (enableIfAdded)
                     Publishers<WorldComponentEnabledEvent<T>>.WorldInstance.Publish(new WorldComponentEnabledEvent<T>(), id);
@@ -188,7 +189,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                     Publishers<WorldComponentDisabledEvent<T>>.WorldInstance.Publish(new WorldComponentDisabledEvent<T>(), id); 
                 var previousStash = Stashes<T>.GetOrCreatePrevious(id);
                 previousStash.WorldSet(Get<T>());
-                m_componentTypes.Add(typeof(T));
             }
             return ref compRef;
         }
@@ -260,8 +260,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Publishers<WorldComponentRemovingEvent<T>>.WorldInstance.Publish(new WorldComponentRemovingEvent<T>(), id);
             stash.WorldRemove();
             m_bitset[Stashes<T>.Bit] = false;
-            Publishers<WorldComponentRemovedEvent<T>>.WorldInstance.Publish(new WorldComponentRemovedEvent<T>(comp), id);
             m_componentTypes.Remove(typeof(T));
+            Publishers<WorldComponentRemovedEvent<T>>.WorldInstance.Publish(new WorldComponentRemovedEvent<T>(comp), id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
