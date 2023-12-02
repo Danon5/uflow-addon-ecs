@@ -57,7 +57,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!alreadyHas) {
                 SetEnabled<T>(enableIfAdded);
                 World.AddEntityComponentType(this, typeof(T));
-                Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Publish(new EntityComponentAddedEvent<T>(this), worldId);
+                World.Publish(new EntityComponentAddedEvent<T>(this));
                 var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
                 previousStash.Set(id, Get<T>());
             }
@@ -146,11 +146,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             var comp = stash.Get(id);
             if (IsEnabled())
                 Disable<T>();
-            Publishers<EntityComponentRemovingEvent<T>>.WorldInstance.Publish(new EntityComponentRemovingEvent<T>(this), worldId);
+            World.Publish(new EntityComponentRemovingEvent<T>(this));
             stash.Remove(id);
             World.SetComponentBit<T>(this, false);
             World.RemoveEntityComponentType(this, typeof(T));
-            Publishers<EntityComponentRemovedEvent<T>>.WorldInstance.Publish(new EntityComponentRemovedEvent<T>(this, comp), worldId);
+            World.Publish(new EntityComponentRemovedEvent<T>(this, comp));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -224,5 +224,54 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabledRaw(Type type) => 
             RawComponentMethodCache.InvokeIsEnabled(this, type);
+        
+        internal ref T SetWithoutEvents<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
+            var stash = Stashes<T>.GetOrCreate(worldId);
+            var alreadyHas = stash.Has(id);
+            if (alreadyHas) {
+                var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
+                previousStash.Set(id, Get<T>());
+            }
+            ref var compRef = ref stash.Set(id, component);
+            if (!alreadyHas) {
+                SetEnabledWithoutEvents<T>(enableIfAdded);
+                World.AddEntityComponentType(this, typeof(T));
+                var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
+                previousStash.Set(id, Get<T>());
+            }
+            return ref compRef;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T AddWithoutEvents<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
+            if (Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id))
+                throw new Exception($"Entity already has component of type {typeof(T)}");
+            return ref SetWithoutEvents(component, enableIfAdded);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void SetEnabledWithoutEvents<T>(bool value) where T : IEcsComponent => 
+            World.SetEntityComponentEnabledWithoutEvents<T>(this, value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void InvokeAddedEvents<T>() where T : IEcsComponent =>
+            World.Publish(new EntityComponentAddedEvent<T>(this));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void InvokeEnabledEvents<T>() where T : IEcsComponent =>
+            World.InvokeEntityComponentEnabledEvents<T>(this, World.IsEntityComponentEnabled<T>(this));
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetWithoutEventsRaw(IEcsComponent value, bool enableIfAdded = true) =>
+            RawComponentMethodCache.InvokeSetWithoutEvents(this, value.GetType(), value, enableIfAdded);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void InvokeAddedEventsRaw(Type type) =>
+            RawComponentMethodCache.InvokeAddedEvents(this, type);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void InvokeEnabledEventsRaw(Type type, bool enabled) =>
+            RawComponentMethodCache.InvokeEnabledEvents(this, type, enabled);
+
     }
 }

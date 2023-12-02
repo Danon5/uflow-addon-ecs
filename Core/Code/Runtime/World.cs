@@ -334,22 +334,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsSystemGroupEnabled<T>() where T : BaseSystemGroup => Systems.IsGroupEnabled<T>(id);
 
-        public Entity CreateEntity(bool enable = true, bool delayEvents = false) {
+        public Entity CreateEntity(bool enable = true) {
             var entityId = m_entityIdStack.GetNextId();
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
-            return CreateEntityWithIdAndGen(entityId, info.gen, enable, delayEvents);
+            return CreateEntityWithIdAndGen(entityId, info.gen, enable);
         }
 
-        public void EmitDelayedCreationEvents(in Entity entity) {
-            var enable = m_entityInfos[entity].bitset[Bits.IsEnabled];
-            Publish(new EntityCreatedEvent(entity));
-            if (enable)
-                Publish(new EntityEnabledEvent(entity));
-            else
-                Publish(new EntityDisabledEvent(entity));
-        }
-        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Entity GetEntity(int entityId) {
             ref var info = ref m_entityInfos[entityId];
@@ -369,7 +360,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 entity.Destroy();
         }
         
-        internal Entity CreateEntityWithIdAndGen(int entityId, uint entityGen, bool enable = true, bool delayEvents = false) {
+        public Entity CreateEntityWithoutEvents(bool enable = true) {
+            var entityId = m_entityIdStack.GetNextId();
+            UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
+            ref var info = ref m_entityInfos[entityId];
+            return CreateEntityWithIdAndGen(entityId, info.gen, enable, true);
+        }
+
+        internal Entity CreateEntityWithIdAndGen(int entityId, uint entityGen, bool enable = true, bool withoutEvents = false) {
             UFlowUtils.Collections.EnsureIndex(ref m_entityInfos, entityId);
             ref var info = ref m_entityInfos[entityId];
             info.bitset[Bits.IsAlive] = true;
@@ -381,14 +379,22 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             info.gen = entityGen;
             var entity = new Entity(entityId, entityGen, id);
             EntityCount++;
-            if (!delayEvents) {
-                Publish(new EntityCreatedEvent(entity));
-                if (enable)
-                    Publish(new EntityEnabledEvent(entity));
-                else
-                    Publish(new EntityDisabledEvent(entity));
-            }
+            if (withoutEvents) return entity;
+            Publish(new EntityCreatedEvent(entity));
+            if (enable)
+                Publish(new EntityEnabledEvent(entity));
+            else
+                Publish(new EntityDisabledEvent(entity));
             return entity;
+        }
+        
+        internal void InvokeEntityCreationEvents(in Entity entity) {
+            var enable = m_entityInfos[entity].bitset[Bits.IsEnabled];
+            Publish(new EntityCreatedEvent(entity));
+            if (enable)
+                Publish(new EntityEnabledEvent(entity));
+            else
+                Publish(new EntityDisabledEvent(entity));
         }
 
         internal void DestroyEntity(in Entity entity) {
@@ -440,6 +446,22 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!enabled)
                 Publishers<EntityComponentDisablingEvent<T>>.WorldInstance.Publish(new EntityComponentDisablingEvent<T>(entity), id);
             info.bitset[Stashes<T>.Bit] = enabled;
+            if (enabled)
+                Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Publish(new EntityComponentEnabledEvent<T>(entity), id);
+            else
+                Publishers<EntityComponentDisabledEvent<T>>.WorldInstance.Publish(new EntityComponentDisabledEvent<T>(entity), id);
+        }
+        
+        internal void SetEntityComponentEnabledWithoutEvents<T>(in Entity entity, bool enabled) where T : IEcsComponent {
+            if (!Stashes<T>.TryGet(id, out var stash) || !stash.Has(entity.id))
+                throw new Exception($"Entity does not have component of type {typeof(T)}");
+            ref var info = ref m_entityInfos[entity.id];
+            var wasEnabled = info.bitset[Stashes<T>.Bit];
+            if (enabled == wasEnabled) return;
+            info.bitset[Stashes<T>.Bit] = enabled;
+        }
+
+        internal void InvokeEntityComponentEnabledEvents<T>(in Entity entity, bool enabled) where T : IEcsComponent {
             if (enabled)
                 Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Publish(new EntityComponentEnabledEvent<T>(entity), id);
             else

@@ -20,10 +20,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Object.Instantiate(gameObject, position, rotation);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Entity AsEntity(this GameObject gameObject, bool delayBakeAndFinalize = false) {
+        public static Entity AsEntity(this GameObject gameObject) {
             if (!gameObject.TryGetComponent(out SceneEntity sceneEntity))
                 sceneEntity = gameObject.AddComponent<SceneEntity>();
-            return sceneEntity.Entity.IsAlive() ? sceneEntity.Entity : sceneEntity.CreateEntity(delayBakeAndFinalize);
+            return sceneEntity.Entity.IsAlive() ? sceneEntity.Entity : sceneEntity.CreateEntity();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,6 +31,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!gameObject.TryGetComponent(out SceneEntity sceneEntity))
                 sceneEntity = gameObject.AddComponent<SceneEntity>();
             return sceneEntity.CreateEntityWithIdAndGen(id, gen);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static Entity AsEntityWithoutEvents(this GameObject gameObject) {
+            if (!gameObject.TryGetComponent(out SceneEntity sceneEntity))
+                sceneEntity = gameObject.AddComponent<SceneEntity>();
+            return sceneEntity.Entity.IsAlive() ? sceneEntity.Entity : sceneEntity.CreateEntityWithoutEvents();
         }
     }
 }
