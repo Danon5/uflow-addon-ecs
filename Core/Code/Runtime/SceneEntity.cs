@@ -36,8 +36,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public World World { get; private set; }
         public Entity Entity { get; private set; }
         public GameObject GameObject => gameObject;
-#if UNITY_EDITOR
         internal string Guid => m_guid;
+#if UNITY_EDITOR
         internal bool IsPlaying => Application.isPlaying && m_instantiated;
         internal bool IsDirty => m_inspector.IsDirty;
         private Color Color => m_inspector.Color;

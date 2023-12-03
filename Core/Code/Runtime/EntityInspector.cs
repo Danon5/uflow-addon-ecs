@@ -87,6 +87,31 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
         }
 
+        internal void BakeAuthoringComponentsWithoutEvents(in Entity entity) {
+            m_entity = entity;
+            m_world = entity.World;
+#if UNITY_EDITOR
+            m_typeMap = new Dictionary<Type, InspectorComponent>();
+            m_typesToSet = new Queue<Type>();
+            m_typesToRemove = new Queue<Type>();
+#endif
+            foreach (var component in m_authoring) {
+                if (component.value == null) continue;
+                entity.SetWithoutEventsRaw(component.value, component.enabled);
+#if UNITY_EDITOR
+                IsDirty = true;
+#endif
+            }
+        }
+
+        internal void InvokeAuthoringComponentEvents(in Entity entity) {
+            foreach (var component in m_authoring) {
+                if (component.value == null) continue;
+                entity.InvokeAddedEventsRaw(component.value.GetType());
+                entity.InvokeEnabledEventsRaw(component.value.GetType(), component.enabled);
+            }
+        }
+
 #if UNITY_EDITOR
         public void RetrieveRuntimeState() {
             if (!m_entity.IsAlive()) return;
@@ -167,31 +192,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 m_entity.SetRaw(component.value, component.enabled);
                 m_entity.SetEnabledRaw(type, component.enabled);
                 IsDirty = true;
-            }
-        }
-        
-        internal void BakeAuthoringComponentsWithoutEvents(in Entity entity) {
-            m_entity = entity;
-            m_world = entity.World;
-#if UNITY_EDITOR
-            m_typeMap = new Dictionary<Type, InspectorComponent>();
-            m_typesToSet = new Queue<Type>();
-            m_typesToRemove = new Queue<Type>();
-#endif
-            foreach (var component in m_authoring) {
-                if (component.value == null) continue;
-                entity.SetWithoutEventsRaw(component.value, component.enabled);
-#if UNITY_EDITOR
-                IsDirty = true;
-#endif
-            }
-        }
-
-        internal void InvokeAuthoringComponentEvents(in Entity entity) {
-            foreach (var component in m_authoring) {
-                if (component.value == null) continue;
-                entity.InvokeAddedEventsRaw(component.value.GetType());
-                entity.InvokeEnabledEventsRaw(component.value.GetType(), component.enabled);
             }
         }
 
