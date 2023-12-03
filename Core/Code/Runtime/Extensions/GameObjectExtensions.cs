@@ -32,12 +32,5 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 sceneEntity = gameObject.AddComponent<SceneEntity>();
             return sceneEntity.CreateEntityWithIdAndGen(id, gen);
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Entity AsEntityWithoutEvents(this GameObject gameObject) {
-            if (!gameObject.TryGetComponent(out SceneEntity sceneEntity))
-                sceneEntity = gameObject.AddComponent<SceneEntity>();
-            return sceneEntity.Entity.IsAlive() ? sceneEntity.Entity : sceneEntity.CreateEntityWithoutEvents();
-        }
     }
 }

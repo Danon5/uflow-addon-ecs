@@ -8,8 +8,5 @@
         bool InvokeTryRemove(in Entity entity);
         void InvokeSetEnabled(in Entity entity, bool enabled);
         bool InvokeIsEnabled(in Entity entity);
-        internal void InvokeSetWithoutEvents(in Entity entity, IEcsComponent value, bool enableIfAdded);
-        internal void InvokeAddedEvents(in Entity entity);
-        internal void InvokeEnabledEvents(in Entity entity, bool enabled);
     }
 }

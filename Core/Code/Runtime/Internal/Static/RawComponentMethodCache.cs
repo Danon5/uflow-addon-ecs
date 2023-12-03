@@ -36,22 +36,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void InvokeSetEnabled(in Entity entity, Type componentType, bool enabled) =>
             GetOrCreateRawMethods(s_cache, componentType).InvokeSetEnabled(entity, enabled);
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool InvokeIsEnabled(in Entity entity, Type componentType) =>
             GetOrCreateRawMethods(s_cache, componentType).InvokeIsEnabled(entity);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void InvokeSetWithoutEvents(in Entity entity, Type componentType, IEcsComponent value, bool enableIfAdded) =>
-            GetOrCreateRawMethods(s_cache, componentType).InvokeSetWithoutEvents(entity, value, enableIfAdded);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void InvokeAddedEvents(in Entity entity, Type componentType) =>
-            GetOrCreateRawMethods(s_cache, componentType).InvokeAddedEvents(entity);
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void InvokeEnabledEvents(in Entity entity, Type componentType, bool enabled) =>
-            GetOrCreateRawMethods(s_cache, componentType).InvokeEnabledEvents(entity, enabled);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Type GetComponentMethodType(Type componentType) => typeof(RawComponentMethods<>).MakeGenericType(componentType);

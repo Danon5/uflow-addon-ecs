@@ -126,26 +126,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
 
-        internal Entity CreateEntityWithoutEvents() {
-            if (World == null)
-                throw new Exception("Attempting to create a SceneEntity with no valid world.");
-            if (Entity.IsAlive())
-                throw new Exception("Attempting to create a SceneEntity multiple times.");
-            Entity = World.CreateEntityWithoutEvents(m_inspector.EntityEnabled);
-            AddSpecialComponentsBeforeBakingWithoutEvents();
-            m_inspector.BakeAuthoringComponentsWithoutEvents(Entity);
-            if (!m_isValidPrefab) return Entity;
-            LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this));
-            return Entity;
-        }
-
-        internal void InvokeEntityEvents() {
-            gameObject.SetActive(Entity.IsEnabled());
-            World.InvokeEntityCreationEvents(Entity);
-            InvokeSpecialComponentEvents();
-            m_inspector.InvokeAuthoringComponentEvents(Entity);
-        }
-        
         protected void Initialize(bool autoCreate = true) {
 #if UNITY_EDITOR
             m_instantiated = true;
@@ -177,40 +157,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 value = this
             });
         }
-        
-        protected virtual void AddSpecialComponentsBeforeBakingWithoutEvents() {
-            Entity.SetWithoutEvents(new GameObjectRef {
-                value = gameObject
-            });
-            if (TryGetComponent(out RectTransform rectTransform)) {
-                Entity.SetWithoutEvents(new RectTransformRef {
-                    value = rectTransform
-                });
-            }
-            else {
-                Entity.SetWithoutEvents(new TransformRef {
-                    value = transform
-                });
-            }
-            Entity.SetWithoutEvents(new SceneEntityRef {
-                value = this
-            });
-        }
-        
-        protected virtual void InvokeSpecialComponentEvents() {
-            Entity.InvokeAddedEvents<GameObjectRef>();
-            Entity.InvokeEnabledEvents<GameObjectRef>();
-            if (TryGetComponent(out RectTransform _)) {
-                Entity.InvokeAddedEvents<RectTransformRef>();
-                Entity.InvokeEnabledEvents<RectTransformRef>();
-            }
-            else {
-                Entity.InvokeAddedEvents<TransformRef>();
-                Entity.InvokeEnabledEvents<TransformRef>();
-            }
-            Entity.InvokeAddedEvents<SceneEntityRef>();
-            Entity.InvokeEnabledEvents<SceneEntityRef>();
-        }
 
 #if UNITY_EDITOR
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -219,9 +165,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!World.IsAlive()) return;
             if (!Entity.IsAlive()) return;
             m_inspector.RetrieveRuntimeState();
-            var isEnabled = Entity.IsEnabled();
-            if (gameObject.activeSelf != isEnabled)
-                gameObject.SetActive(isEnabled);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
