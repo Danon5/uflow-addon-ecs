@@ -305,7 +305,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool IsEnabled<T>() where T : IEcsComponent => m_bitset[Stashes<T>.Bit];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public QueryBuilder BuildQuery() => new QueryBuilder(this, QueryEnabledFlags.Enabled);
+        public QueryBuilder BuildQuery(QueryEnabledFlags enabledFlags = QueryEnabledFlags.Enabled) => new(this, enabledFlags);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetOrCreateSystemGroup<T>() where T : BaseSystemGroup => Systems.GetOrCreateGroup<T>(id);
