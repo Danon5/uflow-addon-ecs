@@ -1,6 +1,8 @@
 ﻿namespace UFlow.Addon.ECS.Core.Runtime {
     internal sealed class RawComponentMethods<T> : IRawComponentMethods where T : IEcsComponent {
         public void InvokeSet(in Entity entity, IEcsComponent value, bool enableIfAdded) => entity.Set((T)value, enableIfAdded);
+        
+        public void InvokeSet(in Entity entity, bool enableIfAdded) => entity.Set<T>(default, enableIfAdded);
 
         public IEcsComponent InvokeGet(in Entity entity) => entity.Get<T>();
 

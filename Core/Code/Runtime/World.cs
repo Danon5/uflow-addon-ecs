@@ -163,6 +163,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Publishers<EntityComponentParentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentParentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
+        internal IDisposable SubscribeAnyEntityComponentAdded(AnyEntityComponentAddedHandler action) =>
+            Publishers<AnyEntityComponentAddedEvent>.WorldInstance.Subscribe(
+                (in AnyEntityComponentAddedEvent @event) => action(@event.entity, @event.type), id);
+        
+        internal IDisposable SubscribeAnyEntityComponentRemoved(AnyEntityComponentAddedHandler action) =>
+            Publishers<AnyEntityComponentAddedEvent>.WorldInstance.Subscribe(
+                (in AnyEntityComponentAddedEvent @event) => action(@event.entity, @event.type), id);
+
         internal IDisposable SubscribeReset(WorldResetHandler action) =>
             Publishers<WorldResetEvent>.WorldInstance.Subscribe(
                 (in WorldResetEvent _) => action(), id);

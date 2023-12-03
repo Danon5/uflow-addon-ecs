@@ -57,6 +57,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             if (!alreadyHas) {
                 SetEnabled<T>(enableIfAdded);
                 World.AddEntityComponentType(this, typeof(T));
+                World.Publish(new AnyEntityComponentAddedEvent(this, typeof(T)));
                 World.Publish(new EntityComponentAddedEvent<T>(this));
                 var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
                 previousStash.Set(id, Get<T>());
@@ -150,6 +151,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             stash.Remove(id);
             World.SetComponentBit<T>(this, false);
             World.RemoveEntityComponentType(this, typeof(T));
+            World.Publish(new AnyEntityComponentRemovedEvent(this, typeof(T)));
             World.Publish(new EntityComponentRemovedEvent<T>(this, comp));
         }
 
@@ -192,6 +194,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetRaw(IEcsComponent value, bool enableIfAdded = true) =>
             RawComponentMethodCache.InvokeSet(this, value.GetType(), value, enableIfAdded);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetRaw(Type type, bool enableIfAdded = true) =>
+            RawComponentMethodCache.InvokeSet(this, type, enableIfAdded);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEcsComponent GetRaw(Type type) => 
