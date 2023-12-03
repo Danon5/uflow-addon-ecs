@@ -34,7 +34,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public static World CreateDefault() => EcsUtils.Worlds.CreateWorldFromType<DefaultWorld>();
 
         public void Destroy() {
-            DestroyAllEntities();
             LogicHook<WorldDestroyedHook>.Execute(new WorldDestroyedHook(id));
             CleanupSystemGroups();
             Worlds.DestroyWorld(this);

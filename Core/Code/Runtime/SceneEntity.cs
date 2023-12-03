@@ -28,6 +28,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private bool m_destroying;
         private bool m_destroyingDirectly;
         private IDisposable m_destroyedSubscription;
+        private IDisposable m_worldDestroyedSubscription;
 #if UNITY_EDITOR
         private bool m_instantiated;
         private bool m_requiresRuntimeRetrieval;
@@ -49,6 +50,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [UsedImplicitly]
         protected virtual void OnDestroy() {
             m_destroyedSubscription?.Dispose();
+            m_worldDestroyedSubscription?.Dispose();
             m_destroying = true;
             if (m_destroyingDirectly) return;
             if (World == null) return;
@@ -137,6 +139,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 if (e == Entity)
                     DestroyEntity();
             });
+            m_worldDestroyedSubscription = World.SubscribeWorldDestroyed(DestroyEntity);
         }
         
         protected virtual void AddSpecialComponentsBeforeBaking() {
