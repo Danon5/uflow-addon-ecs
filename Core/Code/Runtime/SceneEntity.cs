@@ -93,7 +93,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         public void OnAfterDeserialize() { }
 
-        public Entity CreateEntity() {
+        public virtual Entity CreateEntity() {
             if (World == null)
                 throw new Exception("Attempting to create a SceneEntity with no valid world.");
             if (Entity.IsAlive())
