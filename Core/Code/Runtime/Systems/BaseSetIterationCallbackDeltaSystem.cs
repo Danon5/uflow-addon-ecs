@@ -9,19 +9,19 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                                                                 IResetSystem,
                                                                 IEnableDisableSystem {
         private readonly World m_world;
-        private readonly DynamicEntitySet m_query;
         private bool m_enabled;
 
+        protected DynamicEntitySet Query { get; }
         protected EntityCommandBuffer CommandBuffer { get; }
 
         public BaseSetIterationCallbackDeltaSystem(in World world, QueryBuilder query) {
             m_world = world;
-            m_query = query.AsSet();
-            m_query.OnEntityAdded += e => {
+            Query = query.AsSet();
+            Query.OnEntityAdded += e => {
                 if (!m_enabled) return;
                 EntityAdded(m_world, e);
             };
-            m_query.OnEntityRemoved += e => {
+            Query.OnEntityRemoved += e => {
                 if (!m_enabled) return;
                 EntityRemoved(m_world, e);
             };
@@ -39,7 +39,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run(float delta) {
-            foreach (var entity in m_query)
+            foreach (var entity in Query)
                 IterateEntity(m_world, entity, delta);
         }
 
@@ -77,8 +77,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             CommandBuffer.ExecuteCommands();
         }
         
-        protected bool QueryContains(in Entity entity) => m_query.Contains(entity);
-
         protected virtual void PreSetup(World world) { }
 
         protected virtual void Setup(World world) { }
