@@ -78,14 +78,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public static bool IsGroupEnabled<T>(short worldId) where T : BaseSystemGroup => IsGroupEnabled(worldId, typeof(T));
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void RunGroup(short worldId, in Type type) {
+        public static void RunGroup(short worldId, in Type type, float delta) {
             if (!s_groups.ContainsKey(worldId)) return;
             if (!s_groups[worldId].TryGetValue(type, out var group) || !group.IsEnabled()) return;
-            group.Run();
+            group.Run(delta);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void RunGroup<T>(short worldId) where T : BaseSystemGroup => RunGroup(worldId, typeof(T));
+        public static void RunGroup<T>(short worldId, float delta) where T : BaseSystemGroup => RunGroup(worldId, typeof(T), delta);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CleanupGroup(short worldId, in Type type) {

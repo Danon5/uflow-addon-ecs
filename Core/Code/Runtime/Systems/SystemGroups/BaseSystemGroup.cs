@@ -60,14 +60,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Run() {
+        public void Run(float delta) {
             foreach (var system in m_systems) {
                 switch (system) {
                     case IRunSystem runSystem when ShouldRun(system):
                         runSystem.PreRun();
                         break;
                     case IRunDeltaSystem runDeltaSystem when ShouldRun(system):
-                        runDeltaSystem.PreRun(Time.deltaTime);
+                        runDeltaSystem.PreRun(delta);
                         break;
                 }
             }
@@ -78,7 +78,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                         runSystem.Run();
                         break;
                     case IRunDeltaSystem runDeltaSystem when ShouldRun(system):
-                        runDeltaSystem.Run(Time.deltaTime);
+                        runDeltaSystem.Run(delta);
                         break;
                 }
             }
@@ -89,7 +89,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                         runSystem.PostRun();
                         break;
                     case IRunDeltaSystem runDeltaSystem when ShouldRun(system):
-                        runDeltaSystem.PostRun(Time.deltaTime);
+                        runDeltaSystem.PostRun(delta);
                         break;
                 }
             }

@@ -316,7 +316,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void SetupSystemGroup<T>() where T : BaseSystemGroup => Systems.SetupGroup<T>(id);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RunSystemGroup<T>() where T : BaseSystemGroup => Systems.RunGroup<T>(id);
+        public void RunSystemGroup<T>(float delta) where T : BaseSystemGroup => Systems.RunGroup<T>(id, delta);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CleanupSystemGroup<T>() where T : BaseSystemGroup => Systems.CleanupGroup<T>(id);

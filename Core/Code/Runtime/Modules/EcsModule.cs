@@ -1,4 +1,6 @@
 ﻿using UFlow.Core.Runtime;
+using UnityEngine;
+
 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 namespace UFlow.Addon.ECS.Core.Runtime {
@@ -16,22 +18,22 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         public override void Update() {
-            World.RunSystemGroup<FrameSimulationSystemGroup>();
-            World.RunSystemGroup<FrameRenderSystemGroup>();
+            World.RunSystemGroup<FrameSimulationSystemGroup>(Time.deltaTime);
+            World.RunSystemGroup<FrameRenderSystemGroup>(Time.deltaTime);
         }
 
         public override void FixedUpdate() {
-            World.RunSystemGroup<FixedSimulationSystemGroup>();
-            World.RunSystemGroup<FixedRenderSystemGroup>();
+            World.RunSystemGroup<FixedSimulationSystemGroup>(Time.fixedDeltaTime);
+            World.RunSystemGroup<FixedRenderSystemGroup>(Time.fixedDeltaTime);
         }
 
         public override void LateUpdate() {
-            World.RunSystemGroup<LateFrameSimulationSystemGroup>();
-            World.RunSystemGroup<LateFrameRenderSystemGroup>();
+            World.RunSystemGroup<LateFrameSimulationSystemGroup>(Time.deltaTime);
+            World.RunSystemGroup<LateFrameRenderSystemGroup>(Time.deltaTime);
         }
 
-        public override void OnDrawGizmos() => World.RunSystemGroup<GizmoSystemGroup>();
+        public override void OnDrawGizmos() => World.RunSystemGroup<GizmoSystemGroup>(Time.deltaTime);
 
-        public override void OnGUI() => World.RunSystemGroup<GUISystemGroup>();
+        public override void OnGUI() => World.RunSystemGroup<GUISystemGroup>(Time.deltaTime);
     }
 }
