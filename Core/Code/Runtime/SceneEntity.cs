@@ -35,9 +35,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #endif
         
         public World World { get; private set; }
-        public Entity Entity { get; private set; }
+        public Entity Entity { get; protected set; }
         public GameObject GameObject => gameObject;
         internal string Guid => m_guid;
+        internal bool EnabledInInspector => m_inspector.EntityEnabled;
+        internal bool IsValidPrefab => m_isValidPrefab;
 #if UNITY_EDITOR
         internal bool IsPlaying => Application.isPlaying && m_instantiated;
         internal bool IsDirty => m_inspector.IsDirty;
@@ -100,7 +102,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 throw new Exception("Attempting to create a SceneEntity multiple times.");
             Entity = World.CreateEntity(m_inspector.EntityEnabled);
             AddSpecialComponentsBeforeBaking();
-            m_inspector.BakeAuthoringComponents(Entity);
+            BakeAuthoringComponents();
             gameObject.SetActive(Entity.IsEnabled());
             if (!m_isValidPrefab) return Entity;
             LogicHook<PrefabSceneEntityCreatedHook>.Execute(new PrefabSceneEntityCreatedHook(this));
@@ -128,6 +130,8 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
 
+        protected void BakeAuthoringComponents() => m_inspector.BakeAuthoringComponents(Entity);
+        
         protected void Initialize(bool autoCreate = true) {
 #if UNITY_EDITOR
             m_instantiated = true;
