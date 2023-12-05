@@ -35,19 +35,19 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void Setup() => Setup(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PreRun() => PreIterate(m_world);
+        public void PreRun() => PreRun(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run() {
+            PreIterate(m_world);
             foreach (var entity in Query)
                 IterateEntity(m_world, entity);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PostRun() {
             ExecuteCommandBuffers();
             PostIterate(m_world);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void PostRun() => PostRun(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreCleanup() => PreCleanup(m_world);
@@ -85,11 +85,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         
         protected virtual void EntityRemoved(World world, in Entity entity) { }
 
+        protected virtual void PreRun(World world) { }
+
         protected virtual void PreIterate(World world) { }
 
         protected virtual void IterateEntity(World world, in Entity entity) { }
 
         protected virtual void PostIterate(World world) { }
+        
+        protected virtual void PostRun(World world) { }
         
         protected virtual void PreCleanup(World world) { }
         

@@ -26,24 +26,22 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void PreSetup() => PreSetup(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Setup() {
-            Setup(m_world);
-        }
+        public void Setup() => Setup(m_world);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PreRun(float delta) => PreIterate(m_world, delta);
+        public void PreRun(float delta) => PreRun(m_world, delta);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Run(float delta) {
+            PreIterate(m_world, delta);
             foreach (var entity in Query)
                 IterateEntity(m_world, entity, delta);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PostRun(float delta) {
             ExecuteCommandBuffers();
             PostIterate(m_world, delta);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void PostRun(float delta) => PostRun(m_world, delta);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PreCleanup() => PreCleanup(m_world);
@@ -69,13 +67,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsEnabled() => m_enabled;
         
-        internal virtual void ExecuteCommandBuffers() {
-            CommandBuffer.ExecuteCommands();
-        }
+        internal virtual void ExecuteCommandBuffers() => CommandBuffer.ExecuteCommands();
 
         protected virtual void PreSetup(World world) { }
         
         protected virtual void Setup(World world) { }
+        
+        protected virtual void PreRun(World world, float delta) { }
 
         protected virtual void PreIterate(World world, float delta) { }
 
@@ -83,10 +81,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         protected virtual void PostIterate(World world, float delta) { }
         
+        protected virtual void PostRun(World world, float delta) { }
+        
         protected virtual void PreCleanup(World world) { }
         
         protected virtual void Cleanup(World world) { }
-        
+
         protected virtual void Reset(World world) { }
     }
 }
