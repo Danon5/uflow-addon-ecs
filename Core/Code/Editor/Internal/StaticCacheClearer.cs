@@ -5,8 +5,7 @@ using UnityEditor;
 namespace UFlow.Addon.ECS.Core.Editor {
     [InitializeOnLoad]
     internal static class StaticCacheClearer {
-        static StaticCacheClearer() {
-            UnityGlobalEventHelper.RuntimeInitializeOnLoad += () => ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
-        }
+        static StaticCacheClearer() =>
+            InitializeOnLoadHelper.RuntimeInitializeOnLoadEvent += () => ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
     }
 }
