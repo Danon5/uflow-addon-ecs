@@ -1,6 +1,6 @@
 {
-    "name": "UFlow.Addon.ECS.Core.Runtime",
-    "rootNamespace": "UFlow.Addon.ECS.Core.Runtime",
+    "name": "UFlow.Addon.Entities.Core.Runtime",
+    "rootNamespace": "UFlow.Addon.Entities.Core.Runtime",
     "references": [
         "UFlow.Core.Shared",
         "UFlow.Core.Runtime",

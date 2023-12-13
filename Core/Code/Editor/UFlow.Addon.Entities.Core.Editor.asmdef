@@ -1,8 +1,8 @@
 {
-    "name": "UFlow.Addon.ECS.Core.Editor",
-    "rootNamespace": "UFlow.Addon.ECS.Core.Editor",
+    "name": "UFlow.Addon.Entities.Core.Editor",
+    "rootNamespace": "UFlow.Addon.Entities.Core.Editor",
     "references": [
-        "UFlow.Addon.ECS.Core.Runtime",
+        "UFlow.Addon.Entities.Core.Runtime",
         "UFlow.Core.Shared",
         "UFlow.Core.Editor",
         "UFlow.Core.Runtime"

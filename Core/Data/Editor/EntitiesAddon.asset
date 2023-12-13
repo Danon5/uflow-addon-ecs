@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3eebd47379ee4475a314743de506620d, type: 3}
-  m_Name: ECSAddon
+  m_Name: EntitiesAddon
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: ECS
+  <Name>k__BackingField: Entities
