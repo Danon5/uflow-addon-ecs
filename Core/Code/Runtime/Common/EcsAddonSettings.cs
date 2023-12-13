@@ -1,12 +1,20 @@
-﻿using UFlow.Core.Runtime;
+﻿using System;
+using Sirenix.OdinInspector;
+using UFlow.Core.Runtime;
 using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
-    [CreateAssetMenu(
-        menuName = MENU_NAME + nameof(EcsAddonSettings), 
-        fileName = FILE_NAME + nameof(EcsAddonSettings))]
+    [Serializable]
     public sealed class EcsAddonSettings : BaseAddonSettings {
         public override string AddonName => "ECS";
-        [field: SerializeField] public bool EnableRealtimeInspector { get; private set; }
+        public override string Name => "ECS Settings";
+        [field: SerializeField, LabelWidth(LABEL_WIDTH)] public Setting<bool> RealtimeInspectorEnabled { get; private set; } = new();
+
+        public override void Apply() => RealtimeInspectorEnabled.ApplyProposedValue();
+
+        public override void Revert() => RealtimeInspectorEnabled.RevertProposedValue();
+        
+        public override bool HasUnappliedChanges() => 
+            RealtimeInspectorEnabled.ProposedValueDiffersFromCurrent();
     }
 }

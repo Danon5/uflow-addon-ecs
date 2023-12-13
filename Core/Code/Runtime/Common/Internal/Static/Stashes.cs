@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
+using UFlow.Core.Shared;
 
 // ReSharper disable StaticMemberInGenericType
 

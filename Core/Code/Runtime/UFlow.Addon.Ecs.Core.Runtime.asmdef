@@ -2,6 +2,7 @@
     "name": "UFlow.Addon.ECS.Core.Runtime",
     "rootNamespace": "UFlow.Addon.ECS.Core.Runtime",
     "references": [
+        "UFlow.Core.Shared",
         "UFlow.Core.Runtime",
         "UFlow.Odin.Runtime",
         "Unity.ResourceManager",

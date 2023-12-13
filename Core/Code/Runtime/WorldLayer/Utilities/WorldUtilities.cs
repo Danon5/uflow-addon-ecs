@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UFlow.Core.Runtime;
+using UFlow.Core.Shared;
 using UnityEngine;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
