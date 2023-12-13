@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     [StructLayout(LayoutKind.Explicit)]
     public readonly struct World : IEquatable<World> {
         [FieldOffset(0)] internal readonly ushort id;
