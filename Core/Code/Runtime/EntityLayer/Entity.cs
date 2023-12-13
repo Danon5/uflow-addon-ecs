@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace UFlow.Addon.ECS.Core.Runtime {
     [StructLayout(LayoutKind.Explicit)]
     public readonly struct Entity : IEquatable<Entity> {
-        [FieldOffset(0)] public readonly uint id;
-        [FieldOffset(4)] public readonly uint gen;
-        [FieldOffset(8)] public readonly ushort worldId;
+        [FieldOffset(0)] internal readonly uint id;
+        [FieldOffset(4)] internal readonly uint gen;
+        [FieldOffset(8)] internal readonly ushort worldId;
 
         public static implicit operator uint(in Entity entity) => entity.id;
         
