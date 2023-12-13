@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using UFlow.Core.Runtime;
 using UFlow.Core.Shared;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
