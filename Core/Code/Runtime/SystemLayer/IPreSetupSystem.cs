@@ -1,5 +1,0 @@
-﻿namespace UFlow.Addon.ECS.Core.Runtime {
-    public interface IPreSetupSystem : ISystem {
-        void PreSetup();
-    }
-}

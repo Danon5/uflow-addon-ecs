@@ -7,7 +7,9 @@
         "UFlow.Odin.Runtime",
         "Unity.ResourceManager",
         "Unity.Addressables",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "Unity.Collections",
+        "Unity.Burst"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
