@@ -9,7 +9,8 @@
         "Unity.Addressables",
         "Unity.Addressables.Editor",
         "Unity.Collections",
-        "Unity.Burst"
+        "Unity.Burst",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
