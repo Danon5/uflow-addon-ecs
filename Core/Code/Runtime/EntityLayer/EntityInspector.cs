@@ -26,6 +26,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 #if UNITY_EDITOR
         [ColoredFoldoutGroup("ComponentAuthoring", nameof(Color), GroupName = "Components"), HideLabel, 
          LabelText("Authoring"), ListDrawerSettings(ShowFoldout = false), HideIf(nameof(ShouldDisplayRuntime))]
+        [Searchable(FilterOptions = SearchFilterOptions.TypeOfValue)]
 #endif
         [SerializeField]
         private List<InspectorComponent> m_authoring = new();
@@ -34,6 +35,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [SerializeField, ColoredFoldoutGroup("ComponentRuntime", nameof(Color), GroupName = "Components"), HideLabel,
          LabelText("Runtime"), ListDrawerSettings(ShowFoldout = false, CustomAddFunction = nameof(Add)), 
          ShowIf(nameof(ShouldDisplayRuntime))]
+        [Searchable(FilterOptions = SearchFilterOptions.TypeOfValue)]
         private List<InspectorComponent> m_runtime = new();
 #endif
 
