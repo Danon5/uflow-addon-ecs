@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UFlow.Core.Runtime;
+using UFlow.Core.Shared;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     internal static class RawComponentMethodCache {
         private static readonly Dictionary<Type, IRawComponentMethods> s_cache = new();
 
-        static RawComponentMethodCache() => InitializeOnLoadHelper.RuntimeInitializeOnLoadEvent += ClearStaticCache;
+        static RawComponentMethodCache() => StaticEventBus<RuntimeInitializeOnLoadEvent>.Subscribe(ClearStaticCache);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void InvokeSet(in Entity entity, Type componentType, IEcsComponent value, bool enableIfAdded) =>
