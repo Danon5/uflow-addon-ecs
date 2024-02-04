@@ -18,18 +18,15 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         public override void Update() {
-            World.RunSystemGroup<FrameSimulationSystemGroup>(Time.deltaTime);
-            World.RunSystemGroup<FrameRenderSystemGroup>(Time.deltaTime);
+            World.RunSystemGroup<UpdateSystemGroup>(Time.deltaTime);
         }
 
         public override void FixedUpdate() {
-            World.RunSystemGroup<FixedSimulationSystemGroup>(Time.fixedDeltaTime);
-            World.RunSystemGroup<FixedRenderSystemGroup>(Time.fixedDeltaTime);
+            World.RunSystemGroup<FixedUpdateSystemGroup>(Time.fixedDeltaTime);
         }
 
         public override void LateUpdate() {
-            World.RunSystemGroup<LateFrameSimulationSystemGroup>(Time.deltaTime);
-            World.RunSystemGroup<LateFrameRenderSystemGroup>(Time.deltaTime);
+            World.RunSystemGroup<LateUpdateSystemGroup>(Time.deltaTime);
         }
 
         public override void OnDrawGizmos() => World.RunSystemGroup<GizmoSystemGroup>(Time.deltaTime);

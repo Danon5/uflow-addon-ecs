@@ -149,6 +149,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal IDisposable SubscribeEntityDisableComponents(EntityDisableComponentsHandler action) =>
             Publishers<EntityDisableComponentsEvent>.WorldInstance.Subscribe(
                 (in EntityDisableComponentsEvent @event) => action(@event.entity), id);
+        
+        public IDisposable SubscribeReset(WorldResetHandler action) =>
+            Publishers<WorldResetEvent>.WorldInstance.Subscribe(
+                (in WorldResetEvent _) => action(), id);
 
         internal IDisposable WhenEntityRemoveComponents(EntityRemoveComponentsHandler action) =>
             Publishers<EntityRemoveComponentsEvent>.WorldInstance.Subscribe(
@@ -171,10 +175,6 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         internal IDisposable SubscribeAnyEntityComponentRemoved(AnyEntityComponentAddedHandler action) =>
             Publishers<AnyEntityComponentAddedEvent>.WorldInstance.Subscribe(
                 (in AnyEntityComponentAddedEvent @event) => action(@event.entity, @event.type), id);
-
-        internal IDisposable SubscribeReset(WorldResetHandler action) =>
-            Publishers<WorldResetEvent>.WorldInstance.Subscribe(
-                (in WorldResetEvent _) => action(), id);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Publish<T>(in T @event) => Publishers<T>.WorldInstance.Publish(@event, id);
