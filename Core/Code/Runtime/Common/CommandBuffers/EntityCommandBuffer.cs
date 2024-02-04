@@ -3,31 +3,31 @@
 namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class EntityCommandBuffer : BaseCommandBuffer {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Set<T>(in Entity entity, in T component, bool enableIfAdded) where T : IEcsComponent =>
+        public void Set<T>(in Entity entity, in T component, bool enableIfAdded) where T : IEcsComponentData =>
             EnqueueCommand(entity, new SetCommand<T>(component, enableIfAdded));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetWithNotify<T>(in Entity entity, in T component, bool enableIfAdded) where T : IEcsComponent =>
+        public void SetWithNotify<T>(in Entity entity, in T component, bool enableIfAdded) where T : IEcsComponentData =>
             EnqueueCommand(entity, new SetWithNotifyCommand<T>(component, enableIfAdded));
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void NotifyChanged<T>(in Entity entity) where T : IEcsComponent =>
+        public void NotifyChanged<T>(in Entity entity) where T : IEcsComponentData =>
             EnqueueCommand(entity, new NotifyChangedCommand<T>());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Remove<T>(in Entity entity) where T : IEcsComponent =>
+        public void Remove<T>(in Entity entity) where T : IEcsComponentData =>
             EnqueueCommand(entity, new RemoveCommand<T>());
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndEnabled<T>(in Entity entity) where T : IEcsComponent =>
+        public void EnsureAddedAndEnabled<T>(in Entity entity) where T : IEcsComponentData =>
             EnqueueCommand(entity, new EnsureAddedAndEnabledCommand<T>());
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndDisabled<T>(in Entity entity) where T : IEcsComponent =>
+        public void EnsureAddedAndDisabled<T>(in Entity entity) where T : IEcsComponentData =>
             EnqueueCommand(entity, new EnsureAddedAndDisabledCommand<T>());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndSetEnabled<T>(in Entity entity, bool enabled) where T : IEcsComponent =>
+        public void EnsureAddedAndSetEnabled<T>(in Entity entity, bool enabled) where T : IEcsComponentData =>
             EnqueueCommand(entity, new EnsureAddedAndSetEnabled<T>(enabled));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

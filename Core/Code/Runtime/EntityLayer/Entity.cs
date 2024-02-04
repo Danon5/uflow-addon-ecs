@@ -46,7 +46,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsAlive() => World != null && World.IsEntityAlive(this);
 
-        public ref T Set<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
+        public ref T Set<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponentData {
             var stash = Stashes<T>.GetOrCreate(worldId);
             var alreadyHas = stash.Has(id);
             if (alreadyHas) {
@@ -66,14 +66,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Add<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
+        public ref T Add<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponentData {
             if (Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id))
                 throw new Exception($"Entity already has component of type {typeof(T)}");
             return ref Set(component, enableIfAdded);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryAdd<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
+        public bool TryAdd<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponentData {
             if (Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id))
                 return false;
             Set(component, enableIfAdded);
@@ -81,13 +81,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndEnabled<T>() where T : IEcsComponent => EnsureAddedAndSetEnabled<T>(true);
+        public void EnsureAddedAndEnabled<T>() where T : IEcsComponentData => EnsureAddedAndSetEnabled<T>(true);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndDisabled<T>() where T : IEcsComponent => EnsureAddedAndSetEnabled<T>(false);
+        public void EnsureAddedAndDisabled<T>() where T : IEcsComponentData => EnsureAddedAndSetEnabled<T>(false);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureAddedAndSetEnabled<T>(bool state) where T : IEcsComponent {
+        public void EnsureAddedAndSetEnabled<T>(bool state) where T : IEcsComponentData {
             if (!Has<T>())
                 Add<T>(default, state);
             else if (IsEnabled<T>() != state)
@@ -95,25 +95,25 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void NotifyChanged<T>() where T : IEcsComponent {
+        public void NotifyChanged<T>() where T : IEcsComponentData {
             Publishers<EntityComponentChangedEvent<T>>.WorldInstance.Publish(new EntityComponentChangedEvent<T>(this), worldId);
             var previousStash = Stashes<T>.GetOrCreatePrevious(worldId);
             previousStash.Set(id, Get<T>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T SetWithNotify<T>(in T component, bool enableIfAdded = true) where T : IEcsComponent {
+        public ref T SetWithNotify<T>(in T component, bool enableIfAdded = true) where T : IEcsComponentData {
             ref var compRef = ref Set(component, enableIfAdded);
             NotifyChanged<T>();
             return ref compRef;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Get<T>() where T : IEcsComponent => ref Stashes<T>.Get(worldId).Get(id);
+        public ref T Get<T>() where T : IEcsComponentData => ref Stashes<T>.Get(worldId).Get(id);
         
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGet<T>(out T component) where T : IEcsComponent {
+        public bool TryGet<T>(out T component) where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(worldId, out var stash) || !stash.Has(id)) {
                 component = default;
                 return false;
@@ -123,10 +123,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetPrevious<T>() where T : IEcsComponent => ref Stashes<T>.GetPrevious(worldId).Get(id);
+        public ref T GetPrevious<T>() where T : IEcsComponentData => ref Stashes<T>.GetPrevious(worldId).Get(id);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetPrevious<T>(out T component) where T : IEcsComponent {
+        public bool TryGetPrevious<T>(out T component) where T : IEcsComponentData {
             if (!Stashes<T>.TryGetPrevious(worldId, out var stash) || !stash.Has(id)) {
                 component = default;
                 return false;
@@ -136,12 +136,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Has<T>() where T : IEcsComponent => IsAlive() && Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id);
+        public bool Has<T>() where T : IEcsComponentData => IsAlive() && Stashes<T>.TryGet(worldId, out var stash) && stash.Has(id);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool HasAndEnabled<T>() where T : IEcsComponent => IsAlive() && Has<T>() && IsEnabled<T>();
+        public bool HasAndEnabled<T>() where T : IEcsComponentData => IsAlive() && Has<T>() && IsEnabled<T>();
 
-        public void Remove<T>() where T : IEcsComponent {
+        public void Remove<T>() where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(worldId, out var stash) || !stash.Has(id))
                 throw new Exception($"Entity does not have component of type {typeof(T)}");
             var comp = stash.Get(id);
@@ -156,7 +156,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryRemove<T>() where T : IEcsComponent {
+        public bool TryRemove<T>() where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(worldId, out var stash) || !stash.Has(id))
                 return false;
             Remove<T>();
@@ -176,23 +176,23 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public bool IsEnabled() => World.IsEntityEnabled(this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetEnabled<T>(bool value) where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, value);
+        public void SetEnabled<T>(bool value) where T : IEcsComponentData => World.SetEntityComponentEnabled<T>(this, value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Enable<T>() where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, true);
+        public void Enable<T>() where T : IEcsComponentData => World.SetEntityComponentEnabled<T>(this, true);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Disable<T>() where T : IEcsComponent => World.SetEntityComponentEnabled<T>(this, false);
+        public void Disable<T>() where T : IEcsComponentData => World.SetEntityComponentEnabled<T>(this, false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsEnabled<T>() where T : IEcsComponent => World.IsEntityComponentEnabled<T>(this);
+        public bool IsEnabled<T>() where T : IEcsComponentData => World.IsEntityComponentEnabled<T>(this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetRaw(Type type, IEcsComponent value, bool enableIfAdded = true) =>
+        public void SetRaw(Type type, IEcsComponentData value, bool enableIfAdded = true) =>
             RawComponentMethodCache.InvokeSet(this, type, value, enableIfAdded);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetRaw(IEcsComponent value, bool enableIfAdded = true) =>
+        public void SetRaw(IEcsComponentData value, bool enableIfAdded = true) =>
             RawComponentMethodCache.InvokeSet(this, value.GetType(), value, enableIfAdded);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -200,7 +200,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             RawComponentMethodCache.InvokeSet(this, type, enableIfAdded);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IEcsComponent GetRaw(Type type) => 
+        public IEcsComponentData GetRaw(Type type) => 
             RawComponentMethodCache.InvokeGet(this, type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

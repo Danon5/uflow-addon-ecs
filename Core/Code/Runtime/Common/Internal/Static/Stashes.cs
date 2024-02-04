@@ -12,7 +12,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    internal static class Stashes<T> where T : IEcsComponent {
+    internal static class Stashes<T> where T : IEcsComponentData {
         public static readonly Bit Bit = Bit.GetNextBit();
         internal static readonly bool IsComponentTypeDisposable;
         private static Stash<T>[] s_stashes;

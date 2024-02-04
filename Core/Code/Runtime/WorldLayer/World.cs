@@ -65,31 +65,31 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Publishers<WorldDestroyedEvent>.WorldInstance.Subscribe(
                 (in WorldDestroyedEvent _) => action(), id);
 
-        public IDisposable SubscribeWorldComponentAdded<T>(WorldComponentAddedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentAdded<T>(WorldComponentAddedHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentAddedEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentAddedEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable SubscribeWorldComponentEnabled<T>(WorldComponentEnabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentEnabled<T>(WorldComponentEnabledHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentEnabledEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentEnabledEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable SubscribeWorldComponentChanged<T>(WorldComponentChangedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentChanged<T>(WorldComponentChangedHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentChangedEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentChangedEvent<T> _) => action(GetPrevious<T>(), ref Get<T>()), id);
 
-        public IDisposable SubscribeWorldComponentDisabling<T>(WorldComponentDisablingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentDisabling<T>(WorldComponentDisablingHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentDisablingEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentDisablingEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable SubscribeWorldComponentDisabled<T>(WorldComponentDisabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentDisabled<T>(WorldComponentDisabledHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentDisabledEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable SubscribeWorldComponentRemoving<T>(WorldComponentRemovingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentRemoving<T>(WorldComponentRemovingHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentRemovingEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentRemovingEvent<T> _) => action(ref Get<T>()), id);
 
-        public IDisposable SubscribeWorldComponentRemoved<T>(WorldComponentRemovedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeWorldComponentRemoved<T>(WorldComponentRemovedHandler<T> action) where T : IEcsComponentData =>
             Publishers<WorldComponentRemovedEvent<T>>.WorldInstance.Subscribe(
                 (in WorldComponentRemovedEvent<T> @event) => action(@event.component), id);
 
@@ -117,32 +117,32 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             Publishers<EntityDestroyedEvent>.WorldInstance.Subscribe(
                 (in EntityDestroyedEvent @event) => action(@event.entity), id);
 
-        public IDisposable SubscribeEntityComponentAdded<T>(EntityComponentAddedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentAdded<T>(EntityComponentAddedHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentAddedEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentAddedEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable SubscribeEntityComponentEnabled<T>(EntityComponentEnabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentEnabled<T>(EntityComponentEnabledHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentEnabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentEnabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable SubscribeEntityComponentChanged<T>(EntityComponentChangedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentChanged<T>(EntityComponentChangedHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentChangedEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentChangedEvent<T> @event) => 
                     action(@event.entity, @event.entity.GetPrevious<T>(), ref @event.entity.Get<T>()), id);
 
-        public IDisposable SubscribeEntityComponentDisabling<T>(EntityComponentDisablingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentDisabling<T>(EntityComponentDisablingHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentDisablingEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentDisablingEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable SubscribeEntityComponentDisabled<T>(EntityComponentDisabledHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentDisabled<T>(EntityComponentDisabledHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable SubscribeEntityComponentRemoving<T>(EntityComponentRemovingHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentRemoving<T>(EntityComponentRemovingHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentRemovingEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentRemovingEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
-        public IDisposable SubscribeEntityComponentRemoved<T>(EntityComponentRemovedHandler<T> action) where T : IEcsComponent =>
+        public IDisposable SubscribeEntityComponentRemoved<T>(EntityComponentRemovedHandler<T> action) where T : IEcsComponentData =>
             Publishers<EntityComponentRemovedEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentRemovedEvent<T> @event) => action(@event.entity, @event.component), id);
 
@@ -159,12 +159,12 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 (in EntityRemoveComponentsEvent @event) => action(@event.entity), id);
         
         internal IDisposable SubscribeEntityComponentParentEnabled<T>(EntityComponentParentEnabledHandler<T> action) 
-            where T : IEcsComponent =>
+            where T : IEcsComponentData =>
             Publishers<EntityComponentParentEnabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentParentEnabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
         
         internal IDisposable SubscribeEntityComponentParentDisabled<T>(EntityComponentParentDisabledHandler<T> action) 
-            where T : IEcsComponent =>
+            where T : IEcsComponentData =>
             Publishers<EntityComponentParentDisabledEvent<T>>.WorldInstance.Subscribe(
                 (in EntityComponentParentDisabledEvent<T> @event) => action(@event.entity, ref @event.entity.Get<T>()), id);
 
@@ -180,7 +180,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public void Publish<T>(in T @event) => Publishers<T>.WorldInstance.Publish(@event, id);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Set<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponent {
+        public ref T Set<T>(in T component = default, bool enableIfAdded = true) where T : IEcsComponentData {
             var stash = Stashes<T>.GetOrCreate(id);
             var alreadyHas = stash.WorldHas();
             if (alreadyHas) {
@@ -203,14 +203,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Add<T>(in T component = default) where T : IEcsComponent {
+        public ref T Add<T>(in T component = default) where T : IEcsComponentData {
             if (Stashes<T>.TryGet(id, out var stash) && stash.WorldHas())
                 throw new Exception($"World already has component of type {typeof(T)}");
             return ref Set(component);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryAdd<T>(in T component = default) where T : IEcsComponent {
+        public bool TryAdd<T>(in T component = default) where T : IEcsComponentData {
             if (Stashes<T>.TryGet(id, out var stash) && stash.WorldHas())
                 return false;
             Set(component);
@@ -218,24 +218,24 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void NotifyChanged<T>() where T : IEcsComponent {
+        public void NotifyChanged<T>() where T : IEcsComponentData {
             Publishers<WorldComponentChangedEvent<T>>.WorldInstance.Publish(new WorldComponentChangedEvent<T>(), id);
             var previousStash = Stashes<T>.GetOrCreatePrevious(id);
             previousStash.WorldSet(Get<T>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T SetWithNotify<T>(in T component) where T : IEcsComponent {
+        public ref T SetWithNotify<T>(in T component) where T : IEcsComponentData {
             ref var compRef = ref Set(component);
             NotifyChanged<T>();
             return ref compRef;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Get<T>() where T : IEcsComponent => ref Stashes<T>.Get(id).WorldGet();
+        public ref T Get<T>() where T : IEcsComponentData => ref Stashes<T>.Get(id).WorldGet();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGet<T>(out T component) where T : IEcsComponent {
+        public bool TryGet<T>(out T component) where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(id, out var stash) || !stash.WorldHas()) {
                 component = default;
                 return false;
@@ -246,10 +246,10 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetPrevious<T>() where T : IEcsComponent => ref Stashes<T>.GetPrevious(id).WorldGet();
+        public ref T GetPrevious<T>() where T : IEcsComponentData => ref Stashes<T>.GetPrevious(id).WorldGet();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetPrevious<T>(out T component) where T : IEcsComponent {
+        public bool TryGetPrevious<T>(out T component) where T : IEcsComponentData {
             if (!Stashes<T>.TryGetPrevious(id, out var stash) || !stash.WorldHas()) {
                 component = default;
                 return false;
@@ -259,9 +259,9 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Has<T>() where T : IEcsComponent => Stashes<T>.TryGet(id, out var stash) && stash.WorldHas();
+        public bool Has<T>() where T : IEcsComponentData => Stashes<T>.TryGet(id, out var stash) && stash.WorldHas();
 
-        public void Remove<T>() where T : IEcsComponent {
+        public void Remove<T>() where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(id, out var stash) || !stash.WorldHas())
                 throw new Exception($"World does not have component of type {typeof(T)}");
             var comp = stash.WorldGet();
@@ -274,14 +274,14 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryRemove<T>() where T : IEcsComponent {
+        public bool TryRemove<T>() where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(id, out var stash) || !stash.WorldHas())
                 return false;
             Remove<T>();
             return true;
         }
 
-        public void SetEnabled<T>(bool enabled) where T : IEcsComponent {
+        public void SetEnabled<T>(bool enabled) where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(id, out var stash) || !stash.WorldHas())
                 throw new Exception($"World does not have component of type {typeof(T)}");
             var wasEnabled = m_bitset[Stashes<T>.Bit];
@@ -296,13 +296,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Enable<T>() where T : IEcsComponent => SetEnabled<T>(true);
+        public void Enable<T>() where T : IEcsComponentData => SetEnabled<T>(true);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Disable<T>() where T : IEcsComponent => SetEnabled<T>(false);
+        public void Disable<T>() where T : IEcsComponentData => SetEnabled<T>(false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsEnabled<T>() where T : IEcsComponent => m_bitset[Stashes<T>.Bit];
+        public bool IsEnabled<T>() where T : IEcsComponentData => m_bitset[Stashes<T>.Bit];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public QueryBuilder BuildQuery(QueryEnabledFlags enabledFlags = QueryEnabledFlags.Enabled) => new(this, enabledFlags);
@@ -431,7 +431,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool IsEntityEnabled(in Entity entity) => m_entityInfos[entity.id].bitset[Bits.IsEnabled];
 
-        internal void SetEntityComponentEnabled<T>(in Entity entity, bool enabled) where T : IEcsComponent {
+        internal void SetEntityComponentEnabled<T>(in Entity entity, bool enabled) where T : IEcsComponentData {
             if (!Stashes<T>.TryGet(id, out var stash) || !stash.Has(entity.id))
                 throw new Exception($"Entity does not have component of type {typeof(T)}");
             ref var info = ref m_entityInfos[entity.id];
@@ -447,11 +447,11 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal bool IsEntityComponentEnabled<T>(in Entity entity) where T : IEcsComponent => 
+        internal bool IsEntityComponentEnabled<T>(in Entity entity) where T : IEcsComponentData => 
             m_entityInfos[entity.id].bitset[Stashes<T>.Bit];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void SetComponentBit<T>(in Entity entity, bool value) where T : IEcsComponent =>
+        internal void SetComponentBit<T>(in Entity entity, bool value) where T : IEcsComponentData =>
             m_entityInfos[entity.id].bitset[Stashes<T>.Bit] = value;
 
         internal void AddEntityComponentType(in Entity entity, in Type type) => m_entityInfos[entity.id].componentTypes.Add(type);

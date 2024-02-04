@@ -1,5 +1,5 @@
 ﻿namespace UFlow.Addon.ECS.Core.Runtime {
-    public interface IEcsComponent {
+    public interface IEcsComponentData {
         void Dispose() { }
     }
 }

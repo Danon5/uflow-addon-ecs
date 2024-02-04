@@ -1,5 +1,5 @@
 ﻿namespace UFlow.Addon.ECS.Core.Runtime {
-    internal readonly struct EnsureAddedAndSetEnabled<T> : IEcsCommand where T : IEcsComponent {
+    internal readonly struct EnsureAddedAndSetEnabled<T> : IEcsCommand where T : IEcsComponentData {
         private readonly bool m_enabled;
 
         public EnsureAddedAndSetEnabled(bool enabled) => m_enabled = enabled;

@@ -11,7 +11,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         static RawComponentMethodCache() => StaticEventBus<RuntimeInitializeOnLoadEvent>.Subscribe(ClearStaticCache);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void InvokeSet(in Entity entity, Type componentType, IEcsComponent value, bool enableIfAdded) =>
+        public static void InvokeSet(in Entity entity, Type componentType, IEcsComponentData value, bool enableIfAdded) =>
             GetOrCreateRawMethods(s_cache, componentType).InvokeSet(entity, value, enableIfAdded);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -19,7 +19,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             GetOrCreateRawMethods(s_cache, componentType).InvokeSet(entity, enableIfAdded);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IEcsComponent InvokeGet(in Entity entity, Type componentType) =>
+        public static IEcsComponentData InvokeGet(in Entity entity, Type componentType) =>
             GetOrCreateRawMethods(s_cache, componentType).InvokeGet(entity);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

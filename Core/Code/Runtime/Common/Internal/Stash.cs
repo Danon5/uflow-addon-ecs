@@ -6,7 +6,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    internal sealed class Stash<T> where T : IEcsComponent {
+    internal sealed class Stash<T> where T : IEcsComponentData {
         private readonly SparseArray<T> m_components;
 
         public int Count => m_components.Count;

@@ -35,7 +35,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             m_initialAddPredicates = new List<Predicate<Entity>>();
         }
 
-        public QueryBuilder With<T>() where T : IEcsComponent {
+        public QueryBuilder With<T>() where T : IEcsComponentData {
             if (m_withSet[Stashes<T>.Bit]) return this;
             m_withSet[Stashes<T>.Bit] = true;
             var enabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Enabled);
@@ -57,7 +57,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public QueryBuilder Without<T>() where T : IEcsComponent {
+        public QueryBuilder Without<T>() where T : IEcsComponentData {
             if (m_withoutSet[Stashes<T>.Bit]) return this;
             m_withoutSet[Stashes<T>.Bit] = true;
             var enabled = m_enabledFlags.HasFlag(QueryEnabledFlags.Enabled);
@@ -78,7 +78,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public QueryBuilder WhenAdded<T>() where T : IEcsComponent {
+        public QueryBuilder WhenAdded<T>() where T : IEcsComponentData {
             if (m_whenAddedSet[Stashes<T>.Bit]) return this;
             m_whenAddedSet[Stashes<T>.Bit] = true;
             m_whenActions.Add((world, updater) => world.SubscribeEntityComponentAdded((in Entity entity, ref T _) => 
@@ -87,7 +87,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public QueryBuilder WhenEnabled<T>() where T : IEcsComponent {
+        public QueryBuilder WhenEnabled<T>() where T : IEcsComponentData {
             if (m_whenEnabledSet[Stashes<T>.Bit]) return this;
             m_whenEnabledSet[Stashes<T>.Bit] = true;
             m_whenActions.Add((world, updater) => world.SubscribeEntityComponentEnabled((in Entity entity, ref T _) => 
@@ -96,7 +96,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public QueryBuilder WhenChanged<T>() where T : IEcsComponent {
+        public QueryBuilder WhenChanged<T>() where T : IEcsComponentData {
             if (m_whenChangedSet[Stashes<T>.Bit]) return this;
             m_whenChangedSet[Stashes<T>.Bit] = true;
             m_whenActions.Add((world, updater) => world.SubscribeEntityComponentChanged((in Entity entity, in T _, ref T _) => 
@@ -105,7 +105,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public QueryBuilder WhenDisabled<T>() where T : IEcsComponent {
+        public QueryBuilder WhenDisabled<T>() where T : IEcsComponentData {
             if (m_whenDisabledSet[Stashes<T>.Bit]) return this;
             m_whenDisabledSet[Stashes<T>.Bit] = true;
             m_whenActions.Add((world, updater) => world.SubscribeEntityComponentDisabled((in Entity entity, ref T _) => 
@@ -114,7 +114,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public QueryBuilder WhenRemoved<T>() where T : IEcsComponent {
+        public QueryBuilder WhenRemoved<T>() where T : IEcsComponentData {
             if (m_whenRemovedSet[Stashes<T>.Bit]) return this;
             m_whenRemovedSet[Stashes<T>.Bit] = true;
             m_whenActions.Add((world, updater) => world.SubscribeEntityComponentRemoved((in Entity entity, in T _) => 
@@ -123,35 +123,35 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             return this;
         }
 
-        public EitherBuilder WithEither<T>() where T : IEcsComponent {
+        public EitherBuilder WithEither<T>() where T : IEcsComponentData {
             return new EitherBuilder(this, EitherBuilder.EitherType.With).Or<T>();
         }
 
-        public EitherBuilder WithoutEither<T>() where T : IEcsComponent {
+        public EitherBuilder WithoutEither<T>() where T : IEcsComponentData {
             return new EitherBuilder(this, EitherBuilder.EitherType.Without).Or<T>();
         }
 
-        public EitherBuilder WhenEitherAdded<T>() where T : IEcsComponent {
+        public EitherBuilder WhenEitherAdded<T>() where T : IEcsComponentData {
             m_hasWhenFilter = true;
             return new EitherBuilder(this, EitherBuilder.EitherType.WhenAdded).Or<T>();
         }
 
-        public EitherBuilder WhenEitherEnabled<T>() where T : IEcsComponent {
+        public EitherBuilder WhenEitherEnabled<T>() where T : IEcsComponentData {
             m_hasWhenFilter = true;
             return new EitherBuilder(this, EitherBuilder.EitherType.WhenEnabled).Or<T>();
         }
 
-        public EitherBuilder WhenEitherChanged<T>() where T : IEcsComponent {
+        public EitherBuilder WhenEitherChanged<T>() where T : IEcsComponentData {
             m_hasWhenFilter = true;
             return new EitherBuilder(this, EitherBuilder.EitherType.WhenChanged).Or<T>();
         }
 
-        public EitherBuilder WhenEitherDisabled<T>() where T : IEcsComponent {
+        public EitherBuilder WhenEitherDisabled<T>() where T : IEcsComponentData {
             m_hasWhenFilter = true;
             return new EitherBuilder(this, EitherBuilder.EitherType.WhenDisabled).Or<T>();
         }
 
-        public EitherBuilder WhenEitherRemoved<T>() where T : IEcsComponent {
+        public EitherBuilder WhenEitherRemoved<T>() where T : IEcsComponentData {
             m_hasWhenFilter = true;
             return new EitherBuilder(this, EitherBuilder.EitherType.WhenRemoved).Or<T>();
         }
@@ -163,7 +163,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
 
         public DynamicEntitySet AsSet() => 
             new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
-        public DynamicEntityMap<TKey> AsMap<TKey>() where TKey : IEcsComponent => 
+        public DynamicEntityMap<TKey> AsMap<TKey>() where TKey : IEcsComponentData => 
             new(m_world, GetFilter(), GetSubscriptions(), m_initialAddPredicates, m_excludeInitialEntities);
 
         private Predicate<Bitset> GetFilter() => Queries.GetFilter(m_withSet, m_withoutSet, m_withEitherSets, m_withoutEitherSets);
@@ -171,7 +171,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         private List<Func<World, DynamicEntityCollectionUpdater, IDisposable>> GetSubscriptions() =>
             m_hasWhenFilter ? m_whenActions : m_actions;
 
-        private void AddEnabledActions<T>(bool inverse) where T : IEcsComponent {
+        private void AddEnabledActions<T>(bool inverse) where T : IEcsComponentData {
             switch (m_enabledFlags) {
                 case QueryEnabledFlags.Enabled:
                     if (inverse) { // without
@@ -242,7 +242,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
                 m_filter = default;
             }
 
-            public EitherBuilder Or<T>() where T : IEcsComponent {
+            public EitherBuilder Or<T>() where T : IEcsComponentData {
                 if (m_filter[Stashes<T>.Bit]) return this;
                 m_filter[Stashes<T>.Bit] = true;
                 switch (m_type) {
@@ -309,7 +309,7 @@ namespace UFlow.Addon.ECS.Core.Runtime {
             }
 
             public DynamicEntitySet AsSet() => EndEither().AsSet();
-            public DynamicEntityMap<TKey> AsMap<TKey>() where TKey : IEcsComponent => EndEither().AsMap<TKey>();
+            public DynamicEntityMap<TKey> AsMap<TKey>() where TKey : IEcsComponentData => EndEither().AsMap<TKey>();
 
             internal enum EitherType : byte {
                 With,

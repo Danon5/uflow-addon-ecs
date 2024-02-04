@@ -61,11 +61,11 @@ namespace UFlow.Addon.ECS.Tests {
             ExternalEngineEvents.clearStaticCachesEvent?.Invoke();
         }
 
-        private struct Test1 : IEcsComponent {
+        private struct Test1 : IEcsComponentData {
             public int someData;
         }
         
-        private struct Test2 : IEcsComponent {
+        private struct Test2 : IEcsComponentData {
             public int someData;
         }
     }

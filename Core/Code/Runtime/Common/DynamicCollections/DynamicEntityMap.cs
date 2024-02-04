@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace UFlow.Addon.ECS.Core.Runtime {
     public sealed class DynamicEntityMap<TKey> : IDynamicEntityCollection, IInternalDynamicEntityCollection, IDisposable 
-        where TKey : IEcsComponent {
+        where TKey : IEcsComponentData {
         private readonly DynamicEntityCollectionUpdater m_updater;
         private readonly Dictionary<TKey, Entity> m_entities;
 
