@@ -10,11 +10,13 @@ namespace UFlow.Addon.ECS.Core.Runtime {
         public override string Name => "ECS Settings";
         [field: SerializeField, LabelWidth(LABEL_WIDTH)] public Setting<bool> RealtimeInspectorEnabled { get; private set; } = new();
 
+#if UNITY_EDITOR
         public override void Apply() => RealtimeInspectorEnabled.ApplyProposedValue();
 
         public override void Revert() => RealtimeInspectorEnabled.RevertProposedValue();
         
         public override bool HasUnappliedChanges() => 
             RealtimeInspectorEnabled.ProposedValueDiffersFromCurrent();
+#endif
     }
 }
