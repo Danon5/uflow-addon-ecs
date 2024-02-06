@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public sealed class EntityCommandBuffer : BaseCommandBuffer {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set<T>(in Entity entity, in T component, bool enableIfAdded) where T : IEcsComponentData =>

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UFlow.Core.Runtime;
 using UFlow.Core.Shared;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     internal static class RawComponentMethodCache {
         private static readonly Dictionary<Type, IRawComponentMethods> s_cache = new();
 

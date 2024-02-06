@@ -4,14 +4,13 @@ using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using UFlow.Core.Runtime;
 using UFlow.Odin.Runtime;
-using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
+using UnityEngine;
 
-[assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public class SceneEntity : MonoBehaviour, ISceneEntity, ISerializationCallbackReceiver {
 #if UNITY_EDITOR
         [InlineProperty, HideLabel]

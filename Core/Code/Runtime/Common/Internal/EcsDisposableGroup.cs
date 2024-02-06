@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     internal sealed class EcsDisposableGroup : IDisposable {
         private readonly IDisposable[] m_disposables;
         private bool m_disposed;

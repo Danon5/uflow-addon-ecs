@@ -1,5 +1,5 @@
 ﻿using Sirenix.OdinInspector.Editor;
-using UFlow.Addon.ECS.Core.Runtime;
+using UFlow.Addon.Entities.Core.Runtime;
 using UFlow.Core.Runtime;
 using UnityEditor;
 using UnityEngine;

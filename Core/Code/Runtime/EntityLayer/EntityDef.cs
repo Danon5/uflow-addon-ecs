@@ -2,7 +2,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     [CreateAssetMenu(
         fileName = "New" + nameof(EntityDef),
         menuName = "UFlow/ECS/" + nameof(EntityDef))]

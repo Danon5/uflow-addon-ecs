@@ -5,7 +5,7 @@ using UFlow.Core.Runtime;
 using UFlow.Core.Shared;
 using UnityEngine;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public static partial class EcsUtils {
         public static class Worlds {
             public static World CreateWorldFromType<T>() where T : BaseWorldType {

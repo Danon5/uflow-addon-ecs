@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UFlow.Core.Runtime;
 using UnityEngine;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     [Serializable]
     public sealed class EcsAddonSettings : BaseAddonSettings {
         public override string AddonName => "ECS";

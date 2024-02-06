@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public static class EntityDefExtensions {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Entity Instantiate(this EntityDef def) => def.CreateEntity(EcsModule<DefaultWorld>.Get().World);

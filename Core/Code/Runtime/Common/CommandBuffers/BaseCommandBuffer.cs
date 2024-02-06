@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public abstract class BaseCommandBuffer : IDisposable {
         internal event Action<BaseCommandBuffer> OnDisposed;
         private static readonly EcsIdStack s_idStack;

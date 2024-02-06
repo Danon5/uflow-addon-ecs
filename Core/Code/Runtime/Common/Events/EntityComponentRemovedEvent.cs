@@ -1,4 +1,4 @@
-﻿namespace UFlow.Addon.ECS.Core.Runtime {
+﻿namespace UFlow.Addon.Entities.Core.Runtime {
     internal readonly struct EntityComponentRemovedEvent<T> {
         public readonly Entity entity;
         public readonly T component;

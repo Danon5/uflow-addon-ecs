@@ -3,13 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using UFlow.Core.Runtime;
 using UFlow.Core.Shared;
-using UnityEngine;
 
 // ReSharper disable SuspiciousTypeConversion.Global
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public abstract class BaseSystemGroup : IEnumerable<ISystem> {
         private readonly List<ISystem> m_systems;
         private bool m_enabled;

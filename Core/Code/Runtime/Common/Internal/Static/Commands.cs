@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 // ReSharper disable StaticMemberInGenericType
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     internal static class Commands<T> where T : IEcsCommand {
         private static readonly Dictionary<int, CommandQueue<T>> s_queues = new();
 

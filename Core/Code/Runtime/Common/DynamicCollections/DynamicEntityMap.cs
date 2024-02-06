@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public sealed class DynamicEntityMap<TKey> : IDynamicEntityCollection, IInternalDynamicEntityCollection, IDisposable 
         where TKey : IEcsComponentData {
         private readonly DynamicEntityCollectionUpdater m_updater;

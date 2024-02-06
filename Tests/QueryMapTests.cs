@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using UFlow.Addon.ECS.Core.Runtime;
+using UFlow.Addon.Entities.Core.Runtime;
 
 namespace UFlow.Addon.ECS.Tests {
     public sealed class QueryMapTests {

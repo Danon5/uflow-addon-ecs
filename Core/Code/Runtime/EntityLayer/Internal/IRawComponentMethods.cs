@@ -1,4 +1,4 @@
-﻿namespace UFlow.Addon.ECS.Core.Runtime {
+﻿namespace UFlow.Addon.Entities.Core.Runtime {
     public interface IRawComponentMethods {
         void InvokeSet(in Entity entity, IEcsComponentData value, bool enableIfAdded);
         void InvokeSet(in Entity entity, bool enableIfAdded);

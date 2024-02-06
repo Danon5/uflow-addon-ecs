@@ -1,4 +1,4 @@
-﻿namespace UFlow.Addon.ECS.Core.Runtime {
+﻿namespace UFlow.Addon.Entities.Core.Runtime {
     public static partial class EcsUtils {
         public static class Entities {
             public static void RemoveComponentDerivingFromType<T>(in Entity entity) where T : IEcsComponentData {

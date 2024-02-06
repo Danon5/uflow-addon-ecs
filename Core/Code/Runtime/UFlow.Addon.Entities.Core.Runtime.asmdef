@@ -1,13 +1,14 @@
 {
-    "name": "UFlow.Addon.ECS.Core.Runtime",
-    "rootNamespace": "UFlow.Addon.ECS.Core.Runtime",
+    "name": "UFlow.Addon.Entities.Core.Runtime",
+    "rootNamespace": "UFlow.Addon.Entities.Core.Runtime",
     "references": [
         "UFlow.Core.Shared",
         "UFlow.Core.Runtime",
         "UFlow.Odin.Runtime",
         "Unity.ResourceManager",
         "Unity.Addressables",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

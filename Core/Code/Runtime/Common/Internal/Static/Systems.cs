@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     internal static class Systems {
         private static readonly Dictionary<short, Dictionary<Type, BaseSystemGroup>> s_groups = new();
 

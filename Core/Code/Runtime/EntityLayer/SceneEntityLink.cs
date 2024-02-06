@@ -1,7 +1,7 @@
 ﻿using System;
 using Sirenix.OdinInspector;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     [Serializable]
     [HideLabel]
     public struct SceneEntityLink {

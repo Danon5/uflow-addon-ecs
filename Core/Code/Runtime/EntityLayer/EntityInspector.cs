@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Sirenix.OdinInspector;
-using UFlow.Odin.Runtime;
-using UnityEngine;
 #if UNITY_EDITOR
 using Sirenix.OdinInspector.Editor;
 #endif
+using UFlow.Odin.Runtime;
+using UnityEngine;
 
-[assembly: InternalsVisibleTo("UFlow.Addon.Ecs.Core.Editor")]
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     [Serializable]
     internal sealed class EntityInspector
 #if UNITY_EDITOR

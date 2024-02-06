@@ -1,4 +1,4 @@
-﻿namespace UFlow.Addon.ECS.Core.Runtime {
+﻿namespace UFlow.Addon.Entities.Core.Runtime {
     internal sealed class RawComponentMethods<T> : IRawComponentMethods where T : IEcsComponentData {
         public void InvokeSet(in Entity entity, IEcsComponentData value, bool enableIfAdded) => entity.Set((T)value, enableIfAdded);
         

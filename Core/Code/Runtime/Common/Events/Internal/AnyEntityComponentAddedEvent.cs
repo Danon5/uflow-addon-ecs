@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     internal readonly struct AnyEntityComponentAddedEvent {
         public readonly Entity entity;
         public readonly Type type;

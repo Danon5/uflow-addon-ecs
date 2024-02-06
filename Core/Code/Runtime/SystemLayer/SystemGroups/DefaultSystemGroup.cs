@@ -1,3 +1,3 @@
-﻿namespace UFlow.Addon.ECS.Core.Runtime {
+﻿namespace UFlow.Addon.Entities.Core.Runtime {
     public sealed class DefaultSystemGroup : BaseSystemGroup { }
 }

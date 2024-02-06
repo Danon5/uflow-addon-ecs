@@ -3,7 +3,7 @@ using UnityEngine;
 
 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
-namespace UFlow.Addon.ECS.Core.Runtime {
+namespace UFlow.Addon.Entities.Core.Runtime {
     public sealed class EcsModule<T> : BaseBehaviourModule<EcsModule<T>> where T : BaseWorldType {
         public World World { get; private set; }
         public bool AutoRunSystemGroups { get; set; } = true;
