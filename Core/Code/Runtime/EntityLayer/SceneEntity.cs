@@ -26,6 +26,7 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         [SerializeField] private string m_guid;
         private bool m_destroying;
         private bool m_destroyingDirectly;
+        private bool m_initialized;
         private IDisposable m_destroyedSubscription;
         private IDisposable m_worldDestroyedSubscription;
 #if UNITY_EDITOR
@@ -48,6 +49,18 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         [UsedImplicitly]
         protected virtual void Awake() => Initialize();
 
+        [UsedImplicitly]
+        protected virtual void Start() {
+            if (m_initialized) return;
+            Initialize();
+        }
+
+        [UsedImplicitly]
+        protected virtual void Update() {
+            if (m_initialized) return;
+            Initialize();
+        }
+        
         [UsedImplicitly]
         protected virtual void OnDestroy() {
             m_destroyedSubscription?.Dispose();
@@ -132,6 +145,7 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         protected void BakeAuthoringComponents() => m_inspector.BakeAuthoringComponents(Entity);
         
         protected void Initialize(bool autoCreate = true) {
+            if (!EcsModule<DefaultWorld>.IsLoaded()) return;
 #if UNITY_EDITOR
             m_instantiated = true;
 #endif
@@ -143,6 +157,7 @@ namespace UFlow.Addon.Entities.Core.Runtime {
                     DestroyEntity();
             });
             m_worldDestroyedSubscription = World.SubscribeWorldDestroyed(DestroyEntity);
+            m_initialized = true;
         }
         
         protected virtual void AddSpecialComponentsBeforeBaking() {
