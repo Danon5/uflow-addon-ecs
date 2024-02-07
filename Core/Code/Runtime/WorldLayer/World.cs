@@ -420,7 +420,7 @@ namespace UFlow.Addon.Entities.Core.Runtime {
             if (!enabled)
                 Publish(new EntityDisablingEvent(entity));
             info.bitset[Bits.IsEnabled] = enabled;
-            if (entity.TryGet(out SceneEntityRef sceneEntityRef))
+            if (entity.TryGet(out SceneEntityCd sceneEntityRef))
                 sceneEntityRef.value.GameObject.SetActive(enabled);
             if (enabled)
                 Publish(new EntityEnabledEvent(entity));

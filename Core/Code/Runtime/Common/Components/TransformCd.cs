@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace UFlow.Addon.Entities.Core.Runtime {
-    public struct GameObjectRef : IEcsComponentData {
-        [ReadOnly] public GameObject value;
+    public struct TransformCd : IEcsComponentData {
+        [ReadOnly] public Transform value;
     }
 }

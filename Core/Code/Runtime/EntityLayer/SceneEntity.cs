@@ -146,20 +146,20 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         }
         
         protected virtual void AddSpecialComponentsBeforeBaking() {
-            Entity.Set(new GameObjectRef {
+            Entity.Set(new GameObjectCd {
                 value = gameObject
             });
             if (TryGetComponent(out RectTransform rectTransform)) {
-                Entity.Set(new RectTransformRef {
+                Entity.Set(new RectTransformCd {
                     value = rectTransform
                 });
             }
             else {
-                Entity.Set(new TransformRef {
+                Entity.Set(new TransformCd {
                     value = transform
                 });
             }
-            Entity.Set(new SceneEntityRef {
+            Entity.Set(new SceneEntityCd {
                 value = this
             });
         }

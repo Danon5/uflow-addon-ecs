@@ -13,6 +13,7 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         private readonly World m_world;
         private bool m_enabled;
 
+        protected World World => m_world;
         protected EntityCommandBuffer CommandBuffer { get; }
         
         public BaseRunSystem(in World world) {

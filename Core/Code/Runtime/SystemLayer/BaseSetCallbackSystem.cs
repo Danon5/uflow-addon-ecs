@@ -13,6 +13,8 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         private readonly DynamicEntitySet m_query;
         private bool m_enabled;
 
+        protected World World => m_world;
+        
         public BaseSetCallbackSystem(in World world, QueryBuilder query) {
             m_world = world;
             m_query = query.AsSet();

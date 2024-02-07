@@ -8,6 +8,8 @@ namespace UFlow.Addon.Entities.Core.Runtime {
                                      IResetSystem{
         private readonly World m_world;
 
+        protected World World => m_world;
+
         public BaseSystem(in World world) => m_world = world;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
