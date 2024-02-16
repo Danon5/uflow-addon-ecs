@@ -142,10 +142,12 @@ namespace UFlow.Addon.Entities.Core.Runtime {
 
         public virtual World GetWorld() => EcsModule<DefaultWorld>.Get().World;
 
+        protected virtual bool WorldIsLoaded() => EcsModule<DefaultWorld>.IsLoaded();
+
         protected void BakeAuthoringComponents() => m_inspector.BakeAuthoringComponents(Entity);
         
         protected void Initialize(bool autoCreate = true) {
-            if (!EcsModule<DefaultWorld>.IsLoaded()) return;
+            if (!WorldIsLoaded()) return;
 #if UNITY_EDITOR
             m_instantiated = true;
 #endif

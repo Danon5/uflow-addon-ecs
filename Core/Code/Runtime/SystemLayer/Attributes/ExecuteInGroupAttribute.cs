@@ -5,8 +5,8 @@ namespace UFlow.Addon.Entities.Core.Runtime {
     public sealed class ExecuteInGroupAttribute : Attribute {
         public Type[] GroupTypes { get; }
         
-        public ExecuteInGroupAttribute(params Type[] types) {
-            GroupTypes = types;
+        public ExecuteInGroupAttribute(params Type[] groupTypes) {
+            GroupTypes = groupTypes;
         }
     }
 }
