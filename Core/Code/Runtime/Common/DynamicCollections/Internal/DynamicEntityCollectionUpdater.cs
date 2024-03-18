@@ -31,6 +31,9 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool WorldIsAlive() => m_world.IsAlive();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CheckedAdd(in Entity entity) {
             if (!m_filter(entity.Bitset)) return;
             m_collection.EnsureAdded(entity);

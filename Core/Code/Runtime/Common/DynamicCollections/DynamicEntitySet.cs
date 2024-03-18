@@ -42,6 +42,9 @@ namespace UFlow.Addon.Entities.Core.Runtime {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool WorldIsAlive() => m_updater.WorldIsAlive();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ResetCache() {
             if (m_entities.Count == 0) return;
             m_entities.Clear();
